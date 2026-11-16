@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taalstof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Taalstof &middot; Duits via muziek</p>
+    <h1>Kies een lied</h1>
+    <p class="lead">Kies een nummer uit Spotify. Taalstof zoekt de tekst, Claude maakt er een les van.</p>
+    <div class="meta" id="status">Status laden&hellip;</div>
+  </header>
+
+  <main class="kolom">
+    <section class="paneel">
+      <div class="tabs" role="tablist">
+        <button class="btn klein" type="button" data-tab="zoek" aria-pressed="true">Zoeken</button>
+        <button class="btn klein" type="button" data-tab="recent" aria-pressed="false">Recent gespeeld</button>
+        <button class="btn klein" type="button" data-tab="playlists" aria-pressed="false">Playlists</button>
+      </div>
+      <form id="zoek-form" class="rij">
+        <input id="zoek-q" type="search" placeholder="Artiest of titel" autocomplete="off">
+        <button class="btn pri" type="submit">Zoek</button>
+      </form>
+      <ul id="lijst" class="lijst"></ul>
+    </section>
+
+    <section class="paneel" id="gekozen" hidden>
+      <p class="lab">Gekozen</p>
+      <h2 id="g-titel"></h2>
+      <p id="g-artiest" class="muted"></p>
+      <p id="g-lyrics" class="muted"></p>
+      <details>
+        <summary>Tekst zelf plakken</summary>
+        <textarea id="plak" rows="10" placeholder="Plak hier de volledige songtekst"></textarea>
+      </details>
+      <div class="rij">
+        <button class="btn pri" type="button" id="maak">Maak les</button>
+        <a id="g-spotify" class="btn klein" target="_blank" rel="noopener">Open in Spotify</a>
+      </div>
+      <p id="melding" class="muted" aria-live="polite"></p>
+    </section>
+
+    <section class="paneel">
+      <p class="lab">Mijn lessen</p>
+      <ul id="lessen" class="lijst"></ul>
+    </section>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
