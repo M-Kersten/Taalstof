@@ -1,0 +1,30 @@
+{
+  "titel": "Wandern is wandelen met bepakking",
+  "lead": "Een molenaarslied uit 1818 met meer Nederlands erin dan je zou denken.",
+  "lied": { "titel": "Das Wandern", "artiest": "Wilhelm Müller" },
+  "leerdoelen": ["Je herkent de t → ss in Wasser en muss.", "Je leest de tweede naamval in des Müllers."],
+  "strofen": [
+    { "regels": [
+      { "de": "Das Wandern ist des Müllers Lust,", "nl": "Het trekken is de lust van de molenaar,",
+        "woorden": [ { "tekst": "Wandern", "sleutel": "wandern" }, { "tekst": "Müllers", "sleutel": "mueller" }, { "tekst": "Lust", "sleutel": "lust" } ] },
+      { "de": "Vom Wasser haben wir's gelernt, <b>", "nl": "Van het water hebben we het geleerd,",
+        "woorden": [ { "tekst": "Wasser", "sleutel": "wasser" }, { "tekst": "nergens", "sleutel": "lust" } ] }
+    ] }
+  ],
+  "woordenlijst": [
+    { "sleutel": "wandern", "woord": "wandern", "betekenis": "trekken, wandelen", "nlVerwant": "wandelen", "enVerwant": "wander", "klankverschuiving": "", "uitleg": "Dagen onderweg, met bepakking.", "etymologie": "Verwant met winden en wenden.", "zekerheid": "zeker", "labels": [] },
+    { "sleutel": "mueller", "woord": "der Müller", "betekenis": "de molenaar", "nlVerwant": "mulder", "enVerwant": "miller", "klankverschuiving": "", "uitleg": "De -s hoort bij de tweede naamval.", "etymologie": "Uit Laatlatijn molinarius.", "zekerheid": "zeker", "labels": [ { "soort": "l", "tekst": "Latijn" }, { "soort": "g", "tekst": "tweede naamval" } ] },
+    { "sleutel": "lust", "woord": "die Lust", "betekenis": "zin, plezier", "nlVerwant": "lust", "enVerwant": "lust", "klankverschuiving": "", "uitleg": "Ich habe Lust auf Kaffee.", "etymologie": "Verdere herkomst is onbekend.", "zekerheid": "onzeker", "labels": [] },
+    { "sleutel": "wasser", "woord": "das Wasser", "betekenis": "het water", "nlVerwant": "water", "enVerwant": "water", "klankverschuiving": "t → ss", "uitleg": "Na een klinker wordt de t een ss.", "etymologie": "Familie van Grieks hydor.", "zekerheid": "zeker", "labels": [ { "soort": "k", "tekst": "t → ss" } ] }
+  ],
+  "klankverschuivingen": [ { "regel": "t → ss", "uitleg": "Na een klinker wordt de t een ss.", "voorbeelden": ["Wasser"] } ],
+  "decoder": [ { "groep": "Eén schuif", "woorden": [
+    { "nl": "water", "en": "water", "de": "Wasser", "stappen": [ { "regel": "t → ss", "vorm": "wasser" } ], "noot": "Hoofdletter erbij." },
+    { "nl": "dag", "en": "day", "de": "Tag", "stappen": [ { "regel": "d → t", "vorm": "tag" } ], "noot": "Het Engels houdt de d." }
+  ] } ],
+  "verhalen": [ { "woord": "Lust", "titel": "Zin in koffie", "tekst": "Het Engelse lust is vernauwd tot begeerte.", "zekerheid": "onzeker" } ],
+  "grammatica": [ { "titel": "Tweede naamval", "uitleg": "des plus -s.", "voorbeelden": [ { "de": "des Müllers Lust", "nl": "de lust van de molenaar" } ] } ],
+  "valseVrienden": [],
+  "kaarten": [ { "voor": "das Wasser", "betekenis": "het water", "familie": "NL water · EN water", "regel": "t → ss", "tekst": "Wodka is letterlijk watertje." } ],
+  "toets": [ { "vraag": "Wat betekent Lust?", "opties": ["zin", "list", "last", "lucht"], "goed": 0, "toelichting": "Ich habe Lust: ik heb zin." } ]
+}
