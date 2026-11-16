@@ -21,13 +21,23 @@
   }
 
   /* ---------- lied ---------- */
-  function toonWoord(strofe, key) {
-    var e = D.lex[key], uit = $('.uitleg', strofe);
-    $$('.w', strofe).forEach(function (b) {
-      var aan = b.dataset.k === key;
+  function blok(uit, lab, txt) {
+    if (!txt) return;
+    var p = el('p', 'u-txt');
+    p.appendChild(el('span', 'lab', lab));
+    p.appendChild(document.createTextNode(txt));
+    uit.appendChild(p);
+  }
+  function markeer(strofe, test) {
+    $$('.w, .rn', strofe).forEach(function (b) {
+      var aan = test(b);
       b.classList.toggle('on', aan);
       b.setAttribute('aria-pressed', aan ? 'true' : 'false');
     });
+  }
+  function toonWoord(strofe, key) {
+    var e = D.lex[key], uit = $('.uitleg', strofe);
+    markeer(strofe, function (b) { return b.classList.contains('w') && b.dataset.k === key; });
     uit.textContent = '';
     if (!e) return;
     var kop = el('div', 'u-kop');
@@ -37,12 +47,23 @@
     uit.appendChild(kop);
     if (e.fam) uit.appendChild(el('p', 'u-fam', 'Familie: ' + e.fam));
     if (e.chips && e.chips.length) uit.appendChild(chips(e.chips));
-    uit.appendChild(el('p', 'u-txt', e.txt));
+    blok(uit, 'Waarom zo', e.geb);
+    blok(uit, 'Herkomst', e.ety);
+  }
+  function toonNoot(strofe, knop) {
+    var uit = $('.uitleg', strofe), regel = knop.closest('.regel');
+    markeer(strofe, function (b) { return b === knop; });
+    uit.textContent = '';
+    var kop = el('div', 'u-kop');
+    kop.appendChild(el('span', 'u-nl', $('.nl', regel).textContent));
+    uit.appendChild(kop);
+    blok(uit, 'Waarom zo', knop.dataset.noot);
   }
   $$('.strofe').forEach(function (strofe) {
     strofe.addEventListener('click', function (ev) {
-      var b = ev.target.closest('.w');
+      var b = ev.target.closest('.w'), n = ev.target.closest('.rn');
       if (b) toonWoord(strofe, b.dataset.k);
+      else if (n) toonNoot(strofe, n);
     });
     var knop = $('.vert', strofe);
     knop.addEventListener('click', function () { zetVertaling(strofe, knop.getAttribute('aria-pressed') !== 'true'); });

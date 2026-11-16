@@ -8,5 +8,7 @@ export interface TrackRef {
   spotifyId?: string;
   spotifyUrl?: string;
   album?: string;
+  /** Datum van het album volgens Spotify. Kan een heruitgave zijn. */
+  releaseDate?: string;
   imageUrl?: string;
 }

@@ -16,6 +16,8 @@ export interface RenderMeta {
   copyright?: string;
   model: string;
   generatedAt: string;
+  /** De meegeleverde voorbeeldles: tekst vrij van rechten, niet door de app gegenereerd. */
+  voorbeeld?: boolean;
 }
 
 export function esc(s: unknown): string {
@@ -27,13 +29,30 @@ export function esc(s: unknown): string {
     .replace(/'/g, '&#39;');
 }
 
+const LETTER = /[\p{L}\p{N}]/u;
+
+/**
+ * Eerste plek vanaf `van` waar `tekst` als los woord staat. Zo wordt "in" niet
+ * gevonden midden in "sind".
+ */
+export function vindWoord(de: string, tekst: string, van: number): number {
+  const kopLetter = LETTER.test(tekst.charAt(0));
+  const staartLetter = LETTER.test(tekst.charAt(tekst.length - 1));
+  for (let i = de.indexOf(tekst, van); i !== -1; i = de.indexOf(tekst, i + 1)) {
+    const voor = kopLetter && LETTER.test(de.charAt(i - 1));
+    const na = staartLetter && LETTER.test(de.charAt(i + tekst.length));
+    if (!voor && !na) return i;
+  }
+  return -1;
+}
+
 /** Maak een regel klikbaar: elk genoemd woord wordt een knop, de rest blijft tekst. */
 export function regelHtml(r: Regel): string {
   let uit = '';
   let pos = 0;
   for (const w of r.woorden) {
     if (!w.tekst) continue;
-    const i = r.de.indexOf(w.tekst, pos);
+    const i = vindWoord(r.de, w.tekst, pos);
     if (i === -1) continue;
     uit += esc(r.de.slice(pos, i));
     let eind = i + w.tekst.length;
@@ -50,6 +69,23 @@ export function regelHtml(r: Regel): string {
   return uit + esc(r.de.slice(pos));
 }
 
+/** Een herhaalde regel, zoals in een refrein, krijgt de woorden en de noot van de eerste keer. */
+export function vulHerhalingen(strofen: Les['strofen']): Les['strofen'] {
+  const eerste = new Map<string, Regel>();
+  return strofen.map((s) => ({
+    ...s,
+    regels: s.regels.map((r) => {
+      const k = r.de.trim().replace(/\s+/g, ' ');
+      const e = eerste.get(k);
+      if (!e) {
+        if (r.woorden.length || r.noot) eerste.set(k, r);
+        return r;
+      }
+      return { ...r, woorden: r.woorden.length ? r.woorden : e.woorden, noot: r.noot || e.noot };
+    }),
+  }));
+}
+
 export function familie(w: { nlVerwant: string; enVerwant: string }): string {
   return [w.nlVerwant && `NL ${w.nlVerwant}`, w.enVerwant && `EN ${w.enVerwant}`].filter(Boolean).join(' · ');
 }
@@ -59,26 +95,29 @@ function lexEntry(w: Woord) {
   if (w.klankverschuiving) chips.push(['k', w.klankverschuiving]);
   for (const l of w.labels) if (!(l.soort === 'k' && l.tekst === w.klankverschuiving)) chips.push([l.soort, l.tekst]);
   if (w.zekerheid === 'onzeker') chips.push(['o', 'herkomst onzeker']);
-  const txt = [w.uitleg, w.etymologie].filter(Boolean).join(' ');
-  return { w: w.woord, nl: w.betekenis, fam: familie(w), chips, txt };
+  return { w: w.woord, nl: w.betekenis, fam: familie(w), chips, geb: w.gebruik, ety: w.etymologie };
 }
 
 function liedHtml(les: Les): string {
-  const eerste = les.strofen[0]?.regels.find((r) => r.woorden.length)?.woorden[0]?.sleutel;
+  const strofen = vulHerhalingen(les.strofen);
+  const eerste = strofen[0]?.regels.find((r) => r.woorden.length)?.woorden[0]?.sleutel;
   const uit = [
     '<div class="lied" id="lied-app">',
     `  <div class="lied-balk"><p>${esc(les.lied.artiest)} &middot; ${esc(les.lied.titel)}</p>` +
       '<button class="btn klein" type="button" id="vert-alle" aria-pressed="false">Alle vertalingen</button></div>',
   ];
-  les.strofen.forEach((s, n) => {
+  strofen.forEach((s, n) => {
     const start = n === 0 && eerste ? ` data-start="${esc(eerste)}"` : '';
     uit.push(`  <div class="strofe"${start}>`);
     uit.push(
-      `    <div class="strofe-kop"><span>Strofe ${n + 1}</span><button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></div>`,
+      `    <div class="strofe-kop"><span>${esc(s.naam || `Strofe ${n + 1}`)}</span><button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></div>`,
     );
     for (const r of s.regels) {
+      const noot = r.noot
+        ? ` <button class="rn" type="button" lang="nl" aria-pressed="false" data-noot="${esc(r.noot)}">waarom?</button>`
+        : '';
       uit.push(
-        `    <p class="regel"><span class="de" lang="de">${regelHtml(r)}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
+        `    <p class="regel"><span class="de" lang="de">${regelHtml(r)}${noot}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
       );
     }
     uit.push('    <div class="uitleg" aria-live="polite"><p class="leeg">Tik op een woord voor uitleg.</p></div>');
@@ -87,6 +126,14 @@ function liedHtml(les: Les): string {
   uit.push('</div>');
   return uit.join('\n');
 }
+
+/** De officiële Spotify-speler, zodat het lied naast de tekst klinkt. */
+function spelerHtml(t: TrackRef): string {
+  if (!t.spotifyId || !/^[A-Za-z0-9]+$/.test(t.spotifyId)) return '';
+  return `  <iframe class="speler" title="Speel ${esc(t.title)} af in Spotify" src="https://open.spotify.com/embed/track/${t.spotifyId}" height="80" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>\n`;
+}
+
+const ONZEKER = '<p class="zeker">Niet alles hiervan staat vast</p>';
 
 function toetsHtml(les: Les): string {
   const uit = ['<ol class="mc">'];
@@ -122,28 +169,64 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
   const aantalDec = les.decoder.reduce((n, g) => n + g.woorden.length, 0);
   const eersteDec = les.decoder[0]?.woorden[0];
 
-  const nav: [string, string][] = [
-    ['doelen', 'Leerdoelen'],
-    ['tekst', 'De tekst'],
-    ['klank', 'Decodeerapparaat'],
-    ['verhalen', 'Woordverhalen'],
-    ['grammatica', 'Grammatica'],
-    ...(les.valseVrienden.length ? ([['vrienden', 'Valse vrienden']] as [string, string][]) : []),
-    ['kaarten', 'Flashcards'],
-    ['toets', 'Zelftoets'],
-    ['bron', 'Bron'],
-  ];
+  const alineas = les.achtergrond.alineas.filter((a) => a.trim());
+  const nav = (
+    [
+      ['doelen', 'Leerdoelen'],
+      alineas.length && ['achtergrond', 'Achtergrond'],
+      ['tekst', 'De tekst'],
+      les.cultuur.length && ['cultuur', 'Cultuur'],
+      ['klank', 'Decodeerapparaat'],
+      ['verhalen', 'Woordverhalen'],
+      ['grammatica', 'Grammatica'],
+      les.valseVrienden.length && ['vrienden', 'Valse vrienden'],
+      ['kaarten', 'Flashcards'],
+      ['toets', 'Zelftoets'],
+      ['bron', 'Bron'],
+    ] as (false | 0 | [string, string])[]
+  ).filter((n): n is [string, string] => !!n);
 
   const secties: string[] = [];
   secties.push(
     sectie('doelen', 'Deze les', 'Wat je aan het eind kunt', `  <ul>\n${les.leerdoelen.map((d) => `    <li>${esc(d)}</li>`).join('\n')}\n  </ul>`),
   );
+  if (alineas.length) {
+    secties.push(
+      sectie(
+        'achtergrond',
+        'Achtergrond',
+        'Waar dit lied vandaan komt',
+        `${les.achtergrond.zekerheid === 'onzeker' ? `  ${ONZEKER}\n` : ''}${alineas.map((a) => `  <p>${esc(a)}</p>`).join('\n')}`,
+      ),
+    );
+  }
   const partialNoot = meta.partial
     ? '  <div class="box let"><h4>Onvolledige tekst</h4><p>De bron gaf maar een deel van de songtekst. Plak de hele tekst handmatig voor een volledige les.</p></div>\n'
     : '';
+  const heeftNoten = les.strofen.some((s) => s.regels.some((r) => r.noot));
   secties.push(
-    sectie('tekst', 'De tekst', 'Regel voor regel', `${partialNoot}  <p>Tik op een onderstreept woord voor betekenis, familie en herkomst.</p>\n${liedHtml(les)}`),
+    sectie(
+      'tekst',
+      'De tekst',
+      'Regel voor regel',
+      `${partialNoot}  <p>Tik op een onderstreept woord. Naast de betekenis zie je waarom het hier zo staat en waar het vandaan komt.${heeftNoten ? ' Achter sommige regels staat <i>waarom?</i> voor wat aan de hele regel hangt.' : ''}</p>\n${spelerHtml(meta.track)}${liedHtml(les)}`,
+    ),
   );
+  if (les.cultuur.length) {
+    secties.push(
+      sectie(
+        'cultuur',
+        'Cultuur',
+        'Wat een Duitser erbij hoort',
+        les.cultuur
+          .map(
+            (c) =>
+              `  <div class="box beeld cult"><h4>${esc(c.titel)}</h4>${c.aanleiding ? `<p class="aanl">Bij <i lang="de">${esc(c.aanleiding)}</i></p>` : ''}${c.zekerheid === 'onzeker' ? ONZEKER : ''}<p>${esc(c.tekst)}</p>${c.kapstok ? `<p class="kapstok"><b>Kapstok</b>${esc(c.kapstok)}</p>` : ''}</div>`,
+          )
+          .join('\n'),
+      ),
+    );
+  }
   const klankRijen = les.klankverschuivingen
     .map((k) => `    <tr><td class="l">${esc(k.regel)}</td><td>${esc(k.uitleg)}</td><td>${k.voorbeelden.map((v) => `<i lang="de">${esc(v)}</i>`).join(', ')}</td></tr>`)
     .join('\n');
@@ -202,7 +285,7 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       les.grammatica
         .map(
           (g) =>
-            `  <h3>${esc(g.titel)}</h3>\n  <p>${esc(g.uitleg)}</p>\n  <ul class="vb">${g.voorbeelden.map((v) => `<li><span class="de" lang="de">${esc(v.de)}</span> <span class="nl">${esc(v.nl)}</span></li>`).join('')}</ul>`,
+            `  <h3>${esc(g.titel)}</h3>\n  <p>${esc(g.uitleg)}</p>\n  <ul class="vb">${g.voorbeelden.map((v) => `<li><span class="de" lang="de">${esc(v.de)}</span> <span class="nl">${esc(v.nl)}</span></li>`).join('')}</ul>${g.herkomst ? `\n  <div class="box dig"><h4>Hoe het zo kwam</h4><p>${esc(g.herkomst)}</p></div>` : ''}`,
         )
         .join('\n'),
     ),
@@ -245,12 +328,15 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
     ),
   );
   const spotify = meta.track.spotifyUrl ? `<a href="${esc(meta.track.spotifyUrl)}">Open in Spotify</a>. ` : '';
+  const bron = meta.voorbeeld
+    ? `  <p>Dit is de voorbeeldles die bij Taalstof hoort. De tekst van het lied is vrij van rechten. Claude schreef de les bij het bouwen van de app, in dezelfde vorm als de lessen die je zelf maakt.</p>`
+    : `  <p>${spotify}Songtekst via ${esc(meta.lyricsSource)}${meta.copyright ? `, ${esc(meta.copyright)}` : ''}. De tekst is auteursrechtelijk beschermd; deze les is alleen voor eigen gebruik.</p>\n  <p>Gemaakt met ${esc(meta.model)} op ${esc(meta.generatedAt.slice(0, 10))}.</p>`;
   secties.push(
     sectie(
       'bron',
       'Bron',
       'Over deze les',
-      `  <p>${spotify}Songtekst via ${esc(meta.lyricsSource)}${meta.copyright ? `, ${esc(meta.copyright)}` : ''}. De tekst is auteursrechtelijk beschermd; deze les is alleen voor eigen gebruik.</p>\n  <p>Gemaakt met ${esc(meta.model)} op ${esc(meta.generatedAt.slice(0, 10))}. Etymologie met het label onzeker is niet vastgesteld.</p>`,
+      `${bron}\n  <p>Herkomst en achtergrond komen uit het geheugen van een taalmodel. Wat het label onzeker draagt, staat niet vast.</p>`,
     ),
   );
 

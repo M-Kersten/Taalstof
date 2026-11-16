@@ -4,7 +4,12 @@ import { ClaudeLessonGenerator } from './lesson/generator.js';
 import { JsonCache } from './cache.js';
 
 const config = loadConfig();
-const generator = new ClaudeLessonGenerator(config.anthropicApiKey, config.anthropicModel, new JsonCache(config.dataDir));
+const generator = new ClaudeLessonGenerator({
+  apiKey: config.anthropicApiKey,
+  model: config.anthropicModel,
+  effort: config.anthropicEffort,
+  cache: new JsonCache(config.dataDir),
+});
 const app = createApp(defaultDeps(config, generator));
 
 app.listen(config.port, '127.0.0.1', () => {

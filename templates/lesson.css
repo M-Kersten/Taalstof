@@ -239,9 +239,28 @@ details[open] summary{margin-bottom:8px}
 @media (prefers-reduced-motion:no-preference){.w,.wk,.opt,.btn{transition:background-color .12s,border-color .12s,color .12s}}
 
 /* Taalstof: aanvullingen op de voorbeeldles */
+/* Zonder deze regel wint display:block van het hidden-attribuut en staan de vertalingen altijd aan. */
+[hidden]{display:none!important}
 .chip.o{border-color:var(--muted);color:var(--muted);border-style:dashed}
-.box.verhaal .zeker{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.chip.r{border-color:var(--fg);color:var(--fg)}
+.zeker{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 .vb{list-style:none;padding:0;margin:8px 0 0}
 .vb li{margin:0 0 4px}
 .vb .de{font-family:var(--disp);font-weight:600}
 .vb .nl{color:var(--muted);font-style:italic}
+.vb+.box{margin-top:16px}
+
+/* waarom zo: uitleg per woord en per regel */
+.uitleg .u-txt .lab{margin-bottom:1px}
+.rn{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.03em;line-height:1.5;color:var(--accent);background:none;border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-left:8px;cursor:pointer;vertical-align:middle;white-space:nowrap}
+.rn:hover{border-color:var(--accent)}
+.rn.on,.rn.on:hover{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.rn{transition:background-color .12s,border-color .12s,color .12s}}
+
+/* het lied zelf: Spotify-speler boven de tekst */
+.speler{display:block;width:100%;max-width:760px;border:0;border-radius:12px;margin:0 0 16px;position:sticky;top:max(8px,env(safe-area-inset-top,0px));z-index:2}
+
+/* cultuur */
+.box.cult .aanl{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:-2px 0 8px}
+.box .kapstok{border-top:1px solid var(--line);padding-top:10px;margin-top:14px}
+.box .kapstok b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cool);margin-bottom:2px}

@@ -18,7 +18,7 @@ interface SpTrack {
   name: string;
   type?: string;
   artists: { name: string }[];
-  album?: { name: string; images?: { url: string }[] };
+  album?: { name: string; release_date?: string; images?: { url: string }[] };
   external_ids?: { isrc?: string };
   external_urls?: { spotify?: string };
 }
@@ -31,6 +31,7 @@ export function toTrackRef(t: SpTrack): TrackRef {
     spotifyId: t.id,
     spotifyUrl: t.external_urls?.spotify ?? `https://open.spotify.com/track/${t.id}`,
     album: t.album?.name,
+    releaseDate: t.album?.release_date,
     imageUrl: t.album?.images?.[0]?.url,
   };
 }
