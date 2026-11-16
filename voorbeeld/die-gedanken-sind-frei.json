@@ -1,0 +1,1360 @@
+{
+  "titel": "De gedachten zijn vrij, de naamvallen niet",
+  "lead": "Een protestlied van ruim twee eeuwen oud, met meer Nederlands erin dan je verwacht. Je leert de t terugvinden in wissen en Herz, en je ziet welke woorden je beter in het lied kunt laten.",
+  "lied": { "titel": "Die Gedanken sind frei", "artiest": "Duits volkslied" },
+  "achtergrond": {
+    "alineas": [
+      "Niemand weet wie dit lied geschreven heeft. De tekst dook tegen het eind van de achttiende eeuw op, op vlugschriften zonder jaartal. De melodie kwam er een paar decennia later bij. De versie die iedereen nu zingt, staat in een bundel Silezische volksliederen uit 1842, verzameld door Hoffmann von Fallersleben en Ernst Richter. Diezelfde Hoffmann had een jaar eerder de tekst geschreven van wat later het Duitse volkslied werd.",
+      "Het idee is veel ouder. Rond 1200 dichtte Walther von der Vogelweide al dat gedachten vrij zijn. Echt groot werd het lied in de negentiende eeuw, toen de Duitse vorsten kranten lieten censureren en universiteiten lieten bespioneren. Zingen dat niemand in je hoofd kan kijken was toen een daad.",
+      "Sindsdien duikt het op waar mensen zich gekneveld voelen. Het verhaal van Sophie Scholl, verderop in deze les, is het bekendste voorbeeld. Vandaag hoort het bij de bekendste Duitse volksliederen."
+    ],
+    "zekerheid": "zeker"
+  },
+  "leerdoelen": [
+    "Je vindt de Nederlandse t terug in wissen, erschießen, entzwei en Herz.",
+    "Je weet waarom er im Herzen en den Sorgen staat.",
+    "Je kunt uitleggen welke woorden uit dit lied vandaag gewoon zijn en welke naar de achttiende eeuw ruiken.",
+    "Je kent het verhaal achter het lied en kunt het navertellen.",
+    "Je zet met de schuiven zelf Nederlandse woorden om naar het Duits."
+  ],
+  "strofen": [
+    {
+      "naam": "Couplet 1",
+      "regels": [
+        {
+          "de": "Die Gedanken sind frei, wer kann sie erraten,",
+          "nl": "De gedachten zijn vrij, wie kan ze raden,",
+          "woorden": [
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "frei", "sleutel": "frei" },
+            { "tekst": "wer", "sleutel": "wer" },
+            { "tekst": "erraten", "sleutel": "erraten" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "sie fliehen vorbei wie nächtliche Schatten.",
+          "nl": "ze vlieden voorbij als nachtelijke schaduwen.",
+          "woorden": [
+            { "tekst": "fliehen", "sleutel": "fliehen" },
+            { "tekst": "vorbei", "sleutel": "vorbei" },
+            { "tekst": "wie", "sleutel": "wie" },
+            { "tekst": "nächtliche", "sleutel": "naechtlich" },
+            { "tekst": "Schatten", "sleutel": "schatten" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "Kein Mensch kann sie wissen, kein Jäger erschießen",
+          "nl": "Geen mens kan ze weten, geen jager ze doodschieten",
+          "woorden": [
+            { "tekst": "Kein", "sleutel": "kein" },
+            { "tekst": "Mensch", "sleutel": "mensch" },
+            { "tekst": "wissen", "sleutel": "wissen" },
+            { "tekst": "kein", "sleutel": "kein" },
+            { "tekst": "Jäger", "sleutel": "jaeger" },
+            { "tekst": "erschießen", "sleutel": "erschiessen" }
+          ],
+          "noot": "In de tweede helft zijn kann en sie weggelaten. Voluit staat er: kein Jäger kann sie erschießen. Het Duits laat net als het Nederlands weg wat de luisteraar zelf aanvult."
+        },
+        {
+          "de": "mit Pulver und Blei: Die Gedanken sind frei!",
+          "nl": "met kruit en lood: de gedachten zijn vrij!",
+          "woorden": [
+            { "tekst": "Pulver", "sleutel": "pulver" },
+            { "tekst": "Blei", "sleutel": "blei" },
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "frei", "sleutel": "frei" }
+          ],
+          "noot": ""
+        }
+      ]
+    },
+    {
+      "naam": "Couplet 2",
+      "regels": [
+        {
+          "de": "Ich denke, was ich will und was mich beglücket,",
+          "nl": "Ik denk wat ik wil en wat mij gelukkig maakt,",
+          "woorden": [
+            { "tekst": "denke", "sleutel": "denken" },
+            { "tekst": "will", "sleutel": "wollen" },
+            { "tekst": "beglücket", "sleutel": "begluecken" }
+          ],
+          "noot": "Beglücket is de oude lange uitgang van beglückt. In deze strofe komen er nog twee: schicket en bleibet. De extra lettergreep houdt het ritme kloppend."
+        },
+        {
+          "de": "doch alles in der Still', und wie es sich schicket.",
+          "nl": "maar alles in stilte, en zoals het hoort.",
+          "woorden": [
+            { "tekst": "doch", "sleutel": "doch" },
+            { "tekst": "Still", "sleutel": "stille" },
+            { "tekst": "wie", "sleutel": "wie" },
+            { "tekst": "sich schicket", "sleutel": "schicken" }
+          ],
+          "noot": "De apostrof staat voor een ingeslikte e: Stille. Zo rijmt het op will. In liedjes zie je dat overal, zoals hab' voor habe en geh' voor gehe."
+        },
+        {
+          "de": "Mein Wunsch und Begehren kann niemand verwehren,",
+          "nl": "Mijn wens en verlangen kan niemand mij ontzeggen,",
+          "woorden": [
+            { "tekst": "Wunsch", "sleutel": "wunsch" },
+            { "tekst": "Begehren", "sleutel": "begehren" },
+            { "tekst": "verwehren", "sleutel": "verwehren" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "es bleibet dabei: Die Gedanken sind frei!",
+          "nl": "het blijft erbij: de gedachten zijn vrij!",
+          "woorden": [
+            { "tekst": "bleibet", "sleutel": "bleiben" },
+            { "tekst": "dabei", "sleutel": "dabei" },
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "frei", "sleutel": "frei" }
+          ],
+          "noot": "Es bleibt dabei is een vaste uitdrukking: de zaak is beklonken, er verandert niets meer aan. Je hoort haar nog elke dag, aan het eind van een vergadering of een ruzie."
+        }
+      ]
+    },
+    {
+      "naam": "Couplet 3",
+      "regels": [
+        {
+          "de": "Und sperrt man mich ein im finsteren Kerker,",
+          "nl": "En sluit men mij op in de duistere kerker,",
+          "woorden": [
+            { "tekst": "sperrt", "sleutel": "einsperren" },
+            { "tekst": "ein", "sleutel": "einsperren" },
+            { "tekst": "finsteren", "sleutel": "finster" },
+            { "tekst": "Kerker", "sleutel": "kerker" }
+          ],
+          "noot": "Een mededeling die met het werkwoord begint, is een voorwaarde. Sperrt man mich ein betekent: wenn man mich einsperrt. Het Nederlands kan het ook: sluit men mij op, dan lach ik erom."
+        },
+        {
+          "de": "das alles sind rein vergebliche Werke.",
+          "nl": "dat alles is louter vergeefse moeite.",
+          "woorden": [
+            { "tekst": "rein", "sleutel": "rein" },
+            { "tekst": "vergebliche", "sleutel": "vergeblich" },
+            { "tekst": "Werke", "sleutel": "werk" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "Denn meine Gedanken zerreißen die Schranken",
+          "nl": "Want mijn gedachten verscheuren de slagbomen",
+          "woorden": [
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "zerreißen", "sleutel": "zerreissen" },
+            { "tekst": "Schranken", "sleutel": "schranke" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "und Mauern entzwei: Die Gedanken sind frei!",
+          "nl": "en muren in tweeën: de gedachten zijn vrij!",
+          "woorden": [
+            { "tekst": "Mauern", "sleutel": "mauer" },
+            { "tekst": "entzwei", "sleutel": "entzwei" },
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "frei", "sleutel": "frei" }
+          ],
+          "noot": ""
+        }
+      ]
+    },
+    {
+      "naam": "Couplet 4",
+      "regels": [
+        {
+          "de": "Drum will ich auf immer den Sorgen entsagen",
+          "nl": "Daarom wil ik voor altijd de zorgen afzweren",
+          "woorden": [
+            { "tekst": "Drum", "sleutel": "drum" },
+            { "tekst": "will", "sleutel": "wollen" },
+            { "tekst": "auf immer", "sleutel": "immer" },
+            { "tekst": "Sorgen", "sleutel": "sorge" },
+            { "tekst": "entsagen", "sleutel": "entsagen" }
+          ],
+          "noot": ""
+        },
+        {
+          "de": "und will mich auch nimmer mit Grillen mehr plagen.",
+          "nl": "en wil me ook nooit meer met muizenissen kwellen.",
+          "woorden": [
+            { "tekst": "auch", "sleutel": "auch" },
+            { "tekst": "nimmer", "sleutel": "nimmer" },
+            { "tekst": "Grillen", "sleutel": "grille" },
+            { "tekst": "plagen", "sleutel": "plagen" }
+          ],
+          "noot": "Nimmer en mehr horen bij elkaar: nimmermehr, nooit meer. Ze nemen mit Grillen tussen zich in. In de Duitse vertalingen van Poe zegt de raaf precies dat woord: Nimmermehr."
+        },
+        {
+          "de": "Man kann ja im Herzen stets lachen und scherzen",
+          "nl": "Je kunt immers in je hart steeds lachen en schertsen",
+          "woorden": [
+            { "tekst": "ja", "sleutel": "ja" },
+            { "tekst": "Herzen", "sleutel": "herz" },
+            { "tekst": "stets", "sleutel": "stets" },
+            { "tekst": "scherzen", "sleutel": "scherzen" }
+          ],
+          "noot": "Dit ja is een modaal partikel. Het staat zonder klemtoon midden in de zin en zegt: dat weet je zelf ook wel. Het Nederlands gebruikt daar immers of toch voor."
+        },
+        {
+          "de": "und denken dabei: Die Gedanken sind frei!",
+          "nl": "en daarbij denken: de gedachten zijn vrij!",
+          "woorden": [
+            { "tekst": "denken", "sleutel": "denken" },
+            { "tekst": "dabei", "sleutel": "dabei" },
+            { "tekst": "Gedanken", "sleutel": "gedanke" },
+            { "tekst": "frei", "sleutel": "frei" }
+          ],
+          "noot": ""
+        }
+      ]
+    }
+  ],
+  "woordenlijst": [
+    {
+      "sleutel": "gedanke",
+      "woord": "der Gedanke",
+      "betekenis": "de gedachte",
+      "nlVerwant": "gedachte, dank",
+      "enVerwant": "thought, thank",
+      "klankverschuiving": "",
+      "gebruik": "Gewoon dagelijks Duits. Guter Gedanke! zeg je als iemand een goed idee heeft. Het woord krijgt in bijna alle naamvallen een -n: den Gedanken, dem Gedanken. Hier is het meervoud.",
+      "etymologie": "Hoort bij denken. Het Nederlands bouwde zijn woord op de verleden tijd dacht, het Duits op de stam dank. Danken is dezelfde familie: wie dankt, denkt aan een ander. Het Engels heeft think en thank, met th waar wij een d hebben.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "meervoud" }]
+    },
+    {
+      "sleutel": "frei",
+      "woord": "frei",
+      "betekenis": "vrij",
+      "nlVerwant": "vrij, vriend",
+      "enVerwant": "free, friend",
+      "klankverschuiving": "ij → ei",
+      "gebruik": "Het sleutelwoord van het lied en het laatste woord van elke strofe. Daar krijgt het vanzelf de klemtoon. In het dagelijks leven kom je het overal tegen: Ist hier noch frei? vraag je bij een lege stoel in de trein.",
+      "etymologie": "Rond 1200 was het nog frî, met een lange i. Het Nederlands bewaart die klank in de spelling ij, het Duits maakte er een tweeklank van. De oorsprong is een woord voor geliefd: vrij was wie bij de eigen familie hoorde en dus geen slaaf was. Vriend en Freund komen van dezelfde wortel.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "wer",
+      "woord": "wer",
+      "betekenis": "wie",
+      "nlVerwant": "wie",
+      "enVerwant": "who",
+      "klankverschuiving": "",
+      "gebruik": "Wer vraagt naar een persoon. Pas op voor de valkuil in de volgende regel: het Duitse wie betekent zoals of hoe.",
+      "etymologie": "Hetzelfde oude vraagwoord als ons wie. Het Engelse who hoort er ook bij.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "erraten",
+      "woord": "erraten",
+      "betekenis": "raden, erachter komen",
+      "nlVerwant": "raden, raadsel",
+      "enVerwant": "read, riddle",
+      "klankverschuiving": "d → t",
+      "gebruik": "Raten is raden, erraten is het goed raden. Het voorvoegsel er- maakt het werk af: je gokt en je hebt het. Du hast es erraten! roep je als iemand het antwoord vindt.",
+      "etymologie": "Raten betekende eerst raad geven en uitleggen. Het Engelse read is hetzelfde woord: lezen was het raden van tekens. Een Rätsel is een raadsel, in het Engels een riddle. De Nederlandse d werd in het Duits een t.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "voorvoegsel er-" }]
+    },
+    {
+      "sleutel": "fliehen",
+      "woord": "fliehen",
+      "betekenis": "vluchten",
+      "nlVerwant": "vlieden, vluchten",
+      "enVerwant": "flee",
+      "klankverschuiving": "v → f",
+      "gebruik": "Fliehen is op de vlucht slaan voor gevaar. Gedachten die vluchten als schaduwen: je krijgt ze niet te pakken. In het nieuws hoor je de familie elke dag, in Flucht en Flüchtling.",
+      "etymologie": "Het oude Nederlandse vlieden is hetzelfde woord, het Engelse flee ook. Een Nederlandse v aan het woordbegin is in het Duits vaak een f: vlieg en Fliege, vloed en Flut.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "vorbei",
+      "woord": "vorbei",
+      "betekenis": "voorbij",
+      "nlVerwant": "voorbij",
+      "enVerwant": "",
+      "klankverschuiving": "ij → ei",
+      "gebruik": "Vorbei hoort hier bij fliehen: voorbijvluchten. Los betekent het ook afgelopen. Es ist vorbei, het is over: dat zinnetje staat in menig liefdeslied.",
+      "etymologie": "Vor en bei, voor en bij. De ei tegenover onze ij komt in dit lied steeds terug: frei, vorbei, dabei, bleiben.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "wie",
+      "woord": "wie",
+      "betekenis": "zoals, hoe",
+      "nlVerwant": "hoe",
+      "enVerwant": "how",
+      "klankverschuiving": "",
+      "gebruik": "Een valse vriend. Wie vergelijkt: wie nächtliche Schatten, als nachtelijke schaduwen. Het vraagt ook naar de manier: Wie geht's? Naar een persoon vraag je met wer.",
+      "etymologie": "Van dezelfde oude vraagstam als ons hoe en het Engelse how.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "naechtlich",
+      "woord": "nächtlich",
+      "betekenis": "nachtelijk",
+      "nlVerwant": "nachtelijk",
+      "enVerwant": "nightly",
+      "klankverschuiving": "k → ch",
+      "gebruik": "Nächtliche Schatten: het bijvoeglijk naamwoord krijgt een -e omdat Schatten meervoud is en er geen lidwoord voor staat. Nächtlich is wat schrijftaliger dan in der Nacht.",
+      "etymologie": "Nacht met umlaut en de uitgang -lich. Die uitgang is ons -lijk en het Engelse -ly. Ooit was het een los woord voor lichaam of gedaante, hetzelfde als ons lijk. De k van -lijk werd in het Duits een ch, zoals in ik en ich.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "uitgang -e" }]
+    },
+    {
+      "sleutel": "schatten",
+      "woord": "der Schatten",
+      "betekenis": "de schaduw",
+      "nlVerwant": "schaduw",
+      "enVerwant": "shadow, shade",
+      "klankverschuiving": "d → t",
+      "gebruik": "Meervoud zonder dat je het aan het woord ziet: der Schatten, die Schatten. Alleen het lidwoord of het bijvoeglijk naamwoord verraadt het getal.",
+      "etymologie": "Schaduw en Schatten zijn één woord, met een Duitse t waar wij een d hebben. Het Engels maakte er twee woorden van, shade en shadow.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "kein",
+      "woord": "kein",
+      "betekenis": "geen",
+      "nlVerwant": "geen",
+      "enVerwant": "",
+      "klankverschuiving": "ee → ei",
+      "gebruik": "Kein ontkent een zelfstandig naamwoord, zoals ons geen. Nicht doet de rest. Kein Mensch, kein Jäger: de herhaling hamert het erin.",
+      "etymologie": "Geen en kein zijn allebei gekrompen uit een oude vorm die niet één betekende. De ee tegenover ei zie je ook in steen en Stein.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "mensch",
+      "woord": "der Mensch",
+      "betekenis": "de mens",
+      "nlVerwant": "mens",
+      "enVerwant": "man",
+      "klankverschuiving": "",
+      "gebruik": "Kein Mensch is sterker dan niemand: geen sterveling. In de spreektaal is Mensch! ook een uitroep, zoals ons man of tjonge.",
+      "etymologie": "Oorspronkelijk een bijvoeglijk naamwoord bij Mann, zoiets als mannelijk of menselijk. Het Nederlandse mens is hetzelfde woord. Het Engels houdt het bij man.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "wissen",
+      "woord": "wissen",
+      "betekenis": "weten",
+      "nlVerwant": "weten",
+      "enVerwant": "wit, wise",
+      "klankverschuiving": "t → ss",
+      "gebruik": "Wissen is feiten weten, kennen is iemand of iets kennen. Kein Mensch kann sie wissen klinkt vandaag ouderwets. Nu zou je kennen gebruiken.",
+      "etymologie": "Weten en wissen: de t werd tussen klinkers een ss. Het Engels bewaart het woord in wit en wise. De wortel betekende zien. Wie gezien heeft, weet. Het Latijnse videre komt daar ook vandaan, en dus ons video.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "jaeger",
+      "woord": "der Jäger",
+      "betekenis": "de jager",
+      "nlVerwant": "jager, jacht",
+      "enVerwant": "yacht",
+      "klankverschuiving": "",
+      "gebruik": "Kein Jäger staat tegenover kein Mensch: zelfs wie een geweer heeft, begint niets tegen een gedachte. Jäger is een gewoon woord. Je ziet het ook op het etiket van Jägermeister, letterlijk de jachtmeester.",
+      "etymologie": "Jagen met de uitgang -er, die de a een umlaut bezorgt. Het Engelse yacht is geleend uit het Nederlands: een jacht was een snel schip om mee te jagen.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "erschiessen",
+      "woord": "erschießen",
+      "betekenis": "doodschieten",
+      "nlVerwant": "schieten",
+      "enVerwant": "shoot",
+      "klankverschuiving": "t → ß",
+      "gebruik": "Schießen is schieten, erschießen is doodschieten. Het voorvoegsel er- maakt de afloop definitief, zoals in ertrinken, verdrinken. De ß schrijf je na een lange klinker of tweeklank.",
+      "etymologie": "Schießen is ons schieten en het Engelse shoot. Na een klinker werd de t een scherpe s.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "voorvoegsel er-" }]
+    },
+    {
+      "sleutel": "pulver",
+      "woord": "das Pulver",
+      "betekenis": "het poeder, het kruit",
+      "nlVerwant": "poeder, verpulveren",
+      "enVerwant": "powder",
+      "klankverschuiving": "",
+      "gebruik": "Pulver und Blei is een vast paar, zoals ons kruit en lood. Los is Pulver elk poeder: Backpulver is bakpoeder, Waschpulver is waspoeder.",
+      "etymologie": "Uit het Latijnse pulvis, stof. Het Engelse powder komt via het Frans van hetzelfde woord.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "l", "tekst": "Latijn" }]
+    },
+    {
+      "sleutel": "blei",
+      "woord": "das Blei",
+      "betekenis": "het lood",
+      "nlVerwant": "",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Blei is het metaal en in het lied de kogel. Een Bleistift is een potlood: beide talen noemen het ding naar lood, al zit er grafiet in.",
+      "etymologie": "Ons lood en het Engelse lead zijn een ander woord. Dat leeft in het Duits voort als Lot, het schietlood, en in löten, solderen. Waar Blei zelf vandaan komt, is onzeker. De woordenboeken leggen een verband met een oud woord voor blauwachtig glanzen. Bewezen is dat verband nooit.",
+      "zekerheid": "onzeker",
+      "labels": []
+    },
+    {
+      "sleutel": "denken",
+      "woord": "denken",
+      "betekenis": "denken",
+      "nlVerwant": "denken",
+      "enVerwant": "think",
+      "klankverschuiving": "",
+      "gebruik": "Ich denke, was ich will. De komma voor was is in het Duits verplicht, want daar begint een bijzin. In de laatste strofe staat de hele werkwoordsvorm, denken, omdat hij aan kann hangt.",
+      "etymologie": "Hetzelfde woord als in het Nederlands. Het Engelse think laat zien waar de d vandaan komt: een oude th-klank, die Duits en Nederlands allebei tot d maakten. Zo ook het Engelse three tegenover ons drie.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "wollen",
+      "woord": "wollen",
+      "betekenis": "willen",
+      "nlVerwant": "willen",
+      "enVerwant": "will",
+      "klankverschuiving": "",
+      "gebruik": "Ich will is ik wil. Het Engelse I will is toekomende tijd, dus pas op als je via het Engels vertaalt. De ich-vorm heeft geen uitgang: ich will, er will.",
+      "etymologie": "Wollen is ons willen. Het Engelse will is hetzelfde werkwoord, dat daar een hulpwerkwoord voor de toekomst werd.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "begluecken",
+      "woord": "beglücken",
+      "betekenis": "gelukkig maken",
+      "nlVerwant": "geluk",
+      "enVerwant": "luck",
+      "klankverschuiving": "",
+      "gebruik": "Een plechtig woord. In een gesprek zeg je glücklich machen. De vorm beglücket heeft de oude lange uitgang, vandaag is het beglückt.",
+      "etymologie": "Be- plus Glück. Het Engelse luck is aan het eind van de middeleeuwen geleend uit het Nederlands of het Nederduits, als gokkersterm. Verder terug is het woord niet te volgen. Waar Glück en geluk vandaan komen, weet niemand.",
+      "zekerheid": "onzeker",
+      "labels": [{ "soort": "r", "tekst": "plechtig" }]
+    },
+    {
+      "sleutel": "doch",
+      "woord": "doch",
+      "betekenis": "maar, toch",
+      "nlVerwant": "doch, toch",
+      "enVerwant": "though",
+      "klankverschuiving": "",
+      "gebruik": "Hier betekent doch maar: ik denk wat ik wil, maar wel in stilte. Het is hetzelfde woord als ons deftige doch. In gesproken Duits is Doch! een tegenwerping. Je zegt het als iemand ten onrechte nee zegt.",
+      "etymologie": "Doch is ons toch. Het Engelse though is hetzelfde woord.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "stille",
+      "woord": "die Stille",
+      "betekenis": "de stilte",
+      "nlVerwant": "stilte, stil",
+      "enVerwant": "still",
+      "klankverschuiving": "",
+      "gebruik": "In der Stille: derde naamval na in, omdat het om een toestand gaat en er niets beweegt. De e is ingeslikt, vandaar de apostrof. Je kent het woord al uit Stille Nacht.",
+      "etymologie": "Stil is in alle drie de talen hetzelfde woord. Het Duits maakt er een zelfstandig naamwoord van met -e, het Nederlands met -te.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "derde naamval" }]
+    },
+    {
+      "sleutel": "schicken",
+      "woord": "sich schicken",
+      "betekenis": "horen, betamen",
+      "nlVerwant": "schikken",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Wie es sich schickt: zoals het hoort. Een wat ouderwetse wending voor goede manieren. Das schickt sich nicht, dat doe je niet. Zonder sich betekent schicken gewoon sturen: Ich schicke dir eine Nachricht.",
+      "etymologie": "Ons schikken is hetzelfde woord: iets ordenen zodat het past. Wat zich schikt, past. Het Duits ging van ordenen naar op weg sturen.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "ouderwets" }]
+    },
+    {
+      "sleutel": "wunsch",
+      "woord": "der Wunsch",
+      "betekenis": "de wens",
+      "nlVerwant": "wens",
+      "enVerwant": "wish",
+      "klankverschuiving": "",
+      "gebruik": "Wunsch und Begehren: twee woorden voor bijna hetzelfde, een geliefd middel in oude liederen. Wunsch is het gewone woord. Herzlichen Glückwunsch zeg je op elke verjaardag.",
+      "etymologie": "Wunsch is ons wens. Het Engelse wish is hetzelfde woord en verloor de n voor de s-klank, zoals in uns tegenover us en Gans tegenover goose.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "begehren",
+      "woord": "das Begehren",
+      "betekenis": "het verlangen",
+      "nlVerwant": "begeren, gaarne",
+      "enVerwant": "yearn",
+      "klankverschuiving": "",
+      "gebruik": "Hier een zelfstandig naamwoord: het begeren. Het klinkt plechtig. Vandaag leeft het woord vooral in de politiek: een Volksbegehren is een burgerinitiatief dat een referendum afdwingt.",
+      "etymologie": "Familie van gern, ons gaarne. Het Engelse yearn hoort er ook bij.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "plechtig" }]
+    },
+    {
+      "sleutel": "verwehren",
+      "woord": "verwehren",
+      "betekenis": "ontzeggen, beletten",
+      "nlVerwant": "weren, verweren",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Jemandem etwas verwehren: iemand iets ontzeggen. Schrijftaal. In een gesprek zeg je verbieten.",
+      "etymologie": "Hoort bij wehren, weren of tegenhouden. De Wehr is de afweer: de Feuerwehr is letterlijk de brandweer en de Bundeswehr het leger.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "schrijftaal" }]
+    },
+    {
+      "sleutel": "bleiben",
+      "woord": "bleiben",
+      "betekenis": "blijven",
+      "nlVerwant": "blijven",
+      "enVerwant": "leave",
+      "klankverschuiving": "ij → ei",
+      "gebruik": "Es bleibt dabei: het blijft erbij. Bleibet heeft weer de oude lange uitgang.",
+      "etymologie": "Blijven en bleiben zijn be- plus een oud werkwoord voor achterblijven. Het Engelse leave, achterlaten, komt van dezelfde wortel. Onze v tussen klinkers is in het Duits een b: leven en leben, geven en geben.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "k", "tekst": "v → b" }]
+    },
+    {
+      "sleutel": "dabei",
+      "woord": "dabei",
+      "betekenis": "daarbij, erbij",
+      "nlVerwant": "daarbij",
+      "enVerwant": "thereby",
+      "klankverschuiving": "ij → ei",
+      "gebruik": "Twee keer in het lied en twee keer anders. Es bleibet dabei: het blijft erbij. Denken dabei: daarbij denken, ondertussen. Da- is in het Duits een vast bouwsteentje: dabei, damit, dafür, davon.",
+      "etymologie": "Da plus bei, daar plus bij.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "einsperren",
+      "woord": "einsperren",
+      "betekenis": "opsluiten",
+      "nlVerwant": "versperren",
+      "enVerwant": "spar",
+      "klankverschuiving": "",
+      "gebruik": "Een scheidbaar werkwoord: sperrt ... ein. Het stukje ein springt naar het eind. Einsperren is het gewone woord voor opsluiten, van een hond in de schuur tot een mens in de cel.",
+      "etymologie": "Sperren is afsluiten met een Sparren, een balk. Ons versperren is hetzelfde. Op Duitse wegen staat het op borden: Gesperrt, afgesloten.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "scheidbaar" }]
+    },
+    {
+      "sleutel": "finster",
+      "woord": "finster",
+      "betekenis": "duister",
+      "nlVerwant": "deemster",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Donkerder dan dunkel. Finster is zonder licht en ook dreigend: eine finstere Miene is een grimmig gezicht, das finstere Mittelalter zijn de duistere middeleeuwen. Na im krijgt het woord de uitgang -en.",
+      "etymologie": "Oudhoogduits finstar, met ernaast een vorm die met th begon. Pfeifer zet het bij Dämmerung, schemering. Het oude Nederlandse deemster, donker, hoort bij dezelfde familie.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "uitgang -en" }]
+    },
+    {
+      "sleutel": "kerker",
+      "woord": "der Kerker",
+      "betekenis": "de kerker",
+      "nlVerwant": "kerker",
+      "enVerwant": "incarcerate",
+      "klankverschuiving": "",
+      "gebruik": "Een woord uit ridderverhalen en sprookjes. Een gewone gevangenis heet Gefängnis. Wie Kerker zegt, ziet een vochtig gewelf voor zich.",
+      "etymologie": "Uit het Latijnse carcer, gevangenis. Het woord kwam met de Romeinen mee, toen het Latijn de c nog als k uitsprak. Daarom Kerker met een k, net als Keller uit cellarium en Kaiser uit Caesar.",
+      "zekerheid": "zeker",
+      "labels": [
+        { "soort": "l", "tekst": "Latijn" },
+        { "soort": "r", "tekst": "literair" }
+      ]
+    },
+    {
+      "sleutel": "rein",
+      "woord": "rein",
+      "betekenis": "louter, puur",
+      "nlVerwant": "rein",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Hier een versterker: rein vergeblich is volkomen vergeefs. Als bijvoeglijk naamwoord betekent rein zuiver.",
+      "etymologie": "Hetzelfde woord als het Nederlandse rein in reinigen.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "vergeblich",
+      "woord": "vergeblich",
+      "betekenis": "vergeefs",
+      "nlVerwant": "vergeefs",
+      "enVerwant": "",
+      "klankverschuiving": "v → b",
+      "gebruik": "Vergebliche Werke: vergeefse moeite. De -e hoort bij het meervoud zonder lidwoord. Vergeblich is gewoon hedendaags Duits. Vergebliche Liebesmüh is een staande uitdrukking voor verspilde moeite.",
+      "etymologie": "Hoort bij vergeben, weggeven. Wat vergeefs is, heb je voor niets weggegeven. De b van geben is onze v van geven.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "werk",
+      "woord": "das Werk",
+      "betekenis": "het werk, de daad",
+      "nlVerwant": "werk",
+      "enVerwant": "work",
+      "klankverschuiving": "",
+      "gebruik": "Werke zijn hier daden, in de plechtige zin van gute Werke. Voor het dagelijkse werk gebruikt een Duitser Arbeit. Werk is wat je maakt of waar het gemaakt wordt: een Kunstwerk, het Volkswagenwerk in Wolfsburg.",
+      "etymologie": "In alle drie de talen onveranderd gebleven. Het Griekse ergon is dezelfde wortel, en daarmee horen energie en orgel ook bij de familie.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "zerreissen",
+      "woord": "zerreißen",
+      "betekenis": "verscheuren",
+      "nlVerwant": "rijten",
+      "enVerwant": "write",
+      "klankverschuiving": "t → ß",
+      "gebruik": "Zer- betekent uit elkaar, aan stukken. Zerreißen is stukscheuren, zerbrechen is stukbreken. Gedachten die slagbomen en muren verscheuren: het sterkste beeld van het lied.",
+      "etymologie": "Reißen is het oude Nederlandse rijten, scheuren. Het Engelse write is hetzelfde woord: schrijven was krassen in hout of steen.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "voorvoegsel zer-" }]
+    },
+    {
+      "sleutel": "schranke",
+      "woord": "die Schranke",
+      "betekenis": "de slagboom, de grens",
+      "nlVerwant": "",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Een Schranke is de slagboom bij een spoorwegovergang of parkeergarage. In het meervoud zijn het de grenzen die iemand je stelt. Jemanden in die Schranken weisen is iemand op zijn plaats zetten.",
+      "etymologie": "Familie van Schrank, kast. Beide waren ooit een afscheiding van latwerk.",
+      "zekerheid": "zeker",
+      "labels": []
+    },
+    {
+      "sleutel": "mauer",
+      "woord": "die Mauer",
+      "betekenis": "de muur",
+      "nlVerwant": "muur",
+      "enVerwant": "mural",
+      "klankverschuiving": "uu → au",
+      "gebruik": "Een Mauer is van steen en staat buiten. De muur van je kamer heet Wand. Mauern zonder lidwoord: muren in het algemeen, welke dan ook.",
+      "etymologie": "Uit het Latijnse murus. De Germanen vlochten hun wanden van takken, vandaar Wand bij winden. Bouwen in steen leerden ze van de Romeinen en de woorden kwamen mee.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "l", "tekst": "Latijn" }]
+    },
+    {
+      "sleutel": "entzwei",
+      "woord": "entzwei",
+      "betekenis": "in tweeën, stuk",
+      "nlVerwant": "twee",
+      "enVerwant": "two",
+      "klankverschuiving": "t → z",
+      "gebruik": "Een wat ouderwets woord voor kapot: Die Vase ist entzwei. Vandaag zeg je kaputt. Hier hoort het bij zerreißen.",
+      "etymologie": "Samengetrokken uit in zwei. Twee en zwei laten de schuif aan het woordbegin zien: de t werd een z. Zo ook tien en zehn, tijd en Zeit.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "ouderwets" }]
+    },
+    {
+      "sleutel": "drum",
+      "woord": "drum",
+      "betekenis": "daarom",
+      "nlVerwant": "daarom",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Spreektaal voor darum. Je hoort het in vaste wendingen: Sei's drum, het zij zo. In een brief schrijf je deshalb.",
+      "etymologie": "Da plus um, met een r ertussen omdat um met een klinker begint. Het Nederlands doet hetzelfde in daarom.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "spreektaal" }]
+    },
+    {
+      "sleutel": "immer",
+      "woord": "auf immer",
+      "betekenis": "voor altijd",
+      "nlVerwant": "immer",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Auf immer is plechtig. Vandaag zegt iedereen für immer. Immer alleen is het gewone woord voor altijd.",
+      "etymologie": "Gegroeid uit twee oude woorden voor ooit en meer. Het Nederlandse immer is hetzelfde woord en klinkt bij ons deftig. In het Duits is het zo gewoon als ons altijd.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "plechtig" }]
+    },
+    {
+      "sleutel": "sorge",
+      "woord": "die Sorge",
+      "betekenis": "de zorg",
+      "nlVerwant": "zorg",
+      "enVerwant": "sorrow",
+      "klankverschuiving": "z → s",
+      "gebruik": "Den Sorgen: derde naamval meervoud, want entsagen vraagt die naamval. In het meervoud krijgt de derde naamval altijd een -n. Mach dir keine Sorgen is het Duitse maak je geen zorgen.",
+      "etymologie": "Sorge is ons zorg en het Engelse sorrow. De Duitse s voor een klinker klinkt als onze z, dus het verschil zit alleen in de letter.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "derde naamval" }]
+    },
+    {
+      "sleutel": "entsagen",
+      "woord": "entsagen",
+      "betekenis": "afzweren, vaarwel zeggen",
+      "nlVerwant": "ontzeggen",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Een plechtig woord: je zegt iets voorgoed vaarwel. Het krijgt de derde naamval, dus dem Alkohol entsagen.",
+      "etymologie": "Ent- plus sagen, zoals ons ont- plus zeggen. Zich iets ontzeggen ligt er vlak naast.",
+      "zekerheid": "zeker",
+      "labels": [
+        { "soort": "r", "tekst": "plechtig" },
+        { "soort": "g", "tekst": "met derde naamval" }
+      ]
+    },
+    {
+      "sleutel": "auch",
+      "woord": "auch",
+      "betekenis": "ook",
+      "nlVerwant": "ook",
+      "enVerwant": "eke",
+      "klankverschuiving": "oo → au",
+      "gebruik": "Gewoon dagelijks Duits. Het staat in bijna elke zin.",
+      "etymologie": "Ook en auch. De oo werd au en de k na de klinker een ch. Zo ook rook en Rauch. Het Engelse eke is uitgestorven, op nickname na: dat was ooit an eke-name, een naam erbij.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "k", "tekst": "k → ch" }]
+    },
+    {
+      "sleutel": "nimmer",
+      "woord": "nimmer",
+      "betekenis": "nooit",
+      "nlVerwant": "nimmer",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Nimmer met mehr erbij is nooit meer. In het noorden klinkt nimmer plechtig en zegt men nie. In Zuid-Duitsland en Oostenrijk is nimmer gewone spreektaal voor niet meer.",
+      "etymologie": "De ontkenning van immer. Het Nederlands heeft nimmer en nooit, het Duits koos nie voor dagelijks gebruik.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "plechtig of regionaal" }]
+    },
+    {
+      "sleutel": "grille",
+      "woord": "die Grille",
+      "betekenis": "de krekel, de muizenis",
+      "nlVerwant": "gril",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Grillen zijn hier sombere invallen. Die betekenis is verouderd. Vandaag is een Grille een krekel en is grillen barbecueën, een heel ander woord. Een Duitser van nu leest deze regel met een glimlach.",
+      "etymologie": "Een Grille is eerst een krekel. De naam wordt meestal afgeleid van het Latijnse gryllus, al kan hij ook een klanknabootsing zijn. Sinds de vijftiende eeuw staat het woord ook voor een rare inval: krekels in je hoofd. Hoe die overdracht precies ging, is onzeker. Ons gril is uit het Duits geleend.",
+      "zekerheid": "onzeker",
+      "labels": [{ "soort": "r", "tekst": "verouderd" }]
+    },
+    {
+      "sleutel": "plagen",
+      "woord": "sich plagen",
+      "betekenis": "zich kwellen, tobben",
+      "nlVerwant": "plagen",
+      "enVerwant": "plague",
+      "klankverschuiving": "",
+      "gebruik": "Zwaarder dan het Nederlandse plagen. Sich plagen is tobben of zwoegen. Wie een ander voor de grap plaagt, die neckt hem.",
+      "etymologie": "Uit het Latijnse plaga, slag of wond. De pest heette een plaag, in het Engels nog altijd plague.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "l", "tekst": "Latijn" }]
+    },
+    {
+      "sleutel": "ja",
+      "woord": "ja",
+      "betekenis": "immers, toch",
+      "nlVerwant": "ja",
+      "enVerwant": "yea",
+      "klankverschuiving": "",
+      "gebruik": "Een modaal partikel, zonder klemtoon midden in de zin. Het zegt: dat weet je zelf ook. Duitsers strooien deze woordjes door elke zin, en zonder klinkt het kaal.",
+      "etymologie": "Het gewone woord ja, dat hier een tweede taak kreeg.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "modaal partikel" }]
+    },
+    {
+      "sleutel": "herz",
+      "woord": "das Herz",
+      "betekenis": "het hart",
+      "nlVerwant": "hart",
+      "enVerwant": "heart",
+      "klankverschuiving": "t → z",
+      "gebruik": "Im Herzen: in het hart, derde naamval. Herz is een buitenbeentje dat daar een -en krijgt. Von Herzen is ons van harte, tot en met de oude naamvalsuitgang.",
+      "etymologie": "Herz is ons hart en het Engelse heart. Aan het woordeind werd de t een z. Het Latijnse cor en het Griekse kardia zijn dezelfde wortel.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "g", "tekst": "derde naamval" }]
+    },
+    {
+      "sleutel": "stets",
+      "woord": "stets",
+      "betekenis": "steeds, altijd",
+      "nlVerwant": "steeds",
+      "enVerwant": "steady",
+      "klankverschuiving": "",
+      "gebruik": "Schrijftaal voor immer. In een sollicitatiebrief staat stets, aan de keukentafel immer.",
+      "etymologie": "Hoort bij stehen, staan: wat steeds gebeurt, staat vast. Steeds en het Engelse steady zijn familie.",
+      "zekerheid": "zeker",
+      "labels": [{ "soort": "r", "tekst": "schrijftaal" }]
+    },
+    {
+      "sleutel": "scherzen",
+      "woord": "scherzen",
+      "betekenis": "schertsen, grappen maken",
+      "nlVerwant": "schertsen",
+      "enVerwant": "",
+      "klankverschuiving": "",
+      "gebruik": "Lachen und scherzen: een rijmpaar met Herzen. Scherzen is wat netter dan Witze machen. Sie scherzen! zeg je beleefd als je iemand niet gelooft.",
+      "etymologie": "Ons scherts is uit het Duits geleend. Het Italiaans nam het woord ook over, als scherzare. Zo kwam het scherzo in de muziek terecht: het speelse deel van een symfonie heet letterlijk grap.",
+      "zekerheid": "zeker",
+      "labels": []
+    }
+  ],
+  "cultuur": [
+    {
+      "titel": "Sophie Scholl bij de gevangenismuur",
+      "aanleiding": "Und sperrt man mich ein im finsteren Kerker",
+      "tekst": "In de zomer van 1942 werd Robert Scholl in Ulm opgesloten. Hij had Hitler tegenover een medewerkster een gesel Gods genoemd en zij gaf hem aan. Zijn dochter Sophie ging 's avonds bij de gevangenismuur staan en speelde dit lied op haar blokfluit, zodat hij het in zijn cel kon horen. Een half jaar later werd ze zelf opgepakt, als lid van de verzetsgroep Die Weiße Rose. Ze was eenentwintig toen ze werd terechtgesteld.",
+      "kapstok": "Sperrt man mich ein: een zin die met het werkwoord begint, is hier een voorwaarde. Als ze mij opsluiten.",
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Die Mauer is er maar één",
+      "aanleiding": "Mauern",
+      "tekst": "Zeg in Duitsland die Mauer en iedereen denkt aan Berlijn. De Muur stond er van 1961 tot 1989, en de val ervan heet der Mauerfall. Het lied is veel ouder. Toch hoort wie het vandaag zingt bij Mauern entzwei vanzelf die ene muur.",
+      "kapstok": "Een Mauer is van steen en staat buiten, een Wand is de muur van je kamer. De Berlijnse Muur was een Mauer.",
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Mensch ärgere Dich nicht",
+      "aanleiding": "Kein Mensch",
+      "tekst": "Het bordspel dat in veel Nederlandse kasten ligt, is Duits. Josef Friedrich Schmidt bedacht het rond 1908 in München. In de Eerste Wereldoorlog stuurde hij drieduizend exemplaren naar de lazaretten, en zo leerden de soldaten het kennen. De Nederlandse naam is een letterlijke vertaling.",
+      "kapstok": "Mensch en mens zijn hetzelfde woord, en ärgere dich nicht is erger je niet. Kein Mensch is dus geen mens.",
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Zuiver bier",
+      "aanleiding": "rein",
+      "tekst": "In 1516 legden de Beierse hertogen vast wat er in bier mocht zitten. Dat voorschrift heet nu het Reinheitsgebot en Duitse brouwers zetten het nog altijd trots op hun etiket: gebraut nach dem deutschen Reinheitsgebot. Rein is hier zuiver, de eerste betekenis van het woord.",
+      "kapstok": "In het lied is rein een versterker: rein vergeblich, volkomen vergeefs. Zuiver vergeefs, zou je kunnen zeggen.",
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "De geheimtaal van het getuigschrift",
+      "aanleiding": "stets",
+      "tekst": "Een Duitse werkgever geeft een vertrekkende werknemer een Arbeitszeugnis mee, en dat moet welwillend klinken. Daardoor is een geheimtaal ontstaan. Stets zu unserer vollsten Zufriedenheit is het hoogste cijfer. Laat de chef het woordje stets weg, dan zakt het cijfer. Wie in Duitsland solliciteert, leest elk bijwoord twee keer.",
+      "kapstok": "Stets is ons steeds. Het is schrijftaal, en daarom staat het in zulke brieven.",
+      "zekerheid": "zeker"
+    }
+  ],
+  "klankverschuivingen": [
+    {
+      "regel": "t → ss / ß",
+      "uitleg": "Na een klinker werd de t een scherpe s. Na een korte klinker schrijf je ss, na een lange klinker of tweeklank ß.",
+      "voorbeelden": ["wissen", "erschießen", "zerreißen"]
+    },
+    {
+      "regel": "t → z",
+      "uitleg": "Aan het begin van een woord en na een medeklinker werd de t een z, uitgesproken als ts.",
+      "voorbeelden": ["entzwei", "Herzen"]
+    },
+    {
+      "regel": "d → t",
+      "uitleg": "De Nederlandse d is in het Duits vaak een t.",
+      "voorbeelden": ["erraten", "Schatten"]
+    },
+    {
+      "regel": "k → ch",
+      "uitleg": "Na een klinker werd de k een ch. De uitgang -lich is ons -lijk.",
+      "voorbeelden": ["ich", "auch", "nächtliche"]
+    },
+    {
+      "regel": "p → f",
+      "uitleg": "Na een klinker werd de p een f. Ons op is het Duitse auf.",
+      "voorbeelden": ["auf"]
+    },
+    {
+      "regel": "ij → ei",
+      "uitleg": "Onze ij was ooit een lange i. Het Duits maakte er een ei van.",
+      "voorbeelden": ["frei", "vorbei", "dabei", "bleibet"]
+    },
+    {
+      "regel": "ee → ei",
+      "uitleg": "Een tweede bron van de Duitse ei. Waar wij een lange e hebben, zoals in twee en geen, staat in het Duits ook ei.",
+      "voorbeelden": ["kein", "entzwei"]
+    },
+    {
+      "regel": "oo → au",
+      "uitleg": "Onze lange o is in het Duits au voor m, p, k en g: boom en Baum, ook en auch. Voor t, d, n en r bleef het een o: brood en Brot.",
+      "voorbeelden": ["auch"]
+    },
+    {
+      "regel": "uu → au",
+      "uitleg": "Onze uu en ui waren ooit dezelfde lange klank. Het Duits maakte er au van: muur en Mauer, huis en Haus.",
+      "voorbeelden": ["Mauern"]
+    },
+    {
+      "regel": "v → b",
+      "uitleg": "Tussen klinkers staat tegenover onze v een Duitse b.",
+      "voorbeelden": ["bleibet", "vergebliche"]
+    },
+    {
+      "regel": "v → f",
+      "uitleg": "Aan het woordbegin is onze v in het Duits een f.",
+      "voorbeelden": ["frei", "fliehen"]
+    },
+    {
+      "regel": "z → s",
+      "uitleg": "De Duitse s voor een klinker klinkt als onze z. Het verschil zit alleen in de letter.",
+      "voorbeelden": ["Sorgen", "entsagen", "sind", "sie"]
+    }
+  ],
+  "decoder": [
+    {
+      "groep": "Eén schuif",
+      "woorden": [
+        {
+          "nl": "mijn",
+          "en": "my, mine",
+          "de": "mein",
+          "stappen": [{ "regel": "ij → ei", "vorm": "mein" }],
+          "noot": "Meine Gedanken, mijn gedachten. Dezelfde schuif zit in dein en sein."
+        },
+        {
+          "nl": "geven",
+          "en": "give",
+          "de": "geben",
+          "stappen": [{ "regel": "v → b", "vorm": "geben" }],
+          "noot": "Tussen klinkers is onze v een Duitse b. Vergeblich uit het lied is ons vergeefs."
+        },
+        {
+          "nl": "zingen",
+          "en": "sing",
+          "de": "singen",
+          "stappen": [{ "regel": "z → s", "vorm": "singen" }],
+          "noot": "De Duitse s voor een klinker klinkt als onze z. Alleen de letter verandert."
+        },
+        {
+          "nl": "steen",
+          "en": "stone",
+          "de": "Stein",
+          "stappen": [{ "regel": "ee → ei", "vorm": "stein" }],
+          "noot": "De naam Einstein betekent letterlijk een steen."
+        },
+        {
+          "nl": "maken",
+          "en": "make",
+          "de": "machen",
+          "stappen": [{ "regel": "k → ch", "vorm": "machen" }],
+          "noot": "Na een klinker werd de k een ch. Zo ook breken en brechen, spreken en sprechen."
+        },
+        {
+          "nl": "schieten",
+          "en": "shoot",
+          "de": "schießen",
+          "stappen": [{ "regel": "t → ß", "vorm": "schießen" }],
+          "noot": "Na een lange klinker schrijf je ß. Met er- ervoor heb je het woord uit het lied."
+        }
+      ]
+    },
+    {
+      "groep": "Twee schuiven",
+      "woorden": [
+        {
+          "nl": "vrij",
+          "en": "free",
+          "de": "frei",
+          "stappen": [
+            { "regel": "v → f", "vorm": "frij" },
+            { "regel": "ij → ei", "vorm": "frei" }
+          ],
+          "noot": "Het woord van het lied. Soms schrijft het Duits toch een v, zoals in Vater. De klank is altijd f."
+        },
+        {
+          "nl": "blijven",
+          "en": "stay",
+          "de": "bleiben",
+          "stappen": [
+            { "regel": "ij → ei", "vorm": "bleiven" },
+            { "regel": "v → b", "vorm": "bleiben" }
+          ],
+          "noot": "Es bleibet dabei."
+        },
+        {
+          "nl": "ook",
+          "en": "also",
+          "de": "auch",
+          "stappen": [
+            { "regel": "oo → au", "vorm": "auk" },
+            { "regel": "k → ch", "vorm": "auch" }
+          ],
+          "noot": "Staat in de laatste strofe: und will mich auch nimmer."
+        },
+        {
+          "nl": "twee",
+          "en": "two",
+          "de": "zwei",
+          "stappen": [
+            { "regel": "t → z", "vorm": "zwee" },
+            { "regel": "ee → ei", "vorm": "zwei" }
+          ],
+          "noot": "In entzwei zit dit woord verstopt: in tweeën."
+        },
+        {
+          "nl": "droom",
+          "en": "dream",
+          "de": "Traum",
+          "stappen": [
+            { "regel": "d → t", "vorm": "troom" },
+            { "regel": "oo → au", "vorm": "traum" }
+          ],
+          "noot": "Träume zijn in Duitse liedjes nooit ver weg."
+        },
+        {
+          "nl": "lopen",
+          "en": "leap",
+          "de": "laufen",
+          "stappen": [
+            { "regel": "oo → au", "vorm": "laupen" },
+            { "regel": "p → f", "vorm": "laufen" }
+          ],
+          "noot": "Laufen is in het noorden rennen. In het zuiden gebruiken ze het ook voor gewoon lopen."
+        }
+      ]
+    },
+    {
+      "groep": "Drie schuiven",
+      "woorden": [
+        {
+          "nl": "tijd",
+          "en": "tide",
+          "de": "Zeit",
+          "stappen": [
+            { "regel": "t → z", "vorm": "zijd" },
+            { "regel": "ij → ei", "vorm": "zeid" },
+            { "regel": "d → t", "vorm": "zeit" }
+          ],
+          "noot": "Drie schuiven in vier letters. Die Zeit is ook de naam van een grote weekkrant uit Hamburg."
+        },
+        {
+          "nl": "dijk",
+          "en": "dike, ditch",
+          "de": "Teich",
+          "stappen": [
+            { "regel": "d → t", "vorm": "tijk" },
+            { "regel": "ij → ei", "vorm": "teik" },
+            { "regel": "k → ch", "vorm": "teich" }
+          ],
+          "noot": "Een Teich is een vijver. De dijk zelf heet Deich, een leenwoord uit het noorden, waar ze de schuif nooit meemaakten."
+        },
+        {
+          "nl": "dopen",
+          "en": "dip",
+          "de": "taufen",
+          "stappen": [
+            { "regel": "d → t", "vorm": "topen" },
+            { "regel": "oo → au", "vorm": "taupen" },
+            { "regel": "p → f", "vorm": "taufen" }
+          ],
+          "noot": "Dopen is onderdompelen. De Taufe is de doop."
+        },
+        {
+          "nl": "verdrijven",
+          "en": "drive",
+          "de": "vertreiben",
+          "stappen": [
+            { "regel": "d → t", "vorm": "vertrijven" },
+            { "regel": "ij → ei", "vorm": "vertreiven" },
+            { "regel": "v → b", "vorm": "vertreiben" }
+          ],
+          "noot": "De v van ver- blijft staan. In het Duits klinkt die al als een f."
+        }
+      ]
+    }
+  ],
+  "verhalen": [
+    {
+      "woord": "frei",
+      "titel": "Vrij is wie erbij hoort",
+      "tekst": "De oudste betekenis van frei is geliefd. Vrij waren de mensen van je eigen huis en familie, tegenover de slaven die erbij woonden. Uit dezelfde wortel komt Freund, onze vriend: degene van wie je houdt. Ons vrijen hoort er ook bij, en in vrijdag zit de godin Frija, de geliefde. Rond 1200 schreef Walther von der Vogelweide nog gedanke frî, met een lange i. Het Nederlands bewaart die klank in de letters ij, het Duits maakte er ei van.",
+      "zekerheid": "zeker"
+    },
+    {
+      "woord": "wissen",
+      "titel": "Weten is gezien hebben",
+      "tekst": "Wissen is eigenlijk een verleden tijd. De oervorm betekende ik heb gezien, en wie iets gezien heeft, weet het. Daarom vervoegt het werkwoord zo vreemd: ich weiß, er weiß, zonder uitgang. De wortel leeft overal. In het Latijn werd hij videre, zien, en zo kwam video bij ons terecht. In het Sanskriet werd hij veda, kennis. Het Engelse wit en wise komen er ook vandaan.",
+      "zekerheid": "zeker"
+    },
+    {
+      "woord": "zerreißen",
+      "titel": "Schrijven was krassen",
+      "tekst": "Reißen betekende eerst een kras of snee maken. Wie runen in hout of steen wilde zetten, moest krassen, en zo werd het Engelse write het woord voor schrijven. Het Duits hield de ruwe betekenis: scheuren, rukken. De oude betekenis schemert door in de tekenkamer. Een Grundriss is een plattegrond en een Umriss een omtrek. Ons rijten is hetzelfde woord, al zeggen we nu liever scheuren.",
+      "zekerheid": "zeker"
+    },
+    {
+      "woord": "Kerker",
+      "titel": "Wat de Romeinen achterlieten",
+      "tekst": "Toen de Germanen de Romeinen leerden kennen, bouwden ze met hout en leem. Stenen huizen namen ze over, met de woorden erbij: Mauer van murus, Keller van cellarium, Fenster van fenestra, Kerker van carcer. Aan de k hoor je hoe oud de lening is. In de keizertijd sprak een Romein de c nog uit als k, ook voor een e. Later werd dat ts. Wat vroeg geleend is, heeft een k: Kerker, Keller, Kaiser, Kiste. Wat later kwam, heeft een z: Zelle komt van cella, hetzelfde woord dat in Keller zit.",
+      "zekerheid": "zeker"
+    },
+    {
+      "woord": "Grillen",
+      "titel": "Krekels in je hoofd",
+      "tekst": "Een Grille is een krekel. De meeste woordenboeken leiden de naam af van het Latijnse gryllus. Sinds de vijftiende eeuw staat het woord ook voor een rare inval of een sombere bui. De Etymologiebank noemt een oud volksgeloof als mogelijke bron: krekels zouden via het oor je hoofd in kruipen. Hoe de overdracht precies verliep, is onzeker. Ons gril, een kuur, is uit het Duits geleend. Het werkwoord grillen voor barbecueën is iets heel anders. Dat komt via het Engels uit het Frans.",
+      "zekerheid": "onzeker"
+    },
+    {
+      "woord": "Herz",
+      "titel": "Van cor naar Herz in twee stappen",
+      "tekst": "Leg het Latijnse cordis naast het Duitse Herz. Daartussen liggen twee klankverschuivingen. De k-klank van cor werd in de Germaanse talen een h, zoals in centum en honderd, en de d werd een t. Dat is de eerste verschuiving, die alle Germaanse talen meemaakten. Het Nederlands en het Engels bleven daar staan, met hart en heart. Het Duits schoof nog een keer en maakte van de t een z. Aan één woord zie je zo ruim tweeduizend jaar taalgeschiedenis.",
+      "zekerheid": "zeker"
+    }
+  ],
+  "grammatica": [
+    {
+      "titel": "De derde naamval",
+      "uitleg": "Het lied zit er vol mee: im Herzen, im finsteren Kerker, in der Still', mit Grillen. Na mit staat altijd de derde naamval. Na in staat hij als het om een plek gaat en er niets beweegt. Sommige werkwoorden vragen hem ook, zoals entsagen. In het meervoud krijgt het woord zelf dan een -n: die Sorgen worden den Sorgen.",
+      "herkomst": "Het Nederlands had deze naamval ook. Je hoort hem nog in versteende resten: van harte, ter plekke, in den beginne, te allen tijde. Bij ons sleten de uitgangen eerst weg uit de spreektaal en later uit de spelling. Het Duits hield ze vast, vooral in het lidwoord. Van harte en von Herzen zijn woord voor woord dezelfde constructie.",
+      "voorbeelden": [
+        { "de": "im Herzen", "nl": "in het hart" },
+        { "de": "den Sorgen entsagen", "nl": "de zorgen afzweren" },
+        { "de": "mit Pulver und Blei", "nl": "met kruit en lood" },
+        { "de": "im finsteren Kerker", "nl": "in de duistere kerker" }
+      ]
+    },
+    {
+      "titel": "De zin als tang",
+      "uitleg": "Het vervoegde werkwoord staat op de tweede plek en de rest van het gezegde wacht tot het eind. Kann staat vooraan, erraten sluit af. Bij een scheidbaar werkwoord springt het voorvoegsel naar achteren: einsperren wordt sperrt ... ein. Voor een Nederlander voelt dat vertrouwd, want wij doen het ook.",
+      "herkomst": "Deze bouw is oud en gemeenschappelijk. Nederlands en Duits hebben hem allebei bewaard. Het Engels had hem vroeger ook en liet hem in de middeleeuwen los. Daarom klinkt een Duitse zin voor een Nederlander logischer dan voor een Engelsman.",
+      "voorbeelden": [
+        { "de": "wer kann sie erraten", "nl": "wie kan ze raden" },
+        { "de": "Drum will ich auf immer den Sorgen entsagen", "nl": "Daarom wil ik voor altijd de zorgen afzweren" },
+        { "de": "sperrt man mich ein", "nl": "sluit men mij op" }
+      ]
+    },
+    {
+      "titel": "Een voorwaarde zonder wenn",
+      "uitleg": "Und sperrt man mich ein: een mededeling die met het werkwoord begint, is een voorwaarde. Voluit zou het zijn: wenn man mich einsperrt. De korte vorm is krachtiger en past in het ritme.",
+      "herkomst": "Een oude Germaanse manier om als te zeggen. Het Nederlands kent haar ook: sluit men mij op, dan lach ik erom. Het Engels bewaart haar in deftige zinnen als had I known en should you need help.",
+      "voorbeelden": [{ "de": "Und sperrt man mich ein im finsteren Kerker", "nl": "En sluit men mij op in de duistere kerker" }]
+    },
+    {
+      "titel": "De lange uitgang -et",
+      "uitleg": "Beglücket en bleibet zijn in het Duits van nu beglückt en bleibt. De dichter heeft de extra lettergreep nodig voor het ritme, en in zijn tijd klonk dat plechtig en vertrouwd tegelijk. Zelf gebruik je altijd de korte vorm.",
+      "herkomst": "In het Middelhoogduits was de lange uitgang de gewone. De e sleet weg in de spreektaal en bleef in liederen en kerktaal hangen. Je hoort hem in de titels van Bachs cantates: Wachet auf, Jauchzet Gott. Het Middelnederlands zei ook hi blivet, waar wij hij blijft zeggen.",
+      "voorbeelden": [
+        { "de": "was mich beglücket", "nl": "wat mij gelukkig maakt" },
+        { "de": "es bleibet dabei", "nl": "het blijft erbij" }
+      ]
+    }
+  ],
+  "valseVrienden": [
+    {
+      "duits": "wie",
+      "lijktOp": "wie",
+      "betekent": "zoals, hoe",
+      "toelichting": "Wie nächtliche Schatten: als nachtelijke schaduwen. Naar een persoon vraag je met wer."
+    },
+    {
+      "duits": "plagen",
+      "lijktOp": "plagen",
+      "betekent": "kwellen, afbeulen",
+      "toelichting": "Sich plagen is tobben of zwoegen. Voor de grap plagen heet necken."
+    },
+    {
+      "duits": "schicken",
+      "lijktOp": "schikken",
+      "betekent": "sturen",
+      "toelichting": "Alleen in es schickt sich, het hoort zo, zit de oude betekenis nog."
+    },
+    {
+      "duits": "das Blei",
+      "lijktOp": "blij",
+      "betekent": "lood",
+      "toelichting": "Blij is froh. Ons lood vind je terug in Lot, het schietlood."
+    },
+    {
+      "duits": "ich will",
+      "lijktOp": "Engels I will",
+      "betekent": "ik wil",
+      "toelichting": "Het gaat om willen. De toekomende tijd maak je met werden: ich werde."
+    }
+  ],
+  "kaarten": [
+    {
+      "voor": "die Gedanken",
+      "betekenis": "de gedachten",
+      "familie": "NL gedachte, dank · EN thought, thank",
+      "regel": "",
+      "tekst": "Wie dankt, denkt aan je. Dank en Gedanke zijn één familie."
+    },
+    {
+      "voor": "frei",
+      "betekenis": "vrij",
+      "familie": "NL vrij, vriend · EN free, friend",
+      "regel": "ij → ei",
+      "tekst": "Vrij was wie bij de familie hoorde. Sophie Scholl speelde het lied voor haar vader, aan de buitenkant van de gevangenismuur."
+    },
+    {
+      "voor": "wissen",
+      "betekenis": "weten",
+      "familie": "NL weten · EN wit, wise",
+      "regel": "t → ss",
+      "tekst": "Weten is gezien hebben. Video betekent ik zie."
+    },
+    {
+      "voor": "erschießen",
+      "betekenis": "doodschieten",
+      "familie": "NL schieten · EN shoot",
+      "regel": "t → ß",
+      "tekst": "Er- maakt het definitief. Schießen is schieten, erschießen is raak en dood."
+    },
+    {
+      "voor": "das Blei",
+      "betekenis": "het lood",
+      "familie": "",
+      "regel": "",
+      "tekst": "Een Bleistift is een potlood. Ons lood zit in het Duitse Lot, het schietlood."
+    },
+    {
+      "voor": "der Kerker",
+      "betekenis": "de kerker",
+      "familie": "NL kerker · EN incarcerate",
+      "regel": "Latijn",
+      "tekst": "Carcer, met de harde k van de Romeinen. Net als Keller en Kaiser."
+    },
+    {
+      "voor": "zerreißen",
+      "betekenis": "verscheuren",
+      "familie": "NL rijten · EN write",
+      "regel": "t → ß",
+      "tekst": "Schrijven was krassen. Een Grundriss is een plattegrond."
+    },
+    {
+      "voor": "die Mauer",
+      "betekenis": "de muur",
+      "familie": "NL muur · EN mural",
+      "regel": "Latijn",
+      "tekst": "Steen kwam van de Romeinen. De Wand in huis was gevlochten, van winden. En die Mauer is voor elke Duitser die van Berlijn."
+    },
+    {
+      "voor": "entzwei",
+      "betekenis": "in tweeën, stuk",
+      "familie": "NL twee · EN two",
+      "regel": "t → z",
+      "tekst": "In zwei, aan elkaar gegroeid."
+    },
+    {
+      "voor": "das Herz",
+      "betekenis": "het hart",
+      "familie": "NL hart · EN heart",
+      "regel": "t → z",
+      "tekst": "Van cordis naar heart werd de d een t. Van heart naar Herz werd de t een z. Twee verschuivingen op een rij."
+    },
+    {
+      "voor": "die Grillen",
+      "betekenis": "de muizenissen",
+      "familie": "NL gril",
+      "regel": "",
+      "tekst": "Krekels die in je hoofd tsjirpen. Ons gril komt hiervandaan. Vandaag denkt een Duitser bij grillen aan de barbecue."
+    },
+    {
+      "voor": "sich plagen",
+      "betekenis": "tobben, zwoegen",
+      "familie": "NL plagen · EN plague",
+      "regel": "Latijn",
+      "tekst": "Zwaarder dan ons plagen. De pest was een Plage."
+    },
+    {
+      "voor": "es schickt sich",
+      "betekenis": "het hoort zo",
+      "familie": "NL schikken",
+      "regel": "",
+      "tekst": "Wat zich schikt, past. Schicken alleen is sturen."
+    },
+    {
+      "voor": "es bleibt dabei",
+      "betekenis": "het blijft erbij",
+      "familie": "NL blijven, daarbij",
+      "regel": "ij → ei",
+      "tekst": "Twee keer ei waar wij ij zeggen. Een zin voor het einde van elke discussie."
+    },
+    {
+      "voor": "wie",
+      "betekenis": "zoals, hoe",
+      "familie": "NL hoe · EN how",
+      "regel": "",
+      "tekst": "De valkuil van het lied. Wie is zoals, wer is wie."
+    },
+    {
+      "voor": "stets",
+      "betekenis": "steeds",
+      "familie": "NL steeds · EN steady",
+      "regel": "",
+      "tekst": "In een Duits getuigschrift is stets het woord waar alles om draait."
+    }
+  ],
+  "toets": [
+    {
+      "vraag": "Wat betekent wie in wie nächtliche Schatten?",
+      "opties": ["wie", "zoals", "waar", "wanneer"],
+      "goed": 1,
+      "toelichting": "Wie is zoals of hoe. Naar een persoon vraag je met wer."
+    },
+    {
+      "vraag": "Welke schuif maakte van weten het Duitse wissen?",
+      "opties": ["t → z", "d → t", "t → ss", "k → ch"],
+      "goed": 2,
+      "toelichting": "Na een klinker werd de t een ss. Zo ook water en Wasser."
+    },
+    {
+      "vraag": "Waarom staat er den Sorgen?",
+      "opties": ["Het is tweede naamval", "Sorgen is mannelijk", "Het rijmt beter", "Entsagen vraagt de derde naamval"],
+      "goed": 3,
+      "toelichting": "Entsagen krijgt de derde naamval. In het meervoud is dat den, met een -n aan het woord."
+    },
+    {
+      "vraag": "Wat doet het voorvoegsel er- in erschießen?",
+      "opties": ["Het maakt de afloop definitief", "Het maakt er verleden tijd van", "Het betekent opnieuw", "Het maakt het woord beleefder"],
+      "goed": 0,
+      "toelichting": "Schießen is schieten, erschießen is doodschieten. Zo ook ertrinken, verdrinken."
+    },
+    {
+      "vraag": "Und sperrt man mich ein begint met het werkwoord. Wat betekent dat hier?",
+      "opties": ["Het is een vraag", "Het is een bevel", "Het is een voorwaarde", "Het is verleden tijd"],
+      "goed": 2,
+      "toelichting": "Als men mij opsluit. Het Nederlands kan het ook: sluit men mij op, dan lach ik erom."
+    },
+    {
+      "vraag": "Uit welke taal komt Kerker?",
+      "opties": ["Grieks", "Frans", "Engels", "Latijn"],
+      "goed": 3,
+      "toelichting": "Carcer, uit de tijd dat de Romeinen de c nog als k uitspraken."
+    },
+    {
+      "vraag": "Welk Engels woord is familie van zerreißen?",
+      "opties": ["rise", "write", "rice", "race"],
+      "goed": 1,
+      "toelichting": "Reißen en write betekenden allebei krassen. Schrijven was krassen in hout of steen."
+    },
+    {
+      "vraag": "Wat is een Bleistift?",
+      "opties": ["een potlood", "een soldeerbout", "een schietlood", "een loden kogel"],
+      "goed": 0,
+      "toelichting": "Blei is lood. Het Nederlands zegt potlood, het Duits Bleistift."
+    },
+    {
+      "vraag": "Wie speelde dit lied in 1942 op de blokfluit bij een gevangenismuur?",
+      "opties": ["Marlene Dietrich", "Clara Schumann", "Sophie Scholl", "Nena"],
+      "goed": 2,
+      "toelichting": "Haar vader zat in Ulm vast omdat hij Hitler een gesel Gods had genoemd."
+    },
+    {
+      "vraag": "Hoe schrijf je beglücket vandaag?",
+      "opties": ["beglücken", "beglückt", "beglückte", "geglückt"],
+      "goed": 1,
+      "toelichting": "De lange uitgang -et is uit de spreektaal verdwenen. In liederen en kerkmuziek leeft hij voort."
+    }
+  ]
+}

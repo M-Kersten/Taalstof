@@ -1,8 +1,25 @@
 # Taalstof
 
-Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, Taalstof haalt de tekst op bij Musixmatch en Claude bouwt er een les van: elke regel klikbaar met betekenis, Nederlandse en Engelse verwanten, de klankschuif die het woord onderging en het verhaal erachter. Daarbij komen een decodeerapparaat voor de Tweede Klankverschuiving, flashcards en een zelftoets.
+Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, Taalstof haalt de tekst op bij Musixmatch en Claude bouwt er een les van. Een woordenlijst vind je overal. Een les van Taalstof legt uit waarom een woord er zo staat en hoe dat zo gekomen is, en hangt het op aan de wereld achter het lied.
 
 Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0.0.1`. Elke les is een los HTML-bestand in `lessons/`, dat je ook zonder de server kunt openen.
+
+## Wat er in een les zit
+
+| Onderdeel | Wat je krijgt |
+| --- | --- |
+| Achtergrond | Het lied en zijn maker, en de tijd of plek waar het uit komt |
+| De tekst | Elke regel klikbaar. Per woord de betekenis en de familie, met daaronder waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt, zoals woordvolgorde of een uitdrukking. Komt het nummer van Spotify, dan staat de speler erboven |
+| Cultuur | Wat een Duitser bij de tekst weet of voelt. Elk stuk eindigt met een kapstok die het vastknoopt aan een woord of regel uit de les |
+| Decodeerapparaat | De klankschuiven uit het lied, en Nederlandse woorden die je er zelf mee omzet |
+| Woordverhalen | De herkomst van de mooiste woorden |
+| Grammatica | Wat het lied nodig heeft, met erbij hoe het zo gekomen is |
+| Valse vrienden | Woorden die op Nederlands lijken en iets anders betekenen |
+| Flashcards en zelftoets | Oefenen, met het verhaal op de achterkant |
+
+Eerst zien hoe dat eruitziet? Start de app en open `http://127.0.0.1:8787/voorbeeld`. Die voorbeeldles over *Die Gedanken sind frei* werkt zonder sleutels.
+
+Herkomst en achtergrond komen uit het geheugen van het model. Het is gevraagd om alleen stellig te zijn waar iets vaststaat en de rest het label onzeker te geven. Bij een onbekend lied is de achtergrond dunner.
 
 ## Wat je nodig hebt
 
@@ -24,7 +41,7 @@ cp .env.example .env
 
 Een app in development mode werkt alleen voor accounts die je onder **User Management** toevoegt. Zet je eigen Spotify-account daar neer.
 
-Spotify levert zelf geen songteksten. Taalstof gebruikt de officiële Web API alleen voor je playlists, recent gespeelde nummers, zoeken en de link om het nummer te openen.
+Spotify levert zelf geen songteksten. Taalstof gebruikt de officiële Web API alleen voor je playlists, recent gespeelde nummers, zoeken en de link om het nummer te openen. In de les staat de officiële Spotify-speler boven de tekst, zodat je kunt meeluisteren.
 
 ### Musixmatch-sleutel
 
@@ -39,8 +56,11 @@ Met de gratis sleutel geeft Musixmatch ongeveer 30 procent van de tekst. Taalsto
 1. Log in op de [Claude Console](https://console.anthropic.com).
 2. Maak onder **API Keys** een sleutel aan en zet hem in `ANTHROPIC_API_KEY`.
 3. `ANTHROPIC_MODEL` staat standaard op `claude-opus-5-5`. Voor goedkopere lessen kun je `claude-sonnet-5-5` proberen.
+4. `ANTHROPIC_EFFORT` bepaalt hoe diep het model nadenkt voor het schrijft. Standaard `high`. Met `medium` of `low` gaat het sneller en goedkoper, met meer kans op slordigheden in de herkomst.
 
-Eén les is een flinke hoeveelheid uitvoer. Taalstof bewaart elke les in `data/`, zodat hetzelfde lied met dezelfde tekst je maar één keer geld kost.
+Eén les is een flinke hoeveelheid uitvoer en duurt een paar minuten. De server maakt hem op de achtergrond en de pagina laat zien hoe ver hij is. Taalstof bewaart elke les in `data/`, zodat hetzelfde lied met dezelfde tekst en dezelfde instellingen je maar één keer geld kost.
+
+Weigert een veiligheidsfilter van het model een tekst, dan probeert de API het zelf nog eens op het vervangende model dat Anthropic daarvoor aanraadt. Dat staat aan in `src/lesson/generator.ts` met `fallbacks`.
 
 ## Starten
 
@@ -51,7 +71,7 @@ npm run dev        # ontwikkelen, herstart bij wijzigingen
 npm run build && npm start
 ```
 
-Open `http://127.0.0.1:8787`, klik op **Inloggen bij Spotify**, kies een nummer en druk op **Maak les**. De les opent in een nieuw tabblad.
+Open `http://127.0.0.1:8787`, klik op **Inloggen bij Spotify**, kies een nummer en druk op **Maak les**. Is de les klaar, dan verschijnt de knop **Open de les**.
 
 Overige commando's:
 
@@ -69,6 +89,7 @@ npm run build      # TypeScript naar dist/
 | `src/lesson/` | Lesschema, Nederlandse prompt en de aanroep naar Claude |
 | `src/render/` | Zet een les om naar één zelfstandig HTML-bestand |
 | `templates/` | CSS en script van de les, overgenomen uit de eerste handgemaakte les |
+| `voorbeeld/` | De voorbeeldles over een rechtenvrij volkslied, ook de maatstaf in de tests |
 | `public/` | De kiespagina |
 | `data/` | Cache van Spotify, songteksten en lessen, plus je Spotify-token (niet in git) |
 | `lessons/` | De gemaakte lessen (niet in git) |

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var $ = function (s) { return document.querySelector(s); };
-  var gekozen = null;
+  var gekozen = null, bezig = false;
 
   function el(tag, txt) { var e = document.createElement(tag); if (txt != null) e.textContent = txt; return e; }
 
@@ -12,7 +12,12 @@
     if (!res.ok) throw new Error(body.error || ('HTTP ' + res.status));
     return body;
   }
-  function melding(t) { $('#melding').textContent = t; }
+  function melding(t, link) {
+    var m = $('#melding'); m.textContent = t;
+    if (!link) return;
+    var a = el('a', link.tekst); a.href = link.url; a.target = '_blank'; a.className = 'btn klein';
+    m.appendChild(document.createTextNode(' ')); m.appendChild(a);
+  }
 
   async function status() {
     var s = await api('/api/status');
@@ -21,7 +26,7 @@
     stip('Spotify-app', s.keys.spotify);
     stip('Musixmatch', s.keys.musixmatch);
     stip('Anthropic', s.keys.anthropic);
-    m.appendChild(el('span', 'model ' + s.model));
+    m.appendChild(el('span', 'model ' + s.model + ', effort ' + s.effort));
     if (s.keys.spotify && !s.spotify) { var a = el('a', 'Inloggen bij Spotify'); a.href = '/login'; m.appendChild(a); }
     else if (s.spotify) stip('ingelogd', true);
   }
@@ -55,7 +60,7 @@
     $('#g-titel').textContent = t.title;
     $('#g-artiest').textContent = t.artist;
     var sp = $('#g-spotify'); sp.hidden = !t.spotifyUrl; if (t.spotifyUrl) sp.href = t.spotifyUrl;
-    $('#plak').value = ''; melding('');
+    $('#plak').value = ''; if (!bezig) melding('');
     $('#g-lyrics').textContent = 'Songtekst zoeken…';
     try {
       var l = await api('/api/lyrics', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ track: t }) });
@@ -67,18 +72,37 @@
     $('#gekozen').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  function duur(ms) {
+    var s = Math.max(0, Math.round(ms / 1000));
+    return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+  }
+  function wacht(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  /* De server maakt de les op de achtergrond. Vraag om de paar tellen hoe ver hij is. */
+  async function volg(job, titel) {
+    for (;;) {
+      if (job.status === 'klaar') { melding('Klaar: ' + job.titel + '.', { tekst: 'Open de les', url: job.url }); lessen(); return; }
+      if (job.status === 'mislukt') { melding('Mislukt: ' + job.error); return; }
+      var t = duur(Date.now() - job.gestart);
+      melding(job.tekens
+        ? titel + ': Claude schrijft de les. ' + job.tekens.toLocaleString('nl-NL') + ' tekens, ' + t + ' bezig.'
+        : titel + ': Claude denkt na over het lied. ' + t + ' bezig. Een nieuwe les duurt een paar minuten.');
+      await wacht(1500);
+      job = await api('/api/jobs/' + encodeURIComponent(job.id));
+    }
+  }
+
   $('#maak').addEventListener('click', async function () {
-    if (!gekozen) return;
-    var b = $('#maak'); b.disabled = true;
-    melding('Les maken. Dit duurt een paar minuten bij een nieuw lied…');
+    if (!gekozen || bezig) return;
+    var b = $('#maak'), titel = gekozen.title;
+    bezig = true; b.disabled = true;
+    melding('Les aanvragen…');
     try {
-      var r = await api('/api/lesson', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      var job = await api('/api/lesson', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ track: gekozen, lyricsText: $('#plak').value }) });
-      melding('Klaar: ' + r.titel);
-      window.open(r.url, '_blank');
-      lessen();
+      await volg(job, titel);
     } catch (e) { melding('Mislukt: ' + e.message); }
-    b.disabled = false;
+    bezig = false; b.disabled = false;
   });
 
   $('#zoek-form').addEventListener('submit', async function (ev) {
