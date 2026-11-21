@@ -5,6 +5,7 @@ import type { Lyrics } from '../lyrics/provider.js';
 import type { TrackRef } from '../types.js';
 import { JsonCache } from '../cache.js';
 import { DEFAULT_EFFORT, type Effort } from '../config.js';
+import { leegKosten, telOp, type Kosten } from './kosten.js';
 
 /**
  * Hoe ver het model is. `zoekopdrachten` telt het onderzoek, `tekens` wat er al
@@ -17,13 +18,15 @@ export interface Voortgang {
 
 export interface GenerateOpts {
   onProgress?: (v: Voortgang) => void;
+  /** Wat de les tot nu toe kost. Komt na elke aanroep, ook als de les daarna mislukt. */
+  onKosten?: (k: Kosten) => void;
 }
 
 export interface LessonGenerator {
   generate(track: TrackRef, lyrics: Lyrics, opts?: GenerateOpts): Promise<Les>;
 }
 
-type Antwoord = Pick<Anthropic.Beta.BetaMessage, 'content' | 'stop_reason' | 'stop_details'>;
+type Antwoord = Pick<Anthropic.Beta.BetaMessage, 'content' | 'stop_reason' | 'stop_details'> & { usage?: Anthropic.Beta.BetaUsage | null };
 type StreamParams = Parameters<Anthropic['beta']['messages']['stream']>[0];
 type Gebeurtenis = { type: string; content_block?: { type: string } };
 
@@ -57,11 +60,11 @@ export interface GeneratorOpties {
  */
 const MAX_TOKENS = 100_000;
 
-/** Zoeken en lezen gebeurt bij Anthropic; de app krijgt alleen de resultaten terug. */
-export const ONDERZOEK_TOOLS = [
-  { type: 'web_search_20260209', name: 'web_search', max_uses: 8 },
-  { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 6 },
-] as const;
+/**
+ * Zoeken gebeurt bij Anthropic; de app krijgt alleen de resultaten terug. Alleen zoeken, en
+ * hooguit vier keer: hele pagina's openen maakte een les vele malen duurder.
+ */
+export const ONDERZOEK_TOOLS = [{ type: 'web_search_20260209', name: 'web_search', max_uses: 4 }] as const;
 
 /** Een lange onderzoeksbeurt pauzeert de API soms. Zo vaak laten we hem doorgaan. */
 const MAX_VERVOLG = 5;
@@ -83,8 +86,14 @@ export class ClaudeLessonGenerator implements LessonGenerator {
 
   async generate(track: TrackRef, lyrics: Lyrics, opts: GenerateOpts = {}): Promise<Les> {
     const key = JsonCache.key(this.model, this.effort, this.onderzoek, PROMPT_VERSIE, track.title, track.artist, lyrics.text);
-    const run = () => this.call(track, lyrics, opts);
-    return this.cache ? this.cache.wrap('lessen', key, run) : run();
+    let betaald = false;
+    const run = () => {
+      betaald = true;
+      return this.call(track, lyrics, opts);
+    };
+    const les = await (this.cache ? this.cache.wrap('lessen', key, run) : run());
+    if (!betaald) opts.onKosten?.(leegKosten(true));
+    return les;
   }
 
   private async call(track: TrackRef, lyrics: Lyrics, opts: GenerateOpts): Promise<Les> {
@@ -94,8 +103,13 @@ export class ClaudeLessonGenerator implements LessonGenerator {
     const stand: Voortgang = { tekens: 0, zoekopdrachten: 0 };
     const gezien = new Set<string>();
     const meld = () => opts.onProgress?.({ ...stand });
+    let kosten = leegKosten();
+    const reken = (u: Antwoord['usage']) => {
+      kosten = telOp(kosten, u, this.model);
+      opts.onKosten?.(kosten);
+    };
 
-    let tekst = await this.beurt(messages, stand, gezien, meld, true);
+    let tekst = await this.beurt(messages, stand, gezien, meld, reken, true);
     let uitkomst = leesLes(tekst);
     if (!uitkomst.les) {
       // Eén herkansing: het model ziet zijn eigen antwoord terug met wat eraan mankeert.
@@ -104,7 +118,7 @@ export class ClaudeLessonGenerator implements LessonGenerator {
         content: `Dit antwoord klopt niet met het JSON-schema:\n${uitkomst.fouten.slice(0, 30).join('\n')}\nGeef het hele JSON-object opnieuw, verbeterd, zonder tekst ervoor of erna. Zoek niet opnieuw.`,
       });
       stand.tekens = 0;
-      tekst = await this.beurt(messages, stand, gezien, meld, false);
+      tekst = await this.beurt(messages, stand, gezien, meld, reken, false);
       uitkomst = leesLes(tekst);
     }
     if (!uitkomst.les) throw new Error(`Het model gaf geen bruikbare les terug: ${uitkomst.fouten.slice(0, 3).join('; ')}`);
@@ -123,6 +137,7 @@ export class ClaudeLessonGenerator implements LessonGenerator {
     stand: Voortgang,
     gezien: Set<string>,
     meld: () => void,
+    reken: (u: Antwoord['usage']) => void,
     zoeken: boolean,
   ): Promise<string> {
     const blokken: Anthropic.Beta.BetaContentBlock[] = [];
@@ -133,6 +148,8 @@ export class ClaudeLessonGenerator implements LessonGenerator {
         thinking: { type: 'adaptive' },
         system: SYSTEEMPROMPT,
         messages: [...messages],
+        // De lange systeemprompt en het gesprek tot nu toe komen uit de cache bij een vervolg of herkansing.
+        cache_control: { type: 'ephemeral' },
         // Het lesschema is te groot voor de strikte JSON-modus van de API. Het schema staat in de
         // prompt en leesLes controleert het antwoord.
         output_config: { effort: this.effort },
@@ -152,6 +169,7 @@ export class ClaudeLessonGenerator implements LessonGenerator {
         }
       });
       const msg = await stream.finalMessage();
+      reken(msg.usage);
 
       if (msg.stop_reason === 'refusal') {
         const cat = msg.stop_details?.category;

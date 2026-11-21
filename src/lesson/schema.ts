@@ -27,7 +27,7 @@ export interface Regel {
   noot: string;
 }
 
-/** Een vraag midden in het verhaal. Een lege `vraag` betekent: geen vraag bij dit hoofdstuk. */
+/** Een vraag om eerst te raden. Een lege `vraag` betekent: geen vraag. */
 export interface Denkvraag {
   vraag: string;
   opties: string[];
@@ -35,14 +35,18 @@ export interface Denkvraag {
   uitleg: string;
 }
 
-export interface Hoofdstuk {
-  kop: string;
-  alineas: string[];
-  /** Een regel uit het lied waar dit hoofdstuk om draait. Lege `de` betekent: geen citaat. */
-  citaat: { de: string; nl: string };
-  /** Sleutels uit de woordenlijst die aan dit hoofdstuk hangen. Het verhaal is hun kapstok. */
+/**
+ * Wat een Duitser bij de tekst weet of voelt. `aanleiding` is de zinsnede uit het lied waar het
+ * aan hangt, `kapstok` knoopt het vast aan iets uit de les, `woorden` zijn sleutels uit de woordenlijst.
+ */
+export interface Cultuur {
+  titel: string;
+  aanleiding: string;
+  tekst: string;
+  kapstok: string;
   woorden: string[];
   vraag: Denkvraag;
+  zekerheid: Zekerheid;
 }
 
 export interface Strofe {
@@ -54,22 +58,14 @@ export interface Strofe {
 
 export interface Les {
   titel: string;
-  lead: string;
   lied: { titel: string; artiest: string };
-  /** Het verhaal van het lied: de maker, hoe het ontstond, waarom de tekst is zoals hij is. */
-  verhaal: { hoofdstukken: Hoofdstuk[]; zekerheid: Zekerheid };
-  /** Pagina's die het model tijdens het onderzoek echt gelezen heeft. */
+  /** Pagina's die het model tijdens het onderzoek echt gezien heeft. */
   bronnen: { titel: string; url: string }[];
   leerdoelen: string[];
   strofen: Strofe[];
   woordenlijst: Woord[];
   /** Wat een Duitser bij de tekst weet of voelt. `kapstok` knoopt het vast aan iets uit de les. */
-  cultuur: { titel: string; aanleiding: string; tekst: string; kapstok: string; zekerheid: Zekerheid }[];
-  klankverschuivingen: { regel: string; uitleg: string; voorbeelden: string[] }[];
-  decoder: {
-    groep: string;
-    woorden: { nl: string; en: string; de: string; stappen: { regel: string; vorm: string }[]; noot: string }[];
-  }[];
+  cultuur: Cultuur[];
   verhalen: { woord: string; titel: string; tekst: string; zekerheid: Zekerheid }[];
   /** `uitleg` zegt wat de vorm doet en waarom het lied hem nodig heeft, `herkomst` hoe het zo gekomen is. */
   grammatica: { titel: string; uitleg: string; herkomst: string; voorbeelden: { de: string; nl: string }[] }[];
@@ -87,22 +83,11 @@ function arr(items: unknown) {
   return { type: 'array', items };
 }
 
+const denkvraag = obj({ vraag: str, opties: arr(str), goed: { type: 'integer' }, uitleg: str });
+
 export const LES_SCHEMA = obj({
   titel: str,
-  lead: str,
   lied: obj({ titel: str, artiest: str }),
-  verhaal: obj({
-    hoofdstukken: arr(
-      obj({
-        kop: str,
-        alineas: arr(str),
-        citaat: obj({ de: str, nl: str }),
-        woorden: arr(str),
-        vraag: obj({ vraag: str, opties: arr(str), goed: { type: 'integer' }, uitleg: str }),
-      }),
-    ),
-    zekerheid,
-  }),
   bronnen: arr(obj({ titel: str, url: str })),
   leerdoelen: arr(str),
   strofen: arr(
@@ -126,14 +111,7 @@ export const LES_SCHEMA = obj({
       labels: arr(obj({ soort: { type: 'string', enum: ['k', 'g', 'l', 'r'] }, tekst: str })),
     }),
   ),
-  cultuur: arr(obj({ titel: str, aanleiding: str, tekst: str, kapstok: str, zekerheid })),
-  klankverschuivingen: arr(obj({ regel: str, uitleg: str, voorbeelden: arr(str) })),
-  decoder: arr(
-    obj({
-      groep: str,
-      woorden: arr(obj({ nl: str, en: str, de: str, stappen: arr(obj({ regel: str, vorm: str })), noot: str })),
-    }),
-  ),
+  cultuur: arr(obj({ titel: str, aanleiding: str, tekst: str, kapstok: str, woorden: arr(str), vraag: denkvraag, zekerheid })),
   verhalen: arr(obj({ woord: str, titel: str, tekst: str, zekerheid })),
   grammatica: arr(obj({ titel: str, uitleg: str, herkomst: str, voorbeelden: arr(obj({ de: str, nl: str })) })),
   valseVrienden: arr(obj({ duits: str, lijktOp: str, betekent: str, toelichting: str })),
@@ -172,8 +150,6 @@ const LIJSTEN = [
   'strofen',
   'woordenlijst',
   'cultuur',
-  'klankverschuivingen',
-  'decoder',
   'verhalen',
   'grammatica',
   'valseVrienden',
@@ -193,7 +169,6 @@ export function validateLes(x: unknown): Les {
   };
   if (!l || typeof l !== 'object') fout('geen object');
   for (const k of LIJSTEN) if (!Array.isArray(l[k])) fout(`${k} ontbreekt`);
-  if (!Array.isArray(l.verhaal?.hoofdstukken)) fout('verhaal ontbreekt');
   for (const s of l.strofen) if (!Array.isArray(s?.regels)) fout('strofe zonder regels');
   if (!l.strofen.some((s) => s.regels.length)) fout('geen regels in de tekst');
 
@@ -203,8 +178,10 @@ export function validateLes(x: unknown): Les {
   }
   const geldig = (v: { goed: number; opties: string[] }) => Number.isInteger(v.goed) && v.goed >= 0 && v.goed < v.opties.length;
   l.toets = l.toets.filter(geldig);
-  for (const h of l.verhaal.hoofdstukken) h.woorden = (h.woorden ?? []).filter((k) => sleutels.has(k));
-  for (const h of l.verhaal.hoofdstukken) if (h.vraag?.vraag && !geldig(h.vraag)) h.vraag = { vraag: '', opties: [], goed: 0, uitleg: '' };
+  for (const c of l.cultuur) {
+    c.woorden = (c.woorden ?? []).filter((k) => sleutels.has(k));
+    if (!c.vraag || (c.vraag.vraag && !geldig(c.vraag))) c.vraag = { vraag: '', opties: [], goed: 0, uitleg: '' };
+  }
   l.bronnen = l.bronnen.filter((b) => /^https?:\/\//.test(b.url));
   return l;
 }

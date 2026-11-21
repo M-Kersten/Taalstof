@@ -69,13 +69,14 @@ describe('renderLesson', () => {
   });
 
   it('bevat alle onderdelen van de les, in de volgorde van het menu', () => {
-    const ids = ['verhaal', 'tekst', 'meezingen', 'cultuur', 'klank', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
+    const ids = ['tekst', 'cultuur', 'meezingen', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
     expect([...html.matchAll(/<section id="([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect([...html.matchAll(/<li><a href="#([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect(html).toContain('data-start="wandern"');
-    expect(html).toContain('0 van 2 gedecodeerd');
+    expect(html).not.toContain('decoder');
+    expect(html).not.toContain('class="lead"');
     expect(html).toContain('0 van 1 gekend');
-    // Vier in de toets en vier bij de vraag in het verhaal.
+    // Vier in de toets en vier bij de vraag in de cultuur.
     expect(html.match(/class="opt"/g)).toHaveLength(8);
     expect(html).toContain('data-ok="1">zin</button>');
     expect(html).toContain('Onvolledige tekst');
@@ -83,36 +84,32 @@ describe('renderLesson', () => {
     expect(html).toContain('https://open.spotify.com/track/x');
   });
 
-  const verhaal = /<section id="verhaal">([\s\S]*?)<\/section>/.exec(html)![1];
+  const cultuur = /<section id="cultuur">([\s\S]*?)<\/section>/.exec(html)![1];
 
-  it('opent met het verhaal en zegt erbij wat niet vaststaat', () => {
-    expect(verhaal).toContain('Achter Das Wandern');
-    expect(verhaal).toContain('<h3><span class="hnr">1</span>Een molenaar op pad</h3>');
-    expect(verhaal).toContain('<p>Wilhelm Müller schreef de tekst, Schubert de bekendste melodie.</p>');
-    expect(verhaal).toContain('Niet alles hiervan staat vast');
-    const zeker = renderLesson({ ...les, verhaal: { ...les.verhaal, zekerheid: 'zeker' } }, meta);
-    expect(/<section id="verhaal">([\s\S]*?)<\/section>/.exec(zeker)![1]).not.toContain('staat vast');
+  it('zet wat een Duitser erbij hoort direct na de tekst, en zegt wat niet vaststaat', () => {
+    expect(cultuur).toContain('Wat een Duitser erbij hoort');
+    expect(cultuur.match(/<article class="box beeld cult">/g)).toHaveLength(2);
+    expect(cultuur.match(/Niet alles hiervan staat vast/g)).toHaveLength(1);
   });
 
   it('laat je raden voor je leest, alleen waar een vraag is', () => {
-    expect(verhaal.match(/class="raad"/g)).toHaveLength(1);
-    expect(verhaal).toContain('<p class="q">Wat betekent wandern hier?</p>');
-    expect(verhaal).toContain('data-ok="1">trekken</button>');
-    expect(verhaal).toContain('data-t="Een gezel trok van werkplaats naar werkplaats."');
+    expect(cultuur.match(/class="raad"/g)).toHaveLength(1);
+    expect(cultuur).toContain('<p class="q">Wat betekent wandern hier?</p>');
+    expect(cultuur).toContain('data-ok="1">trekken</button>');
+    expect(cultuur).toContain('data-t="Een gezel trok van werkplaats naar werkplaats."');
   });
 
-  it('linkt een citaat naar de regel in het lied', () => {
-    expect(verhaal).toContain('<blockquote class="citaat"><p lang="de">Das Wandern ist des Müllers Lust</p>');
-    expect(verhaal).toContain('href="#r-0-0" data-r="r-0-0"');
+  it('linkt de zinsnede naar de regel in het lied', () => {
+    expect(cultuur).toContain('Bij <i lang="de">Das Wandern</i> <a class="naar" href="#r-0-0" data-r="r-0-0">naar de regel</a>');
+    expect(cultuur).toContain('href="#r-0-1"');
     expect(html).toContain('<p class="regel" id="r-0-0">');
-    expect(verhaal.match(/class="citaat"/g)).toHaveLength(1);
   });
 
-  it('hangt woorden uit de woordenlijst aan een hoofdstuk', () => {
-    expect(verhaal).toContain('<button class="hwk" type="button" lang="de" data-k="wandern" aria-pressed="false">wandern</button>');
-    expect(verhaal).toContain('data-k="mueller"');
-    expect(verhaal).not.toContain('bestaatniet');
-    expect(verhaal.match(/class="hw"/g)).toHaveLength(1);
+  it('hangt woorden uit de woordenlijst aan een stuk', () => {
+    expect(cultuur).toContain('<button class="hwk" type="button" lang="de" data-k="wandern" aria-pressed="false">wandern</button>');
+    expect(cultuur).toContain('data-k="mueller"');
+    expect(cultuur).not.toContain('bestaatniet');
+    expect(cultuur.match(/class="hw"/g)).toHaveLength(1);
   });
 
   it('legt per strofe uit waarom hij zo is, achter een knop', () => {
@@ -131,7 +128,7 @@ describe('renderLesson', () => {
     expect(mz).not.toContain('nergens');
   });
 
-  it('noemt de bronnen van het verhaal en wat het leren oplevert bij de toets', () => {
+  it('noemt de bronnen en wat het leren oplevert bij de toets', () => {
     const bron = /<section id="bron">([\s\S]*?)<\/section>/.exec(html)![1];
     expect(bron).toContain('<a href="https://de.wikipedia.org/wiki/Das_Wandern" rel="noopener noreferrer" target="_blank">Das Wandern</a>');
     const zonder = renderLesson({ ...les, bronnen: [] }, meta);
@@ -145,6 +142,7 @@ describe('renderLesson', () => {
     const sectie = /<section id="cultuur">([\s\S]*?)<\/section>/.exec(html)![1];
     expect(sectie).toContain('<h4>Op de Walz</h4>');
     expect(sectie).toContain('Bij <i lang="de">Das Wandern</i>');
+    expect(sectie).toContain('<h4>Water als leraar</h4>');
     expect(sectie).toContain('<b>Kapstok</b>Wandern is trekken, spazieren is wandelen.');
   });
 
@@ -182,7 +180,7 @@ describe('renderLesson', () => {
     });
     expect(d.lex.lust.chips).toEqual([['r', 'dichterlijk'], ['o', 'herkomst onzeker']]);
     expect(d.lex.mueller.chips).toEqual([['l', 'Latijn'], ['g', 'tweede naamval']]);
-    expect(d.decoder[0].woorden[0].stappen).toEqual([['t → ss', 'wasser']]);
+    expect(d.decoder).toBeUndefined();
     expect(d.kaarten[0]).toMatchObject({ v: 'das Wasser', b: 'het water', regel: 't → ss' });
   });
 
@@ -196,7 +194,7 @@ describe('renderLesson', () => {
     const js = readFileSync(new URL('../templates/lesson.js', import.meta.url), 'utf8');
     for (const veld of ['e.w', 'e.nl', 'e.fam', 'e.chips', 'e.geb', 'e.ety']) expect(js).toContain(veld);
     expect(js).toContain('dataset.noot');
-    for (const klasse of ["'.raad'", "'.citaat .naar'", "'.hw'", "'.mz'", "'.strofe .duid'"]) expect(js).toContain(klasse);
+    for (const klasse of ["'.raad'", "'a.naar'", "'.hw'", "'.mz'", "'.strofe .duid'"]) expect(js).toContain(klasse);
   });
 
   it('voorkomt dat lesdata het script-element afsluit', () => {
@@ -212,9 +210,8 @@ describe('renderLesson', () => {
     expect(renderLesson(met, meta)).toContain('<section id="vrienden">');
   });
 
-  it('laat verhaal en cultuur weg als het model er niets over wist', () => {
-    const kaal = renderLesson({ ...les, verhaal: { hoofdstukken: [], zekerheid: 'zeker' }, cultuur: [] }, meta);
-    expect(kaal).not.toContain('<section id="verhaal">');
+  it('laat cultuur weg als het model er niets over wist', () => {
+    const kaal = renderLesson({ ...les, cultuur: [] }, meta);
     expect(kaal).not.toContain('<section id="cultuur">');
     expect(kaal).not.toContain('href="#cultuur"');
   });
@@ -224,6 +221,7 @@ describe('renderLesson', () => {
     expect(v).toContain('voorbeeldles');
     expect(v).not.toContain('auteursrechtelijk beschermd');
     expect(html).toContain('auteursrechtelijk beschermd');
-    expect(html).toContain('Gemaakt met claude-opus-5-5 op 2026-11-16');
+    expect(html).toContain('Gemaakt met claude-opus-5-5 op 2026-11-16.');
+    expect(renderLesson(les, { ...meta, bedrag: 'ongeveer $0.89' })).toContain('op 2026-11-16, kosten ongeveer $0.89.');
   });
 });

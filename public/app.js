@@ -83,8 +83,9 @@
   /* De server maakt de les op de achtergrond. Vraag om de paar tellen hoe ver hij is. */
   async function volg(job, titel) {
     for (;;) {
-      if (job.status === 'klaar') { melding('Klaar: ' + job.titel + '.', { tekst: 'Open de les', url: job.url }); lessen(); return; }
-      if (job.status === 'mislukt') { melding('Mislukt: ' + job.error); return; }
+      var prijs = job.bedrag ? ' Kosten: ' + job.bedrag + '.' : '';
+      if (job.status === 'klaar') { melding('Klaar: ' + job.titel + '.' + prijs, { tekst: 'Open de les', url: job.url }); lessen(); return; }
+      if (job.status === 'mislukt') { melding('Mislukt: ' + job.error + prijs); return; }
       var t = duur(Date.now() - job.gestart);
       var zoek = job.zoekopdrachten ? ' Al ' + job.zoekopdrachten + (job.zoekopdrachten === 1 ? ' bron' : ' bronnen') + ' bekeken.' : '';
       melding(job.tekens > 400
@@ -92,6 +93,7 @@
         : job.zoekopdrachten
           ? titel + ': Claude zoekt uit wat er achter het lied zit.' + zoek + ' ' + t + ' bezig.'
           : titel + ': Claude denkt na over het lied. ' + t + ' bezig. Een nieuwe les duurt een paar minuten.');
+      if (job.bedrag) melding($('#melding').textContent + ' Tot nu toe ' + job.bedrag + '.');
       await wacht(1500);
       job = await api('/api/jobs/' + encodeURIComponent(job.id));
     }

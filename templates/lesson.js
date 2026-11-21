@@ -89,7 +89,7 @@
     });
   });
 
-  /* ---------- verhaal ---------- */
+  /* ---------- cultuur ---------- */
   $$('.raad').forEach(function (v) {
     v.addEventListener('click', function (ev) {
       var b = ev.target.closest('.opt');
@@ -103,7 +103,7 @@
       toel.hidden = false;
     });
   });
-  $$('.citaat .naar').forEach(function (a) {
+  $$('a.naar').forEach(function (a) {
     a.addEventListener('click', function () {
       var r = document.getElementById(a.dataset.r);
       if (!r) return;
@@ -163,119 +163,6 @@
       });
     });
   });
-
-  /* ---------- decoder ---------- */
-  var woorden = [];
-  D.decoder.forEach(function (g) { g.woorden.forEach(function (w) { woorden.push(w); }); });
-  var klaar = store.get('taalstof-' + D.id + '-decoder', []).filter(function (n) { return woorden.some(function (w) { return w.nl === n; }); });
-  var huidig = 0, missers = 0;
-  var kies = $('#dec-kies'), uit = $('#dec-uit'), inp = $('#dec-in');
-  if (!woorden.length) { var da = $('#decoder-app'); if (da) da.hidden = true; }
-
-  (function bouwKiezer() {
-    var i = 0;
-    D.decoder.forEach(function (g) {
-      kies.appendChild(el('p', 'dec-groep', g.groep));
-      var rij = el('div', 'dec-chips');
-      g.woorden.forEach(function (w) {
-        var b = el('button', 'wk', w.nl);
-        b.type = 'button';
-        b.dataset.i = i++;
-        rij.appendChild(b);
-      });
-      kies.appendChild(rij);
-    });
-    kies.addEventListener('click', function (ev) {
-      var b = ev.target.closest('.wk');
-      if (b) kiesWoord(+b.dataset.i, true);
-    });
-  })();
-
-  function norm(s) {
-    return s.trim().toLowerCase().replace(/ß/g, 'ss').replace(/^(der|die|das)\s+/, '');
-  }
-  function kap(w, s) { return /^[A-ZÄÖÜ]/.test(w.de) ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
-  function werkBij() {
-    $$('.wk', kies).forEach(function (b) {
-      var w = woorden[+b.dataset.i];
-      b.classList.toggle('on', +b.dataset.i === huidig);
-      b.classList.toggle('af', klaar.indexOf(w.nl) !== -1);
-      if (+b.dataset.i === huidig) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
-    });
-    $('#dec-score').textContent = klaar.length + ' van ' + woorden.length + ' gedecodeerd';
-  }
-  function kiesWoord(i, focus) {
-    huidig = i; missers = 0;
-    var w = woorden[i];
-    $('#dec-nl').textContent = w.nl;
-    $('#dec-en').textContent = w.en;
-    inp.value = '';
-    uit.textContent = '';
-    uit.appendChild(el('p', 'oordeel', 'Typ je gok en druk op Controleer.'));
-    werkBij();
-    if (focus) { try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); } }
-  }
-  function regelsVan(w) {
-    return w.stappen.filter(function (s) { return s[0].indexOf('→') !== -1 || s[0] === 'geen schuif' || /blijft/.test(s[0]); })
-      .map(function (s) { return ['k', s[0]]; });
-  }
-  function toonHint() {
-    var w = woorden[huidig];
-    uit.textContent = '';
-    uit.appendChild(el('p', 'oordeel', 'Deze schuiven heb je nodig, in deze volgorde:'));
-    uit.appendChild(chips(regelsVan(w)));
-  }
-  function toonAfleiding(kop, cls) {
-    var w = woorden[huidig];
-    uit.textContent = '';
-    uit.appendChild(el('p', 'oordeel ' + (cls || ''), kop));
-    var ol = el('ol', 'ladder');
-    var li = el('li');
-    li.appendChild(el('span', 'chip', 'Nederlands'));
-    li.appendChild(el('span', 'vorm', w.nl));
-    ol.appendChild(li);
-    w.stappen.forEach(function (s, n) {
-      var laatste = n === w.stappen.length - 1;
-      var r = el('li', laatste ? 'eind' : '');
-      r.appendChild(el('span', 'chip k', s[0]));
-      var v = el('span', 'vorm', laatste ? w.de : kap(w, s[1]));
-      v.lang = 'de';
-      r.appendChild(v);
-      ol.appendChild(r);
-    });
-    uit.appendChild(ol);
-    uit.appendChild(el('p', 'dec-noot', w.noot));
-  }
-  if (woorden.length) $('#dec-form').addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var w = woorden[huidig], gok = norm(inp.value);
-    if (!gok) { uit.textContent = ''; uit.appendChild(el('p', 'oordeel', 'Typ eerst een woord. Fout gokken mag.')); return; }
-    if (gok === norm(w.de)) {
-      if (klaar.indexOf(w.nl) === -1) { klaar.push(w.nl); store.set('taalstof-' + D.id + '-decoder', klaar); }
-      toonAfleiding('Raak. Zo kom je er:', 'ok');
-      werkBij();
-    } else {
-      missers++;
-      if (missers >= 2) {
-        toonAfleiding('Nog niet. Hier is de afleiding:', 'fout');
-      } else {
-        uit.textContent = '';
-        uit.appendChild(el('p', 'oordeel fout', 'Nog niet. Kijk welke schuiven erin zitten en probeer het nog een keer.'));
-        uit.appendChild(chips(regelsVan(w)));
-      }
-    }
-  });
-  $('#dec-hint').addEventListener('click', toonHint);
-  $('#dec-toon').addEventListener('click', function () { toonAfleiding('De afleiding, stap voor stap:', ''); });
-  $('#dec-volgende').addEventListener('click', function () {
-    var n = woorden.length, i;
-    for (i = 1; i <= n; i++) {
-      var k = (huidig + i) % n;
-      if (klaar.indexOf(woorden[k].nl) === -1) { kiesWoord(k, true); return; }
-    }
-    kiesWoord((huidig + 1) % n, true);
-  });
-  if (woorden.length) kiesWoord(0, false);
 
   /* ---------- flashcards ---------- */
   var kaart = $('#kaart'), gekend = store.get('taalstof-' + D.id + '-kaarten', []).filter(function (v) {

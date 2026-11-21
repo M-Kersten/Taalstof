@@ -1,127 +1,8 @@
 {
   "titel": "De gedachten zijn vrij, de naamvallen niet",
-  "lead": "Een protestlied van ruim twee eeuwen oud, gezongen bij een gevangenismuur en voor de ruïne van de Rijksdag. Onderweg leer je de t terugvinden in wissen en Herz, en zie je welke woorden je beter in het lied kunt laten.",
   "lied": {
     "titel": "Die Gedanken sind frei",
     "artiest": "Duits volkslied"
-  },
-  "verhaal": {
-    "hoofdstukken": [
-      {
-        "kop": "Een lied zonder maker",
-        "alineas": [
-          "Niemand heeft dit lied ooit ondertekend. Tegen het eind van de achttiende eeuw dook de tekst op, op vlugschriften zonder jaartal en zonder naam. De melodie kwam er tussen 1810 en 1820 bij.",
-          "Het idee is veel ouder. Rond 1200 schreef de minnezanger Walther von der Vogelweide al dat gedachten vrij zijn: gedanke frî. Hoor je die lange i? Die klinkt nog in ons vrij. Het Duits maakte er later frei van, en ook dat woord staat aan het eind van elke strofe.",
-          "Een Gedanke is een gedachte en hoort bij denken. Wer is wie, en erraten is raden tot je het hebt. Een raadsel dus, dat niemand oplost."
-        ],
-        "citaat": {
-          "de": "Die Gedanken sind frei, wer kann sie erraten,",
-          "nl": "De gedachten zijn vrij, wie kan ze raden,"
-        },
-        "woorden": [
-          "gedanke",
-          "frei",
-          "wer",
-          "erraten"
-        ],
-        "vraag": {
-          "vraag": "Walther von der Vogelweide schreef rond 1200 dat gedachten vrij zijn. Hoe spelde hij dat laatste woord?",
-          "opties": [
-            "frî",
-            "vrij",
-            "frey",
-            "freit"
-          ],
-          "goed": 0,
-          "uitleg": "Frî, met een lange i. Het Nederlands bewaart die klank achter de letters ij, het Duits maakte er een ei van."
-        }
-      },
-      {
-        "kop": "Zingen waar de censor bij staat",
-        "alineas": [
-          "In 1819 spraken de Duitse vorsten in Karlsbad af dat kranten en universiteiten onder toezicht kwamen. Wie iets drukte, had een censor over zijn schouder. Een lied over gedachten die niemand kan pakken, kreeg toen een scherpe rand.",
-          "In 1842 kwam het in de bundel Schlesische Volkslieder van Hoffmann von Fallersleben en Ernst Richter. Diezelfde Hoffmann had een jaar eerder de tekst geschreven van wat later het Duitse volkslied werd.",
-          "Lees de derde regel en je ziet waarom het lied zo goed tegen macht bestand is. Kein Mensch kann sie wissen: geen mens kan ze weten. Kein Jäger kann sie erschießen, met Pulver und Blei, kruit en lood. Er- maakt van schieten doodschieten. Zelfs een geweer krijgt een gedachte niet dood."
-        ],
-        "citaat": {
-          "de": "Kein Mensch kann sie wissen, kein Jäger erschießen",
-          "nl": "Geen mens kan ze weten, geen jager ze doodschieten"
-        },
-        "woorden": [
-          "mensch",
-          "wissen",
-          "jaeger",
-          "erschiessen",
-          "pulver",
-          "blei"
-        ],
-        "vraag": {
-          "vraag": "Kein Mensch kann sie wissen. Welk Nederlands woord zit verstopt in wissen?",
-          "opties": [
-            "wissen",
-            "wijzen",
-            "weten",
-            "wensen"
-          ],
-          "goed": 2,
-          "uitleg": "Weten. Na een klinker werd de t een ss, net als bij water en Wasser. Iets wegvegen heet in het Duits wischen."
-        }
-      },
-      {
-        "kop": "Een blokfluit bij de muur",
-        "alineas": [
-          "Zomer 1942. Robert Scholl zit in de gevangenis. Hij heeft Hitler een gesel Gods genoemd en is aangegeven. Zijn dochter Sophie gaat 's avonds bij de gevangenismuur staan en speelt dit lied op haar blokfluit, zodat haar vader het in zijn cel hoort.",
-          "Een half jaar later wordt ze zelf opgepakt, als lid van de verzetsgroep Die Weiße Rose. Ze is eenentwintig.",
-          "Wie dat weet, leest de derde strofe anders. Einsperren is opsluiten, in een finsteren Kerker, een duistere kerker. En toch: Gedanken zerreißen die Schranken und Mauern entzwei. Gedachten scheuren slagbomen en muren in tweeën."
-        ],
-        "citaat": {
-          "de": "Und sperrt man mich ein im finsteren Kerker,",
-          "nl": "En sluit men mij op in de duistere kerker,"
-        },
-        "woorden": [
-          "einsperren",
-          "finster",
-          "kerker",
-          "zerreissen",
-          "schranke",
-          "mauer"
-        ],
-        "vraag": {
-          "vraag": "",
-          "opties": [],
-          "goed": 0,
-          "uitleg": ""
-        }
-      },
-      {
-        "kop": "Driehonderdduizend stemmen",
-        "alineas": [
-          "Berlijn, 9 september 1948. De Sovjet-Unie houdt de westelijke sectoren van de stad afgesloten. Burgemeester Ernst Reuter spreekt meer dan driehonderdduizend Berlijners toe voor de ruïne van de Rijksdag. Na zijn toespraak zingt de menigte uit zichzelf dit lied.",
-          "Zo eindigt het lied ook: es bleibet dabei. Het blijft erbij, daar verandert niemand iets aan. Bleiben is ons blijven, met een b waar wij een v hebben en een ei waar wij ij schrijven. Dabei is daarbij."
-        ],
-        "citaat": {
-          "de": "es bleibet dabei: Die Gedanken sind frei!",
-          "nl": "het blijft erbij: de gedachten zijn vrij!"
-        },
-        "woorden": [
-          "bleiben",
-          "dabei",
-          "frei"
-        ],
-        "vraag": {
-          "vraag": "Es bleibet dabei is liedtaal. Wat zegt een Duitser vandaag aan het eind van een discussie?",
-          "opties": [
-            "Es bleibe dabei",
-            "Es blieb dabei",
-            "Es bleibt dabei",
-            "Es bleibet dabei"
-          ],
-          "goed": 2,
-          "uitleg": "Es bleibt dabei. De lange uitgang -et hoort bij liederen en kerktaal."
-        }
-      }
-    ],
-    "zekerheid": "zeker"
   },
   "bronnen": [
     {
@@ -1290,10 +1171,107 @@
   ],
   "cultuur": [
     {
+      "titel": "Een gedachte van achthonderd jaar oud",
+      "aanleiding": "Die Gedanken sind frei",
+      "tekst": "Niemand heeft dit lied ooit ondertekend. Tegen het eind van de achttiende eeuw dook het op, op vlugschriften zonder jaartal en zonder naam. Het idee is veel ouder. Rond 1200 schreef de minnezanger Walther von der Vogelweide al: gedanke frî. Een Duitser die de titel hoort, hoort een gedachte die al eeuwen rondgaat.",
+      "kapstok": "Frî werd frei, en in ons vrij klinkt de oude lange i nog door achter de letters ij.",
+      "woorden": [
+        "gedanke",
+        "frei"
+      ],
+      "vraag": {
+        "vraag": "Walther von der Vogelweide schreef rond 1200 dat gedachten vrij zijn. Hoe spelde hij dat laatste woord?",
+        "opties": [
+          "frî",
+          "vrij",
+          "frey",
+          "freit"
+        ],
+        "goed": 0,
+        "uitleg": "Frî, met een lange i. Het Nederlands bewaart die klank achter de letters ij, het Duits maakte er een ei van."
+      },
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Zingen waar de censor bij staat",
+      "aanleiding": "Kein Mensch kann sie wissen",
+      "tekst": "In 1819 spraken de Duitse vorsten in Karlsbad af dat kranten en universiteiten onder toezicht kwamen. Een lied over gedachten die niemand kan pakken, kreeg toen een scherpe rand. In 1842 kwam het in de bundel Schlesische Volkslieder van Hoffmann von Fallersleben en Ernst Richter. Diezelfde Hoffmann had een jaar eerder de tekst geschreven van wat later het Duitse volkslied werd.",
+      "kapstok": "Kein Mensch kann sie wissen: wissen is ons weten. Geen censor weet wat jij denkt.",
+      "woorden": [
+        "mensch",
+        "wissen",
+        "jaeger",
+        "erschiessen"
+      ],
+      "vraag": {
+        "vraag": "Kein Mensch kann sie wissen. Welk Nederlands woord zit verstopt in wissen?",
+        "opties": [
+          "wissen",
+          "wijzen",
+          "weten",
+          "wensen"
+        ],
+        "goed": 2,
+        "uitleg": "Weten. Na een klinker werd de t een ss, net als bij water en Wasser. Iets wegvegen heet in het Duits wischen."
+      },
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Een blokfluit bij de muur",
+      "aanleiding": "Und sperrt man mich ein im finsteren Kerker",
+      "tekst": "In de zomer van 1942 zat Robert Scholl in de gevangenis. Hij had Hitler een gesel Gods genoemd en was aangegeven. Zijn dochter Sophie ging 's avonds bij de gevangenismuur staan en speelde dit lied op haar blokfluit, zodat hij het in zijn cel hoorde. Een half jaar later werd ze zelf opgepakt, als lid van de verzetsgroep Die Weiße Rose. Ze was eenentwintig.",
+      "kapstok": "Sperrt man mich ein: een zin die met het werkwoord begint, is hier een voorwaarde. Als ze mij opsluiten.",
+      "woorden": [
+        "einsperren",
+        "finster",
+        "kerker",
+        "zerreissen"
+      ],
+      "vraag": {
+        "vraag": "",
+        "opties": [],
+        "goed": 0,
+        "uitleg": ""
+      },
+      "zekerheid": "zeker"
+    },
+    {
+      "titel": "Driehonderdduizend stemmen",
+      "aanleiding": "es bleibet dabei",
+      "tekst": "Berlijn, 9 september 1948. De Sovjet-Unie houdt de westelijke sectoren van de stad afgesloten. Burgemeester Ernst Reuter spreekt meer dan driehonderdduizend Berlijners toe voor de ruïne van de Rijksdag. Na zijn toespraak zingt de menigte uit zichzelf dit lied.",
+      "kapstok": "Es bleibt dabei: het blijft erbij. Een zin voor het eind van elke discussie.",
+      "woorden": [
+        "bleiben",
+        "dabei"
+      ],
+      "vraag": {
+        "vraag": "Es bleibet dabei is liedtaal. Wat zegt een Duitser vandaag aan het eind van een discussie?",
+        "opties": [
+          "Es bleibe dabei",
+          "Es blieb dabei",
+          "Es bleibt dabei",
+          "Es bleibet dabei"
+        ],
+        "goed": 2,
+        "uitleg": "Es bleibt dabei. De lange uitgang -et hoort bij liederen en kerktaal."
+      },
+      "zekerheid": "zeker"
+    },
+    {
       "titel": "Die Mauer is er maar één",
       "aanleiding": "Mauern",
       "tekst": "Zeg in Duitsland die Mauer en iedereen denkt aan Berlijn. De Muur stond er van 1961 tot 1989, en de val ervan heet der Mauerfall. Het lied is veel ouder. Toch hoort wie het vandaag zingt bij Mauern entzwei vanzelf die ene muur.",
       "kapstok": "Een Mauer is van steen en staat buiten, een Wand is de muur van je kamer. De Berlijnse Muur was een Mauer.",
+      "woorden": [
+        "mauer",
+        "entzwei"
+      ],
+      "vraag": {
+        "vraag": "",
+        "opties": [],
+        "goed": 0,
+        "uitleg": ""
+      },
       "zekerheid": "zeker"
     },
     {
@@ -1301,6 +1279,16 @@
       "aanleiding": "Kein Mensch",
       "tekst": "Het bordspel dat in veel Nederlandse kasten ligt, is Duits. Josef Friedrich Schmidt bedacht het rond 1908 in München. In de Eerste Wereldoorlog stuurde hij drieduizend exemplaren naar de lazaretten, en zo leerden de soldaten het kennen. De Nederlandse naam is een letterlijke vertaling.",
       "kapstok": "Mensch en mens zijn hetzelfde woord, en ärgere dich nicht is erger je niet. Kein Mensch is dus geen mens.",
+      "woorden": [
+        "mensch",
+        "kein"
+      ],
+      "vraag": {
+        "vraag": "",
+        "opties": [],
+        "goed": 0,
+        "uitleg": ""
+      },
       "zekerheid": "zeker"
     },
     {
@@ -1308,6 +1296,16 @@
       "aanleiding": "rein",
       "tekst": "In 1516 legden de Beierse hertogen vast wat er in bier mocht zitten. Dat voorschrift heet nu het Reinheitsgebot en Duitse brouwers zetten het nog altijd trots op hun etiket: gebraut nach dem deutschen Reinheitsgebot. Rein is hier zuiver, de eerste betekenis van het woord.",
       "kapstok": "In het lied is rein een versterker: rein vergeblich, volkomen vergeefs. Zuiver vergeefs, zou je kunnen zeggen.",
+      "woorden": [
+        "rein",
+        "vergeblich"
+      ],
+      "vraag": {
+        "vraag": "",
+        "opties": [],
+        "goed": 0,
+        "uitleg": ""
+      },
       "zekerheid": "zeker"
     },
     {
@@ -1315,373 +1313,16 @@
       "aanleiding": "stets",
       "tekst": "Een Duitse werkgever geeft een vertrekkende werknemer een Arbeitszeugnis mee, en dat moet welwillend klinken. Daardoor is een geheimtaal ontstaan. Stets zu unserer vollsten Zufriedenheit is het hoogste cijfer. Laat de chef het woordje stets weg, dan zakt het cijfer. Wie in Duitsland solliciteert, leest elk bijwoord twee keer.",
       "kapstok": "Stets is ons steeds. Het is schrijftaal, en daarom staat het in zulke brieven.",
+      "woorden": [
+        "stets"
+      ],
+      "vraag": {
+        "vraag": "",
+        "opties": [],
+        "goed": 0,
+        "uitleg": ""
+      },
       "zekerheid": "zeker"
-    }
-  ],
-  "klankverschuivingen": [
-    {
-      "regel": "t → ss / ß",
-      "uitleg": "Na een klinker werd de t een scherpe s. Na een korte klinker schrijf je ss, na een lange klinker of tweeklank ß.",
-      "voorbeelden": [
-        "wissen",
-        "erschießen",
-        "zerreißen"
-      ]
-    },
-    {
-      "regel": "t → z",
-      "uitleg": "Aan het begin van een woord en na een medeklinker werd de t een z, uitgesproken als ts.",
-      "voorbeelden": [
-        "entzwei",
-        "Herzen"
-      ]
-    },
-    {
-      "regel": "d → t",
-      "uitleg": "De Nederlandse d is in het Duits vaak een t.",
-      "voorbeelden": [
-        "erraten",
-        "Schatten"
-      ]
-    },
-    {
-      "regel": "k → ch",
-      "uitleg": "Na een klinker werd de k een ch. De uitgang -lich is ons -lijk.",
-      "voorbeelden": [
-        "ich",
-        "auch",
-        "nächtliche"
-      ]
-    },
-    {
-      "regel": "p → f",
-      "uitleg": "Na een klinker werd de p een f. Ons op is het Duitse auf.",
-      "voorbeelden": [
-        "auf"
-      ]
-    },
-    {
-      "regel": "ij → ei",
-      "uitleg": "Onze ij was ooit een lange i. Het Duits maakte er een ei van.",
-      "voorbeelden": [
-        "frei",
-        "vorbei",
-        "dabei",
-        "bleibet"
-      ]
-    },
-    {
-      "regel": "ee → ei",
-      "uitleg": "Een tweede bron van de Duitse ei. Waar wij een lange e hebben, zoals in twee en geen, staat in het Duits ook ei.",
-      "voorbeelden": [
-        "kein",
-        "entzwei"
-      ]
-    },
-    {
-      "regel": "oo → au",
-      "uitleg": "Onze lange o is in het Duits au voor m, p, k en g: boom en Baum, ook en auch. Voor t, d, n en r bleef het een o: brood en Brot.",
-      "voorbeelden": [
-        "auch"
-      ]
-    },
-    {
-      "regel": "uu → au",
-      "uitleg": "Onze uu en ui waren ooit dezelfde lange klank. Het Duits maakte er au van: muur en Mauer, huis en Haus.",
-      "voorbeelden": [
-        "Mauern"
-      ]
-    },
-    {
-      "regel": "v → b",
-      "uitleg": "Tussen klinkers staat tegenover onze v een Duitse b.",
-      "voorbeelden": [
-        "bleibet",
-        "vergebliche"
-      ]
-    },
-    {
-      "regel": "v → f",
-      "uitleg": "Aan het woordbegin is onze v in het Duits een f.",
-      "voorbeelden": [
-        "frei",
-        "fliehen"
-      ]
-    },
-    {
-      "regel": "z → s",
-      "uitleg": "De Duitse s voor een klinker klinkt als onze z. Het verschil zit alleen in de letter.",
-      "voorbeelden": [
-        "Sorgen",
-        "entsagen",
-        "sind",
-        "sie"
-      ]
-    }
-  ],
-  "decoder": [
-    {
-      "groep": "Eén schuif",
-      "woorden": [
-        {
-          "nl": "mijn",
-          "en": "my, mine",
-          "de": "mein",
-          "stappen": [
-            {
-              "regel": "ij → ei",
-              "vorm": "mein"
-            }
-          ],
-          "noot": "Meine Gedanken, mijn gedachten. Dezelfde schuif zit in dein en sein."
-        },
-        {
-          "nl": "geven",
-          "en": "give",
-          "de": "geben",
-          "stappen": [
-            {
-              "regel": "v → b",
-              "vorm": "geben"
-            }
-          ],
-          "noot": "Tussen klinkers is onze v een Duitse b. Vergeblich uit het lied is ons vergeefs."
-        },
-        {
-          "nl": "zingen",
-          "en": "sing",
-          "de": "singen",
-          "stappen": [
-            {
-              "regel": "z → s",
-              "vorm": "singen"
-            }
-          ],
-          "noot": "De Duitse s voor een klinker klinkt als onze z. Alleen de letter verandert."
-        },
-        {
-          "nl": "steen",
-          "en": "stone",
-          "de": "Stein",
-          "stappen": [
-            {
-              "regel": "ee → ei",
-              "vorm": "stein"
-            }
-          ],
-          "noot": "De naam Einstein betekent letterlijk een steen."
-        },
-        {
-          "nl": "maken",
-          "en": "make",
-          "de": "machen",
-          "stappen": [
-            {
-              "regel": "k → ch",
-              "vorm": "machen"
-            }
-          ],
-          "noot": "Na een klinker werd de k een ch. Zo ook breken en brechen, spreken en sprechen."
-        },
-        {
-          "nl": "schieten",
-          "en": "shoot",
-          "de": "schießen",
-          "stappen": [
-            {
-              "regel": "t → ß",
-              "vorm": "schießen"
-            }
-          ],
-          "noot": "Na een lange klinker schrijf je ß. Met er- ervoor heb je het woord uit het lied."
-        }
-      ]
-    },
-    {
-      "groep": "Twee schuiven",
-      "woorden": [
-        {
-          "nl": "vrij",
-          "en": "free",
-          "de": "frei",
-          "stappen": [
-            {
-              "regel": "v → f",
-              "vorm": "frij"
-            },
-            {
-              "regel": "ij → ei",
-              "vorm": "frei"
-            }
-          ],
-          "noot": "Het woord van het lied. Soms schrijft het Duits toch een v, zoals in Vater. De klank is altijd f."
-        },
-        {
-          "nl": "blijven",
-          "en": "stay",
-          "de": "bleiben",
-          "stappen": [
-            {
-              "regel": "ij → ei",
-              "vorm": "bleiven"
-            },
-            {
-              "regel": "v → b",
-              "vorm": "bleiben"
-            }
-          ],
-          "noot": "Es bleibet dabei."
-        },
-        {
-          "nl": "ook",
-          "en": "also",
-          "de": "auch",
-          "stappen": [
-            {
-              "regel": "oo → au",
-              "vorm": "auk"
-            },
-            {
-              "regel": "k → ch",
-              "vorm": "auch"
-            }
-          ],
-          "noot": "Staat in de laatste strofe: und will mich auch nimmer."
-        },
-        {
-          "nl": "twee",
-          "en": "two",
-          "de": "zwei",
-          "stappen": [
-            {
-              "regel": "t → z",
-              "vorm": "zwee"
-            },
-            {
-              "regel": "ee → ei",
-              "vorm": "zwei"
-            }
-          ],
-          "noot": "In entzwei zit dit woord verstopt: in tweeën."
-        },
-        {
-          "nl": "droom",
-          "en": "dream",
-          "de": "Traum",
-          "stappen": [
-            {
-              "regel": "d → t",
-              "vorm": "troom"
-            },
-            {
-              "regel": "oo → au",
-              "vorm": "traum"
-            }
-          ],
-          "noot": "Träume zijn in Duitse liedjes nooit ver weg."
-        },
-        {
-          "nl": "lopen",
-          "en": "leap",
-          "de": "laufen",
-          "stappen": [
-            {
-              "regel": "oo → au",
-              "vorm": "laupen"
-            },
-            {
-              "regel": "p → f",
-              "vorm": "laufen"
-            }
-          ],
-          "noot": "Laufen is in het noorden rennen. In het zuiden gebruiken ze het ook voor gewoon lopen."
-        }
-      ]
-    },
-    {
-      "groep": "Drie schuiven",
-      "woorden": [
-        {
-          "nl": "tijd",
-          "en": "tide",
-          "de": "Zeit",
-          "stappen": [
-            {
-              "regel": "t → z",
-              "vorm": "zijd"
-            },
-            {
-              "regel": "ij → ei",
-              "vorm": "zeid"
-            },
-            {
-              "regel": "d → t",
-              "vorm": "zeit"
-            }
-          ],
-          "noot": "Drie schuiven in vier letters. Die Zeit is ook de naam van een grote weekkrant uit Hamburg."
-        },
-        {
-          "nl": "dijk",
-          "en": "dike, ditch",
-          "de": "Teich",
-          "stappen": [
-            {
-              "regel": "d → t",
-              "vorm": "tijk"
-            },
-            {
-              "regel": "ij → ei",
-              "vorm": "teik"
-            },
-            {
-              "regel": "k → ch",
-              "vorm": "teich"
-            }
-          ],
-          "noot": "Een Teich is een vijver. De dijk zelf heet Deich, een leenwoord uit het noorden, waar ze de schuif nooit meemaakten."
-        },
-        {
-          "nl": "dopen",
-          "en": "dip",
-          "de": "taufen",
-          "stappen": [
-            {
-              "regel": "d → t",
-              "vorm": "topen"
-            },
-            {
-              "regel": "oo → au",
-              "vorm": "taupen"
-            },
-            {
-              "regel": "p → f",
-              "vorm": "taufen"
-            }
-          ],
-          "noot": "Dopen is onderdompelen. De Taufe is de doop."
-        },
-        {
-          "nl": "verdrijven",
-          "en": "drive",
-          "de": "vertreiben",
-          "stappen": [
-            {
-              "regel": "d → t",
-              "vorm": "vertrijven"
-            },
-            {
-              "regel": "ij → ei",
-              "vorm": "vertreiven"
-            },
-            {
-              "regel": "v → b",
-              "vorm": "vertreiben"
-            }
-          ],
-          "noot": "De v van ver- blijft staan. In het Duits klinkt die al als een f."
-        }
-      ]
     }
   ],
   "verhalen": [

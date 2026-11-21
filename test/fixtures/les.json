@@ -1,58 +1,8 @@
 {
  "titel": "Wandern is wandelen met bepakking",
- "lead": "Een molenaarslied uit 1818 met meer Nederlands erin dan je zou denken.",
  "lied": {
   "titel": "Das Wandern",
   "artiest": "Wilhelm Müller"
- },
- "verhaal": {
-  "hoofdstukken": [
-   {
-    "kop": "Een molenaar op pad",
-    "alineas": [
-     "Wilhelm Müller schreef de tekst, Schubert de bekendste melodie.",
-     "Gezellen trokken jaren van molen naar molen."
-    ],
-    "citaat": {
-     "de": "Das Wandern ist des Müllers Lust",
-     "nl": "Het trekken is de lust van de molenaar"
-    },
-    "woorden": [
-     "wandern",
-     "mueller",
-     "bestaatniet"
-    ],
-    "vraag": {
-     "vraag": "Wat betekent wandern hier?",
-     "opties": [
-      "trekken",
-      "wandelen",
-      "dwalen",
-      "varen"
-     ],
-     "goed": 0,
-     "uitleg": "Een gezel trok van werkplaats naar werkplaats."
-    }
-   },
-   {
-    "kop": "Water als leraar",
-    "alineas": [
-     "Het water staat nooit stil."
-    ],
-    "citaat": {
-     "de": "",
-     "nl": ""
-    },
-    "woorden": [],
-    "vraag": {
-     "vraag": "",
-     "opties": [],
-     "goed": 0,
-     "uitleg": ""
-    }
-   }
-  ],
-  "zekerheid": "onzeker"
  },
  "bronnen": [
   {
@@ -193,47 +143,37 @@
    "aanleiding": "Das Wandern",
    "tekst": "Een gezel trok drie jaar en een dag rond.",
    "kapstok": "Wandern is trekken, spazieren is wandelen.",
-   "zekerheid": "onzeker"
-  }
- ],
- "klankverschuivingen": [
-  {
-   "regel": "t → ss",
-   "uitleg": "Na een klinker wordt de t een ss.",
-   "voorbeelden": [
-    "Wasser"
-   ]
-  }
- ],
- "decoder": [
-  {
-   "groep": "Eén schuif",
    "woorden": [
-    {
-     "nl": "water",
-     "en": "water",
-     "de": "Wasser",
-     "stappen": [
-      {
-       "regel": "t → ss",
-       "vorm": "wasser"
-      }
-     ],
-     "noot": "Hoofdletter erbij."
-    },
-    {
-     "nl": "dag",
-     "en": "day",
-     "de": "Tag",
-     "stappen": [
-      {
-       "regel": "d → t",
-       "vorm": "tag"
-      }
-     ],
-     "noot": "Het Engels houdt de d."
-    }
-   ]
+    "wandern",
+    "mueller",
+    "bestaatniet"
+   ],
+   "vraag": {
+    "vraag": "Wat betekent wandern hier?",
+    "opties": [
+     "trekken",
+     "wandelen",
+     "dwalen",
+     "varen"
+    ],
+    "goed": 0,
+    "uitleg": "Een gezel trok van werkplaats naar werkplaats."
+   },
+   "zekerheid": "onzeker"
+  },
+  {
+   "titel": "Water als leraar",
+   "aanleiding": "Vom Wasser",
+   "tekst": "Het water staat nooit stil.",
+   "kapstok": "Wasser is water met een ss.",
+   "woorden": [],
+   "vraag": {
+    "vraag": "",
+    "opties": [],
+    "goed": 0,
+    "uitleg": ""
+   },
+   "zekerheid": "zeker"
   }
  ],
  "verhalen": [

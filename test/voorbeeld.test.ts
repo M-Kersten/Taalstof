@@ -47,40 +47,19 @@ describe('voorbeeldles', () => {
     expect(sleutels.filter((s) => !gebruikt.has(s))).toEqual([]);
   });
 
-  it('hangt cultuur en klankschuiven aan woorden die echt in de tekst staan', () => {
-    for (const c of les.cultuur) expect(songtekst, c.titel).toContain(c.aanleiding);
-    for (const k of les.klankverschuivingen) {
-      for (const v of k.voorbeelden) expect(songtekst.toLowerCase(), `${k.regel}: ${v}`).toContain(v.toLowerCase());
-    }
-    for (const g of les.grammatica) expect(g.herkomst, g.titel).not.toBe('');
-  });
-
-  it('laat elke decodering uitkomen op het Duitse woord, met schuiven die de hint kan tonen', () => {
-    const regelsInLes = new Set(les.klankverschuivingen.flatMap((k) => k.regel.split(' / ').map((r, i) => (i ? `${k.regel.split(' → ')[0]} → ${r}` : r))));
-    for (const w of les.decoder.flatMap((g) => g.woorden)) {
-      expect(w.stappen.at(-1)!.vorm, w.nl).toBe(w.de.toLowerCase());
-      for (const s of w.stappen) {
-        expect(s.regel, w.nl).toContain('→');
-        expect(regelsInLes, `${w.nl}: ${s.regel}`).toContain(s.regel);
-        expect(s.vorm).toBe(s.vorm.toLowerCase());
-      }
-    }
-    const aantallen = les.decoder.map((g) => g.woorden.map((w) => w.stappen.length));
-    expect(aantallen.every((groep) => new Set(groep).size === 1)).toBe(true);
-  });
-
-  it('vertelt een verhaal dat aan de tekst en de woorden vastzit', () => {
+  it('hangt wat een Duitser erbij hoort aan de tekst en aan de woorden', () => {
     const sleutels = new Set(les.woordenlijst.map((w) => w.sleutel));
-    expect(les.verhaal.hoofdstukken.length).toBeGreaterThanOrEqual(3);
-    for (const h of les.verhaal.hoofdstukken) {
-      if (h.citaat.de) expect(vindRegel(les.strofen, h.citaat.de), h.kop).not.toBe('');
-      expect(h.woorden.length, h.kop).toBeGreaterThanOrEqual(3);
-      for (const k of h.woorden) expect(sleutels, `${h.kop}: ${k}`).toContain(k);
-      if (h.vraag.vraag) expect(h.vraag.opties).toHaveLength(4);
+    expect(les.cultuur.length).toBeGreaterThanOrEqual(4);
+    for (const c of les.cultuur) {
+      expect(songtekst, c.titel).toContain(c.aanleiding);
+      expect(vindRegel(les.strofen, c.aanleiding), c.titel).not.toBe('');
+      expect(c.woorden.length, c.titel).toBeGreaterThanOrEqual(1);
+      for (const k of c.woorden) expect(sleutels, `${c.titel}: ${k}`).toContain(k);
+      if (c.vraag.vraag) expect(c.vraag.opties).toHaveLength(4);
     }
-    const vragen = les.verhaal.hoofdstukken.filter((h) => h.vraag.vraag);
-    expect(vragen.length).toBeGreaterThanOrEqual(2);
+    expect(les.cultuur.filter((c) => c.vraag.vraag).length).toBeGreaterThanOrEqual(2);
     for (const s of les.strofen) expect(s.duiding, s.naam).not.toBe('');
+    for (const g of les.grammatica) expect(g.herkomst, g.titel).not.toBe('');
     for (const b of les.bronnen) expect(b.url).toMatch(/^https:\/\//);
   });
 
@@ -105,7 +84,7 @@ describe('voorbeeldles', () => {
 
   it('wordt een complete les', () => {
     const html = renderLesson(les, { id: 'voorbeeld', track: { title: les.lied.titel, artist: les.lied.artiest }, lyricsSource: 'publiek domein', partial: false, model: '', generatedAt: '', voorbeeld: true });
-    for (const id of ['verhaal', 'tekst', 'meezingen', 'cultuur', 'klank', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
+    for (const id of ['tekst', 'cultuur', 'meezingen', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
       expect(html).toContain(`<section id="${id}">`);
     }
     expect(html.match(/class="w"/g)!.length).toBe(regels.reduce((n, r) => n + r.woorden.length, 0));

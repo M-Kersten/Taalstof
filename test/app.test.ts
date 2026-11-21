@@ -136,7 +136,7 @@ describe('de rest van de app', () => {
       spotify: false,
       keys: { spotify: false, musixmatch: false, anthropic: false },
       model: 'claude-opus-5-5',
-      effort: 'high',
+      effort: 'medium',
     });
   });
 

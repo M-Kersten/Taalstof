@@ -175,37 +175,6 @@ details[open] summary{margin-bottom:8px}
 .u-fam{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:4px 0 0;max-width:none}
 .uitleg .u-txt{margin:9px 0 0;font-size:16px;max-width:64ch}
 
-/* decoder */
-.dec{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
-@media(min-width:720px){.dec{grid-template-columns:232px minmax(0,1fr);gap:26px}}
-.dec>div{min-width:0}
-.dec-groep{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;max-width:none}
-.dec-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px}
-.dec-chips:last-child{margin-bottom:0}
-.wk{display:inline-flex;align-items:center;gap:6px;height:34px;box-sizing:border-box;font-family:var(--sans);font-size:15px;line-height:1;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:3px;padding:0 10px;cursor:pointer}
-.wk:hover{border-color:var(--fg)}
-.wk.on{border-color:var(--fg);background:var(--fg);color:var(--bg)}
-.wk.af::after{content:"\2713";font-size:12px;line-height:1;color:var(--ok)}
-.wk.on.af::after{color:inherit}
-.dec-vraag{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:flex-end;margin-bottom:16px}
-.dec-nl{font-family:var(--disp);font-weight:700;font-size:38px;line-height:1.05;display:block}
-.dec-en{font-family:var(--disp);font-size:22px;line-height:1.25;color:var(--muted);display:block}
-.dec-form{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:0 0 10px}
-.dec-form label{flex:1 1 190px;min-width:0}
-.dec-form input{display:block;width:100%;box-sizing:border-box;font-family:var(--disp);font-size:20px;line-height:1.2;padding:7px 10px;margin-top:4px;background:var(--bg);color:var(--fg);border:1px solid var(--muted);border-radius:3px}
-.dec-acties{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.dec-uit{min-height:150px;border-top:1px solid var(--line);padding-top:12px}
-.dec-uit>p{max-width:none}
-.oordeel{font-family:var(--mono);font-size:13.5px;margin:0 0 10px}
-.oordeel.ok{color:var(--ok)}
-.oordeel.fout{color:var(--fout)}
-.ladder{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:5px;max-width:none}
-.ladder li{display:flex;align-items:center;gap:12px;margin:0;flex-wrap:wrap}
-.ladder .vorm{font-family:var(--disp);font-size:20px;font-weight:600;line-height:1.3}
-.ladder li.eind .vorm{color:var(--accent);font-size:26px;font-weight:700}
-.dec-noot{font-size:15.5px;margin:0}
-.dec-score{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:14px 0 0;max-width:none}
-
 /* flashcards */
 .kaart{display:block;width:100%;box-sizing:border-box;text-align:left;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--fg);border-radius:4px;padding:18px 20px 20px;min-height:236px;cursor:pointer}
 .kaart.om{background:var(--raise)}
@@ -302,3 +271,9 @@ details[open] summary{margin-bottom:8px}
 .gat.fout{border-bottom-color:var(--fout);color:var(--fout)}
 .gat.getoond{border-bottom-color:var(--cool);color:var(--cool)}
 .mz .k-balk{margin-top:14px}
+
+/* cultuur */
+article.cult{max-width:70ch}
+.cult .aanl .naar{font-family:var(--mono);font-size:11.5px;margin-left:6px}
+.cult .raad{margin:4px 0 14px;background:var(--bg)}
+.cult .hw{margin-top:10px}

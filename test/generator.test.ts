@@ -7,6 +7,7 @@ import { JsonCache } from '../src/cache.js';
 import { loadConfig } from '../src/config.js';
 import { LES_SCHEMA, validateLes } from '../src/lesson/schema.js';
 import { SYSTEEMPROMPT, gebruikersprompt } from '../src/lesson/prompt.js';
+import { bedrag, leegKosten, telOp, type Kosten } from '../src/lesson/kosten.js';
 import { schemaFouten } from './helpers.js';
 
 const fixture = readFileSync(new URL('./fixtures/les.json', import.meta.url), 'utf8');
@@ -54,7 +55,9 @@ describe('ClaudeLessonGenerator', () => {
     const p = params(stream);
     expect(p.model).toBe('claude-test');
     // Het lesschema is te groot voor de strikte JSON-modus; het staat in de prompt.
-    expect(p.output_config).toEqual({ effort: 'high' });
+    expect(p.output_config).toEqual({ effort: 'medium' });
+    // De lange prompt gaat in de cache, zodat een vervolg of herkansing weinig kost.
+    expect(p.cache_control).toEqual({ type: 'ephemeral' });
     expect(p.system).toContain(JSON.stringify(LES_SCHEMA));
     expect(p.system).toBe(SYSTEEMPROMPT);
     expect(p.messages[0].content).toContain('maar een deel van de tekst');
@@ -108,7 +111,7 @@ describe('ClaudeLessonGenerator', () => {
     kapot.woordenlijst[0].gebruik = 3;
     const { client, stream } = fakeClient({ text: JSON.stringify(kapot) }, {});
     const les = await maak(client).generate(track, lyrics);
-    expect(les.cultuur).toHaveLength(1);
+    expect(les.cultuur).toHaveLength(2);
     expect(stream).toHaveBeenCalledTimes(2);
     const tweede = (stream.mock.calls[1] as unknown[])[0] as Record<string, any>;
     expect(tweede.messages).toHaveLength(3);
@@ -123,7 +126,8 @@ describe('ClaudeLessonGenerator', () => {
     const { client, stream } = fakeClient();
     await maak(client).generate(track, lyrics);
     const p = params(stream);
-    expect(p.tools.map((t: { type: string }) => t.type)).toEqual(['web_search_20260209', 'web_fetch_20260209']);
+    // Alleen zoeken, met een plafond: hele pagina's openen maakte een les vele malen duurder.
+    expect(p.tools).toEqual([{ type: 'web_search_20260209', name: 'web_search', max_uses: 4 }]);
     expect(p.tool_choice).toEqual({ type: 'auto' });
     expect(p.messages[0].content).toContain('Je kunt het web doorzoeken');
   });
@@ -173,6 +177,42 @@ describe('ClaudeLessonGenerator', () => {
     expect(tweede.messages.at(-1).content).toContain('Zoek niet opnieuw');
   });
 
+  it('telt de kosten op over alle aanroepen, ook de herkansing', async () => {
+    const usage = { input_tokens: 1000, output_tokens: 20000, cache_read_input_tokens: 0, cache_creation_input_tokens: 4000, server_tool_use: { web_search_requests: 2 } };
+    const fc = fakeClient({ text: '{"titel": 1}' }, {});
+    const stream = fc.stream;
+    const echte = stream.getMockImplementation()!;
+    stream.mockImplementation((p) => {
+      const s = echte(p);
+      const eind = s.finalMessage;
+      return { ...s, finalMessage: async () => ({ ...(await eind()), usage }) as never };
+    });
+    const gezien: Kosten[] = [];
+    await maak(fc.client, { model: 'claude-opus-5-5' }).generate(track, lyrics, { onKosten: (k) => gezien.push(k) });
+    const k = gezien.at(-1)!;
+    expect(gezien).toHaveLength(2);
+    expect(k).toMatchObject({ invoer: 2000, uitvoer: 40000, cacheSchrijven: 8000, zoekopdrachten: 4, uitCache: false });
+    // 2000 x $4 + 40000 x $20 + 8000 x $5 per miljoen, plus vier zoekopdrachten van een cent.
+    expect(k.dollar).toBeCloseTo(0.008 + 0.8 + 0.04 + 0.04, 6);
+    expect(bedrag(k)).toBe('ongeveer $0.89');
+  });
+
+  it('meldt een les uit de cache als gratis', async () => {
+    const cache = new JsonCache(mkdtempSync(path.join(tmpdir(), 'taalstof-')));
+    const { client } = fakeClient();
+    await maak(client, { cache }).generate(track, lyrics);
+    const gezien: Kosten[] = [];
+    await maak(client, { cache }).generate(track, lyrics, { onKosten: (k) => gezien.push(k) });
+    expect(gezien).toEqual([{ invoer: 0, cacheLezen: 0, cacheSchrijven: 0, uitvoer: 0, zoekopdrachten: 0, dollar: 0, uitCache: true }]);
+    expect(bedrag(gezien[0])).toBe('uit de cache, gratis');
+  });
+
+  it('noemt tokens in plaats van dollars bij een model zonder bekende prijs', () => {
+    const k = telOp(leegKosten(), { input_tokens: 12000, output_tokens: 3000 }, 'claude-onbekend');
+    expect(k.dollar).toBeNull();
+    expect(bedrag(k)).toBe('12k tokens in, 3k uit');
+  });
+
   it('geeft op na de herkansing en zegt waarom', async () => {
     const { client, stream } = fakeClient({ text: 'Hier is je les:' });
     await expect(maak(client).generate(track, lyrics)).rejects.toThrow('geen bruikbare les terug: Het model gaf geen JSON terug.');
@@ -208,13 +248,19 @@ describe('ClaudeLessonGenerator', () => {
 
 describe('prompt en schema', () => {
   it('bevat de stijlregels', () => {
-    for (const s of ['misschien', 'wellicht', 'gedachtestreepjes', 'niet X maar Y', 'onzeker', 'Tweede Klankverschuiving']) {
+    for (const s of ['misschien', 'wellicht', 'gedachtestreepjes', 'niet X maar Y', 'onzeker', 'Wat een Duitser erbij hoort']) {
       expect(SYSTEEMPROMPT).toContain(s);
     }
   });
 
-  it('vraagt om verhaal, gebruik en herkomst, met de veldnamen uit het schema', () => {
-    const velden = ['verhaal', 'citaat', 'woorden', 'vraag', 'duiding', 'bronnen', 'gebruik', 'noot', 'etymologie', 'herkomst', 'cultuur', 'aanleiding', 'kapstok'];
+  it('vraagt niet meer om een inleiding, een verhaal of een decodeerapparaat', () => {
+    const inSchema = JSON.stringify(LES_SCHEMA);
+    for (const weg of ['"lead"', '"verhaal"', '"decoder"', '"klankverschuivingen"']) expect(inSchema).not.toContain(weg);
+    expect(SYSTEEMPROMPT).toContain('Een inleiding of een algemene achtergrond heeft hij niet nodig.');
+  });
+
+  it('vraagt om cultuur, gebruik en herkomst, met de veldnamen uit het schema', () => {
+    const velden = ['cultuur', 'aanleiding', 'kapstok', 'woorden', 'vraag', 'duiding', 'bronnen', 'gebruik', 'noot', 'etymologie', 'herkomst'];
     const inSchema = JSON.stringify(LES_SCHEMA);
     for (const v of velden) {
       expect(SYSTEEMPROMPT).toContain(`"${v}"`);
@@ -280,8 +326,8 @@ describe('validateLes', () => {
 });
 
 describe('config', () => {
-  it('denkt standaard grondig na en keurt een onbekend niveau af', () => {
-    expect(loadConfig({}).anthropicEffort).toBe('high');
+  it('denkt standaard gemiddeld na en keurt een onbekend niveau af', () => {
+    expect(loadConfig({}).anthropicEffort).toBe('medium');
     expect(loadConfig({ ANTHROPIC_EFFORT: 'low' }).anthropicEffort).toBe('low');
     expect(() => loadConfig({ ANTHROPIC_EFFORT: 'turbo' })).toThrow(/ANTHROPIC_EFFORT/);
   });

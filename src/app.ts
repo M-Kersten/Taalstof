@@ -6,6 +6,7 @@ import { JsonCache } from './cache.js';
 import { SpotifyClient, NotLoggedInError } from './spotify/client.js';
 import { findLyrics, ManualLyricsProvider, MusixmatchProvider, type Lyrics, type LyricsProvider } from './lyrics/index.js';
 import type { LessonGenerator } from './lesson/generator.js';
+import { bedrag, type Kosten } from './lesson/kosten.js';
 import { validateLes } from './lesson/schema.js';
 import { renderLesson } from './render/renderer.js';
 import type { TrackRef } from './types.js';
@@ -29,6 +30,10 @@ export interface Job {
   tekens: number;
   /** Zoekopdrachten en geopende pagina's tijdens het onderzoek naar het lied. */
   zoekopdrachten: number;
+  /** Wat de les kost, bijgewerkt na elke aanroep, ook als de les mislukt. */
+  kosten?: Kosten;
+  /** Hetzelfde als tekst, bijvoorbeeld "ongeveer $0.84". */
+  bedrag?: string;
   gestart: number;
   partial: boolean;
   titel?: string;
@@ -126,7 +131,10 @@ export function createApp(d: Deps) {
 
   async function maakLes(job: Job, track: TrackRef, lyrics: Lyrics): Promise<void> {
     try {
-      const les = await d.generator.generate(track, lyrics, { onProgress: (v) => Object.assign(job, { tekens: v.tekens, zoekopdrachten: v.zoekopdrachten }) });
+      const les = await d.generator.generate(track, lyrics, {
+        onProgress: (v) => Object.assign(job, { tekens: v.tekens, zoekopdrachten: v.zoekopdrachten }),
+        onKosten: (k) => Object.assign(job, { kosten: k, bedrag: bedrag(k) }),
+      });
       const html = renderLesson(les, {
         id: job.id,
         track,
@@ -135,6 +143,7 @@ export function createApp(d: Deps) {
         copyright: lyrics.copyright,
         model: d.config.anthropicModel,
         generatedAt: new Date().toISOString(),
+        bedrag: job.bedrag,
       });
       await mkdir(d.config.lessonsDir, { recursive: true });
       await writeFile(path.join(d.config.lessonsDir, `${job.id}.html`), html, 'utf8');
