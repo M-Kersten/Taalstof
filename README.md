@@ -1,6 +1,6 @@
 # Taalstof
 
-Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, Taalstof haalt de tekst op bij Musixmatch en Claude bouwt er een les van. Een woordenlijst vind je overal. Een les van Taalstof legt uit waarom een woord er zo staat en hoe dat zo gekomen is, en hangt het op aan de wereld achter het lied.
+Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, plakt de songtekst erbij en Claude bouwt er een les van. Een woordenlijst vind je overal. Een les van Taalstof legt uit waarom een woord er zo staat en hoe dat zo gekomen is, en hangt het op aan de wereld achter het lied.
 
 Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0.0.1`. Elke les is een los HTML-bestand in `lessons/`, dat je ook zonder de server kunt openen.
 
@@ -23,7 +23,7 @@ Herkomst en achtergrond komen uit het geheugen van het model. Het is gevraagd om
 
 ## Wat je nodig hebt
 
-Node.js 20 of nieuwer, plus drie sleutels. Kopieer eerst het voorbeeld:
+Node.js 20 of nieuwer, plus twee sleutels: Spotify en Anthropic. Kopieer eerst het voorbeeld:
 
 ```sh
 cp .env.example .env
@@ -43,13 +43,15 @@ Een app in development mode werkt alleen voor accounts die je onder **User Manag
 
 Spotify levert zelf geen songteksten. Taalstof gebruikt de officiële Web API alleen voor je playlists, recent gespeelde nummers, zoeken en de link om het nummer te openen. In de les staat de officiële Spotify-speler boven de tekst, zodat je kunt meeluisteren.
 
-### Musixmatch-sleutel
+### Musixmatch-sleutel (optioneel)
+
+Niet nodig: je plakt de tekst zelf. Wil je dat Taalstof een tekst voor je zoekt, dan kan het via Musixmatch.
 
 1. Maak een account op [developer.musixmatch.com](https://developer.musixmatch.com).
 2. Kies het gratis plan en maak een applicatie aan.
 3. Zet de API-sleutel in `MUSIXMATCH_API_KEY`.
 
-Met de gratis sleutel geeft Musixmatch ongeveer 30 procent van de tekst. Taalstof ziet dat en zegt het erbij. Voor een volledige les plak je de tekst zelf in het veld **Tekst zelf plakken**.
+Met de gratis sleutel geeft Musixmatch ongeveer 30 procent van de tekst. Taalstof ziet dat en zegt het erbij. Zonder sleutel laat Taalstof Musixmatch helemaal links liggen.
 
 ### Anthropic-sleutel
 
@@ -71,7 +73,7 @@ npm run dev        # ontwikkelen, herstart bij wijzigingen
 npm run build && npm start
 ```
 
-Open `http://127.0.0.1:8787`, klik op **Inloggen bij Spotify**, kies een nummer en druk op **Maak les**. Is de les klaar, dan verschijnt de knop **Open de les**.
+Open `http://127.0.0.1:8787`, klik op **Inloggen bij Spotify**, kies een nummer, plak de songtekst in het veld en druk op **Maak les**. Is de les klaar, dan verschijnt de knop **Open de les**.
 
 Overige commando's:
 
@@ -85,7 +87,7 @@ npm run build      # TypeScript naar dist/
 | Map | Inhoud |
 | --- | --- |
 | `src/spotify/` | Spotify Web API met Authorization Code + PKCE |
-| `src/lyrics/` | `LyricsProvider`-interface, Musixmatch en handmatig plakken |
+| `src/lyrics/` | `LyricsProvider`-interface, handmatig plakken en optioneel Musixmatch |
 | `src/lesson/` | Lesschema, Nederlandse prompt en de aanroep naar Claude |
 | `src/render/` | Zet een les om naar één zelfstandig HTML-bestand |
 | `templates/` | CSS en script van de les, overgenomen uit de eerste handgemaakte les |

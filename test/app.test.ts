@@ -4,7 +4,7 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { createApp, slug, type Deps, type Job } from '../src/app.js';
+import { createApp, defaultDeps, slug, type Deps, type Job } from '../src/app.js';
 import { JsonCache } from '../src/cache.js';
 import { loadConfig } from '../src/config.js';
 import { SpotifyClient } from '../src/spotify/client.js';
@@ -138,6 +138,13 @@ describe('de rest van de app', () => {
       model: 'claude-opus-5-5',
       effort: 'high',
     });
+  });
+
+  it('gebruikt Musixmatch alleen met een sleutel', () => {
+    const zonder = defaultDeps({ ...loadConfig({}), musixmatchApiKey: '' }, { generate: async () => les });
+    expect(zonder.lyricsProviders.map((p) => p.id)).toEqual(['handmatig']);
+    const met = defaultDeps({ ...loadConfig({}), musixmatchApiKey: 'k' }, { generate: async () => les });
+    expect(met.lyricsProviders.map((p) => p.id)).toEqual(['musixmatch', 'handmatig']);
   });
 
   it('maakt een bestandsnaam zonder vreemde tekens', () => {

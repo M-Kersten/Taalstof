@@ -146,7 +146,7 @@ export function createApp(d: Deps) {
     wrap(async (req, res) => {
       const track = trackFromBody(req.body);
       const lyrics = await lyricsFor(track, req.body?.lyricsText);
-      if (!lyrics) return res.status(404).json({ error: 'Geen songtekst gevonden. Plak de tekst handmatig.' });
+      if (!lyrics) return res.status(404).json({ error: 'Geen songtekst. Plak de tekst in het veld.' });
       const id = `${slug(`${track.artist}-${track.title}`)}-${JsonCache.key(lyrics.text).slice(0, 6)}`;
       // Dezelfde les twee keer aanvragen mag geen tweede, betaalde aanroep starten.
       const lopend = jobs.get(id);
@@ -218,7 +218,8 @@ export function defaultDeps(config: Config, generator: LessonGenerator): Deps {
     config,
     cache,
     spotify: new SpotifyClient(config.spotifyClientId, config.redirectUri, path.join(config.dataDir, 'spotify-token.json')),
-    lyricsProviders: [new MusixmatchProvider(config.musixmatchApiKey), new ManualLyricsProvider()],
+    // Zonder sleutel plak je de tekst zelf; Musixmatch is een optie.
+    lyricsProviders: [...(config.musixmatchApiKey ? [new MusixmatchProvider(config.musixmatchApiKey)] : []), new ManualLyricsProvider()],
     generator,
   };
 }

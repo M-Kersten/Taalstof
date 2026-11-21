@@ -16,7 +16,6 @@ app.listen(config.port, '127.0.0.1', () => {
   console.log(`Taalstof draait op http://127.0.0.1:${config.port}`);
   const mist = [
     !config.spotifyClientId && 'SPOTIFY_CLIENT_ID',
-    !config.musixmatchApiKey && 'MUSIXMATCH_API_KEY',
     !config.anthropicApiKey && 'ANTHROPIC_API_KEY',
   ].filter(Boolean);
   if (mist.length) console.log(`Let op, nog niet ingesteld in .env: ${mist.join(', ')}`);

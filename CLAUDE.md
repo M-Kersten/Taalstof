@@ -20,7 +20,7 @@ Woordjes zijn het begin. Een les legt daarbovenop uit wat een woordenlijst niet 
 ## Architectuur
 - `src/app.ts` Express-routes; `src/server.ts` start op 127.0.0.1. Een les maken is een achtergrondtaak: `POST /api/lesson` geeft meteen een `Job` terug en de pagina vraagt `GET /api/jobs/:id` tot hij klaar is. Twee keer dezelfde les vragen start geen tweede aanroep.
 - `src/spotify/client.ts` officiële Web API met PKCE. Alleen metadata. Geen onofficiële lyrics-endpoints gebruiken. De les bedt de officiële speler in.
-- `src/lyrics/` `LyricsProvider`-interface. Nieuwe bron = nieuwe klasse + toevoegen in `defaultDeps`. Gratis Musixmatch geeft een deel van de tekst (`partial: true`).
+- `src/lyrics/` `LyricsProvider`-interface. Nieuwe bron = nieuwe klasse + toevoegen in `defaultDeps`. Merijn plakt de tekst zelf; dat is de hoofdroute. Musixmatch doet alleen mee met een sleutel en geeft gratis een deel van de tekst (`partial: true`).
 - `src/lesson/schema.ts` type `Les` en `LES_SCHEMA` (structured outputs: elk object `additionalProperties: false`, alle velden required). Houd type en schema gelijk. `validateLes` gooit alleen als een onderdeel ontbreekt; een woord met een onbekende sleutel of een kapotte toetsvraag ruimt het op.
 - `src/lesson/prompt.ts` Nederlandse systeemprompt met stijlregels. Verhoog `PROMPT_VERSIE` bij elke inhoudelijke wijziging, anders blijft de cache oude lessen geven.
 - `src/lesson/generator.ts` roept `client.beta.messages.stream` aan met het schema en `effort` in `output_config`, en met `fallbacks: 'default'` voor een geweigerde tekst. Kijk eerst naar `stop_reason`, dan pas naar de inhoud. Voortgang gaat via `onProgress`.

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var $ = function (s) { return document.querySelector(s); };
-  var gekozen = null, bezig = false;
+  var gekozen = null, bezig = false, metMusixmatch = false;
 
   function el(tag, txt) { var e = document.createElement(tag); if (txt != null) e.textContent = txt; return e; }
 
@@ -24,7 +24,8 @@
     var m = $('#status'); m.textContent = '';
     function stip(label, ok) { var e = el('span', (ok ? '✓ ' : '✗ ') + label); e.className = ok ? 'ok' : 'fout'; m.appendChild(e); }
     stip('Spotify-app', s.keys.spotify);
-    stip('Musixmatch', s.keys.musixmatch);
+    metMusixmatch = s.keys.musixmatch;
+    if (metMusixmatch) stip('Musixmatch', true);
     stip('Anthropic', s.keys.anthropic);
     m.appendChild(el('span', 'model ' + s.model + ', effort ' + s.effort));
     if (s.keys.spotify && !s.spotify) { var a = el('a', 'Inloggen bij Spotify'); a.href = '/login'; m.appendChild(a); }
@@ -61,6 +62,8 @@
     $('#g-artiest').textContent = t.artist;
     var sp = $('#g-spotify'); sp.hidden = !t.spotifyUrl; if (t.spotifyUrl) sp.href = t.spotifyUrl;
     $('#plak').value = ''; if (!bezig) melding('');
+    $('#gekozen').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!metMusixmatch) { $('#g-lyrics').textContent = 'Plak de songtekst hieronder.'; $('#plak').focus({ preventScroll: true }); return; }
     $('#g-lyrics').textContent = 'Songtekst zoeken…';
     try {
       var l = await api('/api/lyrics', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ track: t }) });
@@ -69,7 +72,6 @@
         ? 'Musixmatch gaf een deel van de tekst (' + l.text.split('\n').length + ' regels). Plak de hele tekst voor een volledige les.'
         : 'Tekst gevonden (' + l.text.split('\n').length + ' regels).';
     } catch (e) { $('#g-lyrics').textContent = 'Tekst ophalen mislukt: ' + e.message + '. Je kunt de tekst ook plakken.'; }
-    $('#gekozen').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function duur(ms) {
@@ -94,6 +96,7 @@
 
   $('#maak').addEventListener('click', async function () {
     if (!gekozen || bezig) return;
+    if (!metMusixmatch && !$('#plak').value.trim()) { melding('Plak eerst de songtekst.'); $('#plak').focus(); return; }
     var b = $('#maak'), titel = gekozen.title;
     bezig = true; b.disabled = true;
     melding('Les aanvragen…');
