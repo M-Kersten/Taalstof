@@ -1,6 +1,6 @@
 # Taalstof
 
-Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, plakt de songtekst erbij en Claude bouwt er een les van. Een woordenlijst vind je overal. Een les van Taalstof legt uit waarom een woord er zo staat en hoe dat zo gekomen is, en hangt het op aan de wereld achter het lied.
+Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, plakt de songtekst erbij en Claude bouwt er een les van. Het doel is Duits leren. Het middel is het verhaal van het lied: Claude zoekt uit wie het schreef en waarom de tekst is zoals hij is, en vertelt dat als een verhaal waar de Duitse woorden aan vastzitten. Een woord dat aan een verhaal hangt, onthoud je.
 
 Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0.0.1`. Elke les is een los HTML-bestand in `lessons/`, dat je ook zonder de server kunt openen.
 
@@ -8,18 +8,20 @@ Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0
 
 | Onderdeel | Wat je krijgt |
 | --- | --- |
-| Achtergrond | Het lied en zijn maker, en de tijd of plek waar het uit komt |
-| De tekst | Elke regel klikbaar. Per woord de betekenis en de familie, met daaronder waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt, zoals woordvolgorde of een uitdrukking. Komt het nummer van Spotify, dan staat de speler erboven |
+| Het verhaal | Hoe het lied ontstond en waarom de tekst zo is, in korte hoofdstukken. Elk hoofdstuk hangt aan woorden uit het lied, die je aantikt voor hun betekenis. Soms raad je eerst voor je verder leest, en een citaat brengt je naar de regel in het lied |
+| De tekst | Elke regel klikbaar. Per woord de betekenis en de familie, met daaronder waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt, zoals woordvolgorde of een uitdrukking. Per strofe vertelt **Waarom deze strofe** wat erin gebeurt. Komt het nummer van Spotify, dan staat de speler erboven |
+| Meezingen | De tekst met gaten. Zet het lied op en vul in wat je hoort |
 | Cultuur | Wat een Duitser bij de tekst weet of voelt. Elk stuk eindigt met een kapstok die het vastknoopt aan een woord of regel uit de les |
 | Decodeerapparaat | De klankschuiven uit het lied, en Nederlandse woorden die je er zelf mee omzet |
 | Woordverhalen | De herkomst van de mooiste woorden |
 | Grammatica | Wat het lied nodig heeft, met erbij hoe het zo gekomen is |
 | Valse vrienden | Woorden die op Nederlands lijken en iets anders betekenen |
-| Flashcards en zelftoets | Oefenen, met het verhaal op de achterkant |
+| Flashcards en zelftoets | Oefenen, met het verhaal op de achterkant. Bij de toets staat wat je na de les moet kunnen |
+| Bron | De pagina's waar het verhaal op steunt |
 
 Eerst zien hoe dat eruitziet? Start de app en open `http://127.0.0.1:8787/voorbeeld`. Die voorbeeldles over *Die Gedanken sind frei* werkt zonder sleutels.
 
-Herkomst en achtergrond komen uit het geheugen van het model. Het is gevraagd om alleen stellig te zijn waar iets vaststaat en de rest het label onzeker te geven. Bij een onbekend lied is de achtergrond dunner.
+Voor het verhaal doorzoekt Claude het web: interviews, kranten, Wikipedia, de site van de artiest. Onder **Bron** staan alleen pagina's die het tijdens het maken echt gezien heeft. Een adres dat het uit zijn geheugen noemt, laat Taalstof weg. De herkomst van losse woorden komt wel uit het geheugen van het model; wat niet vaststaat, krijgt het label onzeker. Bij een onbekend lied is het verhaal korter.
 
 ## Wat je nodig hebt
 
@@ -58,7 +60,8 @@ Met de gratis sleutel geeft Musixmatch ongeveer 30 procent van de tekst. Taalsto
 1. Log in op de [Claude Console](https://console.anthropic.com).
 2. Maak onder **API Keys** een sleutel aan en zet hem in `ANTHROPIC_API_KEY`.
 3. `ANTHROPIC_MODEL` staat standaard op `claude-opus-5-5`. Voor goedkopere lessen kun je `claude-sonnet-5-5` proberen.
-4. `ANTHROPIC_EFFORT` bepaalt hoe diep het model nadenkt voor het schrijft. Standaard `high`. Met `medium` of `low` gaat het sneller en goedkoper, met meer kans op slordigheden in de herkomst.
+4. `ONDERZOEK` staat standaard op `aan`: Claude zoekt op het web naar de artiest en het lied. Zoeken moet aanstaan voor je organisatie in de Claude Console. Elke zoekopdracht kost een cent, en de gelezen pagina's tellen mee als invoer. Met `ONDERZOEK=uit` vertelt Claude alleen wat het zeker weet.
+5. `ANTHROPIC_EFFORT` bepaalt hoe diep het model nadenkt voor het schrijft. Standaard `high`. Met `medium` of `low` gaat het sneller en goedkoper, met meer kans op slordigheden in de herkomst.
 
 Eén les is een flinke hoeveelheid uitvoer en duurt een paar minuten. De server maakt hem op de achtergrond en de pagina laat zien hoe ver hij is. Taalstof bewaart elke les in `data/`, zodat hetzelfde lied met dezelfde tekst en dezelfde instellingen je maar één keer geld kost.
 

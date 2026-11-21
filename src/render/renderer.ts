@@ -98,6 +98,26 @@ function lexEntry(w: Woord) {
   return { w: w.woord, nl: w.betekenis, fam: familie(w), chips, geb: w.gebruik, ety: w.etymologie };
 }
 
+/** Vergelijkt regels zonder te letten op hoofdletters, leestekens en spaties. */
+export function normRegel(s: string): string {
+  return s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+}
+
+/** Het id van de regel die een citaat uit het verhaal aanhaalt, of leeg. */
+export function vindRegel(strofen: Les['strofen'], citaat: string): string {
+  const c = normRegel(citaat);
+  if (!c) return '';
+  for (const heel of [true, false]) {
+    for (const [n, st] of strofen.entries()) {
+      for (const [i, r] of st.regels.entries()) {
+        const d = normRegel(r.de);
+        if (heel ? d === c : d.includes(c) || (c.length > 12 && c.includes(d) && d.length > 6)) return `r-${n}-${i}`;
+      }
+    }
+  }
+  return '';
+}
+
 function liedHtml(les: Les): string {
   const strofen = vulHerhalingen(les.strofen);
   const eerste = strofen[0]?.regels.find((r) => r.woorden.length)?.woorden[0]?.sleutel;
@@ -110,14 +130,15 @@ function liedHtml(les: Les): string {
     const start = n === 0 && eerste ? ` data-start="${esc(eerste)}"` : '';
     uit.push(`  <div class="strofe"${start}>`);
     uit.push(
-      `    <div class="strofe-kop"><span>${esc(s.naam || `Strofe ${n + 1}`)}</span><button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></div>`,
+      `    <div class="strofe-kop"><span>${esc(s.naam || `Strofe ${n + 1}`)}</span><span class="knoppen">${s.duiding ? '<button class="btn klein duid" type="button" aria-pressed="false">Waarom deze strofe</button>' : ''}<button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></span></div>`,
     );
-    for (const r of s.regels) {
+    if (s.duiding) uit.push(`    <p class="duiding" hidden>${esc(s.duiding)}</p>`);
+    for (const [i, r] of s.regels.entries()) {
       const noot = r.noot
         ? ` <button class="rn" type="button" lang="nl" aria-pressed="false" data-noot="${esc(r.noot)}">waarom?</button>`
         : '';
       uit.push(
-        `    <p class="regel"><span class="de" lang="de">${regelHtml(r)}${noot}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
+        `    <p class="regel" id="r-${n}-${i}"><span class="de" lang="de">${regelHtml(r)}${noot}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
       );
     }
     uit.push('    <div class="uitleg" aria-live="polite"><p class="leeg">Tik op een woord voor uitleg.</p></div>');
@@ -127,10 +148,95 @@ function liedHtml(les: Les): string {
   return uit.join('\n');
 }
 
+/** Het verhaal van het lied, met per hoofdstuk de woorden die eraan hangen en soms een vraag. */
+function verhaalHtml(les: Les): string {
+  const lex = new Map(les.woordenlijst.map((w) => [w.sleutel, w]));
+  const uit: string[] = [];
+  if (les.verhaal.zekerheid === 'onzeker') uit.push(`  ${ONZEKER}`);
+  les.verhaal.hoofdstukken.forEach((h, n) => {
+    uit.push(`  <article class="hoofdstuk">`, `    <h3><span class="hnr">${n + 1}</span>${esc(h.kop)}</h3>`);
+    if (h.vraag.vraag) {
+      uit.push(
+        `    <div class="raad"><p class="lab">Raad eerst</p><p class="q">${esc(h.vraag.vraag)}</p><div class="opts">` +
+          h.vraag.opties.map((o, i) => `<button class="opt" type="button" data-ok="${i === h.vraag.goed ? 1 : 0}">${esc(o)}</button>`).join('') +
+          `</div><p class="toel" hidden aria-live="polite" data-t="${esc(h.vraag.uitleg)}"></p></div>`,
+      );
+    }
+    for (const a of h.alineas) uit.push(`    <p>${esc(a)}</p>`);
+    if (h.citaat.de) {
+      const doel = vindRegel(les.strofen, h.citaat.de);
+      uit.push(
+        `    <blockquote class="citaat"><p lang="de">${esc(h.citaat.de)}</p>${h.citaat.nl ? `<p class="nl">${esc(h.citaat.nl)}</p>` : ''}` +
+          (doel ? `<a class="naar" href="#${doel}" data-r="${doel}">Naar deze regel in het lied</a>` : '') +
+          '</blockquote>',
+      );
+    }
+    const woorden = h.woorden.map((k) => lex.get(k)).filter((w): w is Woord => !!w);
+    if (woorden.length) {
+      uit.push(
+        `    <div class="hw"><p class="lab">Woorden uit dit hoofdstuk</p><div class="hw-knoppen">` +
+          woorden.map((w) => `<button class="hwk" type="button" lang="de" data-k="${esc(w.sleutel)}" aria-pressed="false">${esc(w.woord)}</button>`).join('') +
+          `</div><p class="hw-uit" aria-live="polite"></p></div>`,
+      );
+    }
+    uit.push('  </article>');
+  });
+  return uit.join('\n');
+}
+
+/**
+ * Meezingen: de tekst met gaten op de plek van woorden uit de les. Per regel hooguit twee
+ * gaten, de langste woorden eerst. Een herhaalde regel komt maar één keer terug.
+ */
+export function meezingHtml(les: Les): string {
+  const strofen = vulHerhalingen(les.strofen);
+  const gehad = new Set<string>();
+  const blokken: string[] = [];
+  let totaal = 0;
+  strofen.forEach((s, n) => {
+    const regels: string[] = [];
+    for (const r of s.regels) {
+      const k = normRegel(r.de);
+      if (gehad.has(k)) continue;
+      gehad.add(k);
+      const kandidaten = [...new Set(r.woorden.map((w) => w.tekst))].filter((t) => /^[\p{L}]{3,}$/u.test(t));
+      const kies = new Set([...kandidaten].sort((a, b) => b.length - a.length).slice(0, 2));
+      let html = '';
+      let pos = 0;
+      for (const t of kandidaten) {
+        if (!kies.has(t)) continue;
+        const i = vindWoord(r.de, t, pos);
+        if (i === -1) continue;
+        html += esc(r.de.slice(pos, i));
+        html += `<input class="gat" type="text" data-a="${esc(t)}" size="${Math.max(4, t.length + 1)}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="de" aria-label="Ontbrekend woord">`;
+        totaal++;
+        pos = i + t.length;
+      }
+      if (!pos) continue;
+      html += esc(r.de.slice(pos));
+      regels.push(`      <p class="mz-regel"><span class="de" lang="de">${html}</span><span class="nl">${esc(r.nl)}</span></p>`);
+    }
+    if (!regels.length) return;
+    blokken.push(
+      `  <div class="app mz" data-n="${n}">\n    <p class="lab">${esc(s.naam || `Strofe ${n + 1}`)}</p>\n${regels.join('\n')}\n` +
+        '    <div class="k-balk"><button class="btn pri mz-check" type="button">Controleer</button><button class="btn mz-toon" type="button">Toon antwoorden</button><button class="btn klein mz-nl" type="button" aria-pressed="true">Vertaling</button><p class="k-voortgang mz-score" aria-live="polite"></p></div>\n  </div>',
+    );
+  });
+  if (!totaal) return '';
+  return blokken.join('\n');
+}
+
 /** De officiële Spotify-speler, zodat het lied naast de tekst klinkt. */
 function spelerHtml(t: TrackRef): string {
   if (!t.spotifyId || !/^[A-Za-z0-9]+$/.test(t.spotifyId)) return '';
   return `  <iframe class="speler" title="Speel ${esc(t.title)} af in Spotify" src="https://open.spotify.com/embed/track/${t.spotifyId}" height="80" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>\n`;
+}
+
+function bronnenHtml(les: Les): string {
+  if (!les.bronnen.length) return '  <p>Het verhaal steunt niet op bronnen die het model tijdens het maken van de les gelezen heeft. Lees het als een verhaal uit het geheugen.</p>\n';
+  return `  <h3>Waar het verhaal op steunt</h3>\n  <ul class="bronnen">${les.bronnen
+    .map((b) => `<li><a href="${esc(b.url)}" rel="noopener noreferrer" target="_blank">${esc(b.titel || b.url)}</a></li>`)
+    .join('')}</ul>\n`;
 }
 
 const ONZEKER = '<p class="zeker">Niet alles hiervan staat vast</p>';
@@ -169,12 +275,12 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
   const aantalDec = les.decoder.reduce((n, g) => n + g.woorden.length, 0);
   const eersteDec = les.decoder[0]?.woorden[0];
 
-  const alineas = les.achtergrond.alineas.filter((a) => a.trim());
+  const meezingen = meezingHtml(les);
   const nav = (
     [
-      ['doelen', 'Leerdoelen'],
-      alineas.length && ['achtergrond', 'Achtergrond'],
+      les.verhaal.hoofdstukken.length && ['verhaal', 'Het verhaal'],
       ['tekst', 'De tekst'],
+      meezingen && ['meezingen', 'Meezingen'],
       les.cultuur.length && ['cultuur', 'Cultuur'],
       ['klank', 'Decodeerapparaat'],
       ['verhalen', 'Woordverhalen'],
@@ -183,22 +289,12 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       ['kaarten', 'Flashcards'],
       ['toets', 'Zelftoets'],
       ['bron', 'Bron'],
-    ] as (false | 0 | [string, string])[]
+    ] as (false | 0 | '' | [string, string])[]
   ).filter((n): n is [string, string] => !!n);
 
   const secties: string[] = [];
-  secties.push(
-    sectie('doelen', 'Deze les', 'Wat je aan het eind kunt', `  <ul>\n${les.leerdoelen.map((d) => `    <li>${esc(d)}</li>`).join('\n')}\n  </ul>`),
-  );
-  if (alineas.length) {
-    secties.push(
-      sectie(
-        'achtergrond',
-        'Achtergrond',
-        'Waar dit lied vandaan komt',
-        `${les.achtergrond.zekerheid === 'onzeker' ? `  ${ONZEKER}\n` : ''}${alineas.map((a) => `  <p>${esc(a)}</p>`).join('\n')}`,
-      ),
-    );
+  if (les.verhaal.hoofdstukken.length) {
+    secties.push(sectie('verhaal', 'Het verhaal', `Achter ${les.lied.titel}`, verhaalHtml(les)));
   }
   const partialNoot = meta.partial
     ? '  <div class="box let"><h4>Onvolledige tekst</h4><p>De bron gaf maar een deel van de songtekst. Plak de hele tekst handmatig voor een volledige les.</p></div>\n'
@@ -212,6 +308,16 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       `${partialNoot}  <p>Tik op een onderstreept woord. Naast de betekenis zie je waarom het hier zo staat en waar het vandaan komt.${heeftNoten ? ' Achter sommige regels staat <i>waarom?</i> voor wat aan de hele regel hangt.' : ''}</p>\n${spelerHtml(meta.track)}${liedHtml(les)}`,
     ),
   );
+  if (meezingen) {
+    secties.push(
+      sectie(
+        'meezingen',
+        'Meezingen',
+        'Vul de gaten',
+        `  <p>Zet het lied op en vul in wat je hoort. Hoofdletters en umlauts mogen anders, ae voor ä is ook goed.</p>\n${meezingen}`,
+      ),
+    );
+  }
   if (les.cultuur.length) {
     secties.push(
       sectie(
@@ -324,7 +430,7 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       'toets',
       'Zelftoets',
       `${les.toets.length} vragen`,
-      `  <p>Kies per vraag één antwoord. Je ziet meteen of het klopt en waarom.</p>\n${toetsHtml(les)}\n  <div class="score">\n    <p id="toets-score">0 van ${les.toets.length} beantwoord</p>\n    <button class="btn klein" type="button" id="toets-reset">Wis antwoorden</button>\n  </div>`,
+      `${les.leerdoelen.length ? `  <div class="box oef"><h4>Kun je dit nu?</h4><ul>${les.leerdoelen.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>\n` : ''}  <p>Kies per vraag één antwoord. Je ziet meteen of het klopt en waarom.</p>\n${toetsHtml(les)}\n  <div class="score">\n    <p id="toets-score">0 van ${les.toets.length} beantwoord</p>\n    <button class="btn klein" type="button" id="toets-reset">Wis antwoorden</button>\n  </div>`,
     ),
   );
   const spotify = meta.track.spotifyUrl ? `<a href="${esc(meta.track.spotifyUrl)}">Open in Spotify</a>. ` : '';
@@ -336,7 +442,7 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       'bron',
       'Bron',
       'Over deze les',
-      `${bron}\n  <p>Herkomst en achtergrond komen uit het geheugen van een taalmodel. Wat het label onzeker draagt, staat niet vast.</p>`,
+      `${bron}\n${bronnenHtml(les)}  <p>Wat het label onzeker draagt, staat niet vast. Herkomst van woorden komt uit het geheugen van een taalmodel.</p>`,
     ),
   );
 

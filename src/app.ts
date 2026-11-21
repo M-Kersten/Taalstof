@@ -27,6 +27,8 @@ export interface Job {
   status: 'bezig' | 'klaar' | 'mislukt';
   /** Tekens van de les die al geschreven zijn. Blijft 0 zolang het model nadenkt. */
   tekens: number;
+  /** Zoekopdrachten en geopende pagina's tijdens het onderzoek naar het lied. */
+  zoekopdrachten: number;
   gestart: number;
   partial: boolean;
   titel?: string;
@@ -80,6 +82,7 @@ export function createApp(d: Deps) {
         },
         model: d.config.anthropicModel,
         effort: d.config.anthropicEffort,
+        onderzoek: d.config.onderzoek,
         redirectUri: d.config.redirectUri,
       }),
     ),
@@ -123,7 +126,7 @@ export function createApp(d: Deps) {
 
   async function maakLes(job: Job, track: TrackRef, lyrics: Lyrics): Promise<void> {
     try {
-      const les = await d.generator.generate(track, lyrics, { onProgress: (v) => (job.tekens = v.tekens) });
+      const les = await d.generator.generate(track, lyrics, { onProgress: (v) => Object.assign(job, { tekens: v.tekens, zoekopdrachten: v.zoekopdrachten }) });
       const html = renderLesson(les, {
         id: job.id,
         track,
@@ -151,7 +154,7 @@ export function createApp(d: Deps) {
       // Dezelfde les twee keer aanvragen mag geen tweede, betaalde aanroep starten.
       const lopend = jobs.get(id);
       if (lopend?.status === 'bezig') return res.status(202).json(lopend);
-      const job: Job = { id, status: 'bezig', tekens: 0, gestart: Date.now(), partial: lyrics.partial };
+      const job: Job = { id, status: 'bezig', tekens: 0, zoekopdrachten: 0, gestart: Date.now(), partial: lyrics.partial };
       jobs.delete(id);
       jobs.set(id, job);
       for (const [k, j] of jobs) {

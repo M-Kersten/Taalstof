@@ -27,14 +27,41 @@ export interface Regel {
   noot: string;
 }
 
+/** Een vraag midden in het verhaal. Een lege `vraag` betekent: geen vraag bij dit hoofdstuk. */
+export interface Denkvraag {
+  vraag: string;
+  opties: string[];
+  goed: number;
+  uitleg: string;
+}
+
+export interface Hoofdstuk {
+  kop: string;
+  alineas: string[];
+  /** Een regel uit het lied waar dit hoofdstuk om draait. Lege `de` betekent: geen citaat. */
+  citaat: { de: string; nl: string };
+  /** Sleutels uit de woordenlijst die aan dit hoofdstuk hangen. Het verhaal is hun kapstok. */
+  woorden: string[];
+  vraag: Denkvraag;
+}
+
+export interface Strofe {
+  naam: string;
+  /** Wat er in deze strofe gebeurt en waarom de maker het zo schreef. */
+  duiding: string;
+  regels: Regel[];
+}
+
 export interface Les {
   titel: string;
   lead: string;
   lied: { titel: string; artiest: string };
-  /** Het lied, de maker en de tijd of plek waar het uit komt. */
-  achtergrond: { alineas: string[]; zekerheid: Zekerheid };
+  /** Het verhaal van het lied: de maker, hoe het ontstond, waarom de tekst is zoals hij is. */
+  verhaal: { hoofdstukken: Hoofdstuk[]; zekerheid: Zekerheid };
+  /** Pagina's die het model tijdens het onderzoek echt gelezen heeft. */
+  bronnen: { titel: string; url: string }[];
   leerdoelen: string[];
-  strofen: { naam: string; regels: Regel[] }[];
+  strofen: Strofe[];
   woordenlijst: Woord[];
   /** Wat een Duitser bij de tekst weet of voelt. `kapstok` knoopt het vast aan iets uit de les. */
   cultuur: { titel: string; aanleiding: string; tekst: string; kapstok: string; zekerheid: Zekerheid }[];
@@ -64,11 +91,24 @@ export const LES_SCHEMA = obj({
   titel: str,
   lead: str,
   lied: obj({ titel: str, artiest: str }),
-  achtergrond: obj({ alineas: arr(str), zekerheid }),
+  verhaal: obj({
+    hoofdstukken: arr(
+      obj({
+        kop: str,
+        alineas: arr(str),
+        citaat: obj({ de: str, nl: str }),
+        woorden: arr(str),
+        vraag: obj({ vraag: str, opties: arr(str), goed: { type: 'integer' }, uitleg: str }),
+      }),
+    ),
+    zekerheid,
+  }),
+  bronnen: arr(obj({ titel: str, url: str })),
   leerdoelen: arr(str),
   strofen: arr(
     obj({
       naam: str,
+      duiding: str,
       regels: arr(obj({ de: str, nl: str, woorden: arr(obj({ tekst: str, sleutel: str })), noot: str })),
     }),
   ),
@@ -127,6 +167,7 @@ export function schemaFouten(schema: any, waarde: unknown, pad = '$'): string[] 
 }
 
 const LIJSTEN = [
+  'bronnen',
   'leerdoelen',
   'strofen',
   'woordenlijst',
@@ -152,7 +193,7 @@ export function validateLes(x: unknown): Les {
   };
   if (!l || typeof l !== 'object') fout('geen object');
   for (const k of LIJSTEN) if (!Array.isArray(l[k])) fout(`${k} ontbreekt`);
-  if (!Array.isArray(l.achtergrond?.alineas)) fout('achtergrond ontbreekt');
+  if (!Array.isArray(l.verhaal?.hoofdstukken)) fout('verhaal ontbreekt');
   for (const s of l.strofen) if (!Array.isArray(s?.regels)) fout('strofe zonder regels');
   if (!l.strofen.some((s) => s.regels.length)) fout('geen regels in de tekst');
 
@@ -160,6 +201,10 @@ export function validateLes(x: unknown): Les {
   for (const s of l.strofen) {
     for (const r of s.regels) r.woorden = (r.woorden ?? []).filter((w) => sleutels.has(w.sleutel));
   }
-  l.toets = l.toets.filter((t) => Number.isInteger(t.goed) && t.goed >= 0 && t.goed < t.opties.length);
+  const geldig = (v: { goed: number; opties: string[] }) => Number.isInteger(v.goed) && v.goed >= 0 && v.goed < v.opties.length;
+  l.toets = l.toets.filter(geldig);
+  for (const h of l.verhaal.hoofdstukken) h.woorden = (h.woorden ?? []).filter((k) => sleutels.has(k));
+  for (const h of l.verhaal.hoofdstukken) if (h.vraag?.vraag && !geldig(h.vraag)) h.vraag = { vraag: '', opties: [], goed: 0, uitleg: '' };
+  l.bronnen = l.bronnen.filter((b) => /^https?:\/\//.test(b.url));
   return l;
 }

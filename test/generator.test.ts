@@ -19,20 +19,25 @@ interface Nep {
   stop_details?: unknown;
   /** De stukjes waarin de tekst binnenkomt. */
   stukken?: string[];
+  /** Blokken voor de tekst, zoals zoekwerk. */
+  voor?: Record<string, unknown>[];
 }
 
 function fakeClient(...antwoorden: Nep[]) {
   if (!antwoorden.length) antwoorden = [{}];
   let n = 0;
   const stream = vi.fn((_params: unknown) => {
-    const { text = fixture, stop_reason = 'end_turn', stop_details = null, stukken = [text] } = antwoorden[Math.min(n++, antwoorden.length - 1)];
+    const { text = fixture, stop_reason = 'end_turn', stop_details = null, stukken = [text], voor = [] } = antwoorden[Math.min(n++, antwoorden.length - 1)];
     const luisteraars: ((delta: string) => void)[] = [];
+    const gebeurtenissen: ((e: unknown) => void)[] = [];
     return {
-      on: (_event: 'text', l: (delta: string) => void) => luisteraars.push(l),
+      on: (event: string, l: (x: any) => void) => (event === 'text' ? luisteraars : gebeurtenissen).push(l),
       finalMessage: async () => {
+        for (const b of voor) gebeurtenissen.forEach((l) => l({ type: 'content_block_start', content_block: b }));
         for (const s of stukken) luisteraars.forEach((l) => l(s));
         // Het model denkt altijd eerst na; dat blok hoort niet bij de les.
-        return { content: [{ type: 'thinking', thinking: '' }, { type: 'text', text }], stop_reason, stop_details } as never;
+        const content = [{ type: 'thinking', thinking: '' }, ...voor, ...(text ? [{ type: 'text', text }] : [])];
+        return { content, stop_reason, stop_details } as never;
       },
     };
   });
@@ -114,6 +119,60 @@ describe('ClaudeLessonGenerator', () => {
     expect(tweede.messages[2].content).toContain('$.woordenlijst[0].gebruik: geen tekst');
   });
 
+  it('doet onderzoek op het web met de servertools van Anthropic', async () => {
+    const { client, stream } = fakeClient();
+    await maak(client).generate(track, lyrics);
+    const p = params(stream);
+    expect(p.tools.map((t: { type: string }) => t.type)).toEqual(['web_search_20260209', 'web_fetch_20260209']);
+    expect(p.tool_choice).toEqual({ type: 'auto' });
+    expect(p.messages[0].content).toContain('Je kunt het web doorzoeken');
+  });
+
+  it('zoekt niet als onderzoek uit staat, en laat de bronnen dan leeg', async () => {
+    const { client, stream } = fakeClient();
+    const les = await maak(client, { onderzoek: false }).generate(track, lyrics);
+    expect(params(stream).tools).toBeUndefined();
+    expect(params(stream).messages[0].content).toContain('niet zoeken');
+    expect(les.bronnen).toEqual([]);
+  });
+
+  it('houdt alleen bronnen die het model echt gezien heeft en telt het zoekwerk', async () => {
+    const zoek = { type: 'server_tool_use', id: 's1', name: 'web_search', input: { query: 'Das Wandern Müller' } };
+    const uitslag = {
+      type: 'web_search_tool_result',
+      tool_use_id: 's1',
+      content: [{ type: 'web_search_result', url: 'https://de.wikipedia.org/wiki/Das_Wandern/', title: 'Das Wandern', encrypted_content: 'x', page_age: null }],
+    };
+    const les = JSON.parse(fixture);
+    les.bronnen.push({ titel: 'Verzonnen', url: 'https://nergens.example/interview' });
+    const gezien: number[] = [];
+    const { client } = fakeClient({ voor: [zoek, uitslag], text: JSON.stringify(les) });
+    const uit = await maak(client).generate(track, lyrics, { onProgress: (v) => gezien.push(v.zoekopdrachten) });
+    expect(uit.bronnen).toEqual([{ titel: 'Das Wandern', url: 'https://de.wikipedia.org/wiki/Das_Wandern' }]);
+    expect(Math.max(...gezien)).toBe(1);
+  });
+
+  it('gaat door na een pauze in het onderzoek en leest alleen de tekst erna', async () => {
+    const zoek = { type: 'server_tool_use', id: 's1', name: 'web_search', input: { query: 'x' } };
+    const { client, stream } = fakeClient(
+      { voor: [zoek], text: 'Ik zoek even {verder}.', stop_reason: 'pause_turn' },
+      { voor: [{ type: 'web_search_tool_result', tool_use_id: 's1', content: [] }] },
+    );
+    const les = await maak(client).generate(track, lyrics);
+    expect(les.titel).toBe('Wandern is wandelen met bepakking');
+    expect(stream).toHaveBeenCalledTimes(2);
+    const tweede = (stream.mock.calls[1] as unknown[])[0] as Record<string, any>;
+    expect(tweede.messages.map((m: { role: string }) => m.role)).toEqual(['user', 'assistant']);
+  });
+
+  it('zoekt niet opnieuw bij de herkansing', async () => {
+    const { client, stream } = fakeClient({ text: '{"titel": 1}' }, {});
+    await maak(client).generate(track, lyrics);
+    const tweede = (stream.mock.calls[1] as unknown[])[0] as Record<string, any>;
+    expect(tweede.tool_choice).toEqual({ type: 'none' });
+    expect(tweede.messages.at(-1).content).toContain('Zoek niet opnieuw');
+  });
+
   it('geeft op na de herkansing en zegt waarom', async () => {
     const { client, stream } = fakeClient({ text: 'Hier is je les:' });
     await expect(maak(client).generate(track, lyrics)).rejects.toThrow('geen bruikbare les terug: Het model gaf geen JSON terug.');
@@ -154,8 +213,8 @@ describe('prompt en schema', () => {
     }
   });
 
-  it('vraagt om gebruik, herkomst en achtergrond, met de veldnamen uit het schema', () => {
-    const velden = ['gebruik', 'noot', 'etymologie', 'herkomst', 'achtergrond', 'cultuur', 'aanleiding', 'kapstok'];
+  it('vraagt om verhaal, gebruik en herkomst, met de veldnamen uit het schema', () => {
+    const velden = ['verhaal', 'citaat', 'woorden', 'vraag', 'duiding', 'bronnen', 'gebruik', 'noot', 'etymologie', 'herkomst', 'cultuur', 'aanleiding', 'kapstok'];
     const inSchema = JSON.stringify(LES_SCHEMA);
     for (const v of velden) {
       expect(SYSTEEMPROMPT).toContain(`"${v}"`);

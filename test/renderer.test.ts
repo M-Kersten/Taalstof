@@ -69,25 +69,76 @@ describe('renderLesson', () => {
   });
 
   it('bevat alle onderdelen van de les, in de volgorde van het menu', () => {
-    const ids = ['doelen', 'achtergrond', 'tekst', 'cultuur', 'klank', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
+    const ids = ['verhaal', 'tekst', 'meezingen', 'cultuur', 'klank', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
     expect([...html.matchAll(/<section id="([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect([...html.matchAll(/<li><a href="#([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect(html).toContain('data-start="wandern"');
     expect(html).toContain('0 van 2 gedecodeerd');
     expect(html).toContain('0 van 1 gekend');
-    expect(html.match(/class="opt"/g)).toHaveLength(4);
+    // Vier in de toets en vier bij de vraag in het verhaal.
+    expect(html.match(/class="opt"/g)).toHaveLength(8);
     expect(html).toContain('data-ok="1">zin</button>');
     expect(html).toContain('Onvolledige tekst');
     expect(html).toContain('Herkomst onzeker');
     expect(html).toContain('https://open.spotify.com/track/x');
   });
 
-  it('vertelt waar het lied vandaan komt en zegt erbij wat niet vaststaat', () => {
-    const sectie = /<section id="achtergrond">([\s\S]*?)<\/section>/.exec(html)![1];
-    expect(sectie).toContain('<p>Wilhelm Müller schreef de tekst, Schubert de bekendste melodie.</p>');
-    expect(sectie).toContain('Niet alles hiervan staat vast');
-    const zeker = renderLesson({ ...les, achtergrond: { ...les.achtergrond, zekerheid: 'zeker' } }, meta);
-    expect(/<section id="achtergrond">([\s\S]*?)<\/section>/.exec(zeker)![1]).not.toContain('staat vast');
+  const verhaal = /<section id="verhaal">([\s\S]*?)<\/section>/.exec(html)![1];
+
+  it('opent met het verhaal en zegt erbij wat niet vaststaat', () => {
+    expect(verhaal).toContain('Achter Das Wandern');
+    expect(verhaal).toContain('<h3><span class="hnr">1</span>Een molenaar op pad</h3>');
+    expect(verhaal).toContain('<p>Wilhelm Müller schreef de tekst, Schubert de bekendste melodie.</p>');
+    expect(verhaal).toContain('Niet alles hiervan staat vast');
+    const zeker = renderLesson({ ...les, verhaal: { ...les.verhaal, zekerheid: 'zeker' } }, meta);
+    expect(/<section id="verhaal">([\s\S]*?)<\/section>/.exec(zeker)![1]).not.toContain('staat vast');
+  });
+
+  it('laat je raden voor je leest, alleen waar een vraag is', () => {
+    expect(verhaal.match(/class="raad"/g)).toHaveLength(1);
+    expect(verhaal).toContain('<p class="q">Wat betekent wandern hier?</p>');
+    expect(verhaal).toContain('data-ok="1">trekken</button>');
+    expect(verhaal).toContain('data-t="Een gezel trok van werkplaats naar werkplaats."');
+  });
+
+  it('linkt een citaat naar de regel in het lied', () => {
+    expect(verhaal).toContain('<blockquote class="citaat"><p lang="de">Das Wandern ist des Müllers Lust</p>');
+    expect(verhaal).toContain('href="#r-0-0" data-r="r-0-0"');
+    expect(html).toContain('<p class="regel" id="r-0-0">');
+    expect(verhaal.match(/class="citaat"/g)).toHaveLength(1);
+  });
+
+  it('hangt woorden uit de woordenlijst aan een hoofdstuk', () => {
+    expect(verhaal).toContain('<button class="hwk" type="button" lang="de" data-k="wandern" aria-pressed="false">wandern</button>');
+    expect(verhaal).toContain('data-k="mueller"');
+    expect(verhaal).not.toContain('bestaatniet');
+    expect(verhaal.match(/class="hw"/g)).toHaveLength(1);
+  });
+
+  it('legt per strofe uit waarom hij zo is, achter een knop', () => {
+    expect(html).toContain('<button class="btn klein duid" type="button" aria-pressed="false">Waarom deze strofe</button>');
+    expect(html).toContain('<p class="duiding" hidden>De molenaar zingt over zijn lust tot trekken.</p>');
+    expect(html.match(/class="duiding"/g)).toHaveLength(1);
+  });
+
+  it('maakt van de tekst een invuloefening, zonder dubbele regels', () => {
+    const mz = /<section id="meezingen">([\s\S]*?)<\/section>/.exec(html)![1];
+    const gaten = [...mz.matchAll(/data-a="([^"]+)"/g)].map((m) => m[1]);
+    expect(gaten).toEqual(['Wandern', 'Müllers', 'Wasser']);
+    expect(mz).toContain('Das <input class="gat"');
+    expect(mz).toContain('&lt;b&gt;');
+    expect(mz.match(/class="mz-regel"/g)).toHaveLength(2);
+    expect(mz).not.toContain('nergens');
+  });
+
+  it('noemt de bronnen van het verhaal en wat het leren oplevert bij de toets', () => {
+    const bron = /<section id="bron">([\s\S]*?)<\/section>/.exec(html)![1];
+    expect(bron).toContain('<a href="https://de.wikipedia.org/wiki/Das_Wandern" rel="noopener noreferrer" target="_blank">Das Wandern</a>');
+    const zonder = renderLesson({ ...les, bronnen: [] }, meta);
+    expect(zonder).toContain('uit het geheugen');
+    const toets = /<section id="toets">([\s\S]*?)<\/section>/.exec(html)![1];
+    expect(toets).toContain('<h4>Kun je dit nu?</h4>');
+    expect(toets).toContain('<li>Je leest de tweede naamval in des Müllers.</li>');
   });
 
   it('hangt cultuur aan een plek in de tekst en aan een kapstok', () => {
@@ -105,7 +156,7 @@ describe('renderLesson', () => {
     const knoppen = html.match(/<button class="rn"[^>]*>waarom\?<\/button>/g)!;
     expect(knoppen).toHaveLength(2);
     expect(knoppen[0]).toContain('data-noot="Des Müllers Lust: de bezitter staat voorop, zoals in &#39;s lands wijs."');
-    expect(html.match(/data-k="wandern"/g)).toHaveLength(2);
+    expect(html.match(/class="w" type="button" data-k="wandern"/g)).toHaveLength(2);
     expect(html).toContain('<i>waarom?</i>');
   });
 
@@ -145,6 +196,7 @@ describe('renderLesson', () => {
     const js = readFileSync(new URL('../templates/lesson.js', import.meta.url), 'utf8');
     for (const veld of ['e.w', 'e.nl', 'e.fam', 'e.chips', 'e.geb', 'e.ety']) expect(js).toContain(veld);
     expect(js).toContain('dataset.noot');
+    for (const klasse of ["'.raad'", "'.citaat .naar'", "'.hw'", "'.mz'", "'.strofe .duid'"]) expect(js).toContain(klasse);
   });
 
   it('voorkomt dat lesdata het script-element afsluit', () => {
@@ -160,9 +212,9 @@ describe('renderLesson', () => {
     expect(renderLesson(met, meta)).toContain('<section id="vrienden">');
   });
 
-  it('laat achtergrond en cultuur weg als het model er niets over wist', () => {
-    const kaal = renderLesson({ ...les, achtergrond: { alineas: [], zekerheid: 'zeker' }, cultuur: [] }, meta);
-    expect(kaal).not.toContain('<section id="achtergrond">');
+  it('laat verhaal en cultuur weg als het model er niets over wist', () => {
+    const kaal = renderLesson({ ...les, verhaal: { hoofdstukken: [], zekerheid: 'zeker' }, cultuur: [] }, meta);
+    expect(kaal).not.toContain('<section id="verhaal">');
     expect(kaal).not.toContain('<section id="cultuur">');
     expect(kaal).not.toContain('href="#cultuur"');
   });

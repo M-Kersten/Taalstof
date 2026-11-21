@@ -18,6 +18,8 @@ export interface Config {
   anthropicApiKey: string;
   anthropicModel: string;
   anthropicEffort: Effort;
+  /** Mag het model het web doorzoeken naar de artiest en het lied? */
+  onderzoek: boolean;
   dataDir: string;
   lessonsDir: string;
   redirectUri: string;
@@ -38,6 +40,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     anthropicApiKey: env.ANTHROPIC_API_KEY ?? '',
     anthropicModel: env.ANTHROPIC_MODEL || DEFAULT_MODEL,
     anthropicEffort: effort(env.ANTHROPIC_EFFORT),
+    onderzoek: env.ONDERZOEK !== 'uit',
     dataDir: path.join(ROOT, 'data'),
     lessonsDir: path.join(ROOT, 'lessons'),
     // Spotify accepteert geen "localhost" meer als redirect; 127.0.0.1 wel.

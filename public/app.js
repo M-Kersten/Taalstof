@@ -27,7 +27,7 @@
     metMusixmatch = s.keys.musixmatch;
     if (metMusixmatch) stip('Musixmatch', true);
     stip('Anthropic', s.keys.anthropic);
-    m.appendChild(el('span', 'model ' + s.model + ', effort ' + s.effort));
+    m.appendChild(el('span', 'model ' + s.model + ', effort ' + s.effort + (s.onderzoek ? ', zoekt op het web' : '')));
     if (s.keys.spotify && !s.spotify) { var a = el('a', 'Inloggen bij Spotify'); a.href = '/login'; m.appendChild(a); }
     else if (s.spotify) stip('ingelogd', true);
   }
@@ -86,9 +86,12 @@
       if (job.status === 'klaar') { melding('Klaar: ' + job.titel + '.', { tekst: 'Open de les', url: job.url }); lessen(); return; }
       if (job.status === 'mislukt') { melding('Mislukt: ' + job.error); return; }
       var t = duur(Date.now() - job.gestart);
-      melding(job.tekens
-        ? titel + ': Claude schrijft de les. ' + job.tekens.toLocaleString('nl-NL') + ' tekens, ' + t + ' bezig.'
-        : titel + ': Claude denkt na over het lied. ' + t + ' bezig. Een nieuwe les duurt een paar minuten.');
+      var zoek = job.zoekopdrachten ? ' Al ' + job.zoekopdrachten + (job.zoekopdrachten === 1 ? ' bron' : ' bronnen') + ' bekeken.' : '';
+      melding(job.tekens > 400
+        ? titel + ': Claude schrijft de les.' + zoek + ' ' + job.tekens.toLocaleString('nl-NL') + ' tekens, ' + t + ' bezig.'
+        : job.zoekopdrachten
+          ? titel + ': Claude zoekt uit wat er achter het lied zit.' + zoek + ' ' + t + ' bezig.'
+          : titel + ': Claude denkt na over het lied. ' + t + ' bezig. Een nieuwe les duurt een paar minuten.');
       await wacht(1500);
       job = await api('/api/jobs/' + encodeURIComponent(job.id));
     }

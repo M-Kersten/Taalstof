@@ -8,6 +8,7 @@ const generator = new ClaudeLessonGenerator({
   apiKey: config.anthropicApiKey,
   model: config.anthropicModel,
   effort: config.anthropicEffort,
+  onderzoek: config.onderzoek,
   cache: new JsonCache(config.dataDir),
 });
 const app = createApp(defaultDeps(config, generator));

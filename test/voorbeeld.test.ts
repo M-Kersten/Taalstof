@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { LES_SCHEMA, validateLes, type Les } from '../src/lesson/schema.js';
-import { renderLesson, vindWoord } from '../src/render/renderer.js';
+import { renderLesson, vindRegel, vindWoord } from '../src/render/renderer.js';
 import { schemaFouten } from './helpers.js';
 
 /**
@@ -69,6 +69,21 @@ describe('voorbeeldles', () => {
     expect(aantallen.every((groep) => new Set(groep).size === 1)).toBe(true);
   });
 
+  it('vertelt een verhaal dat aan de tekst en de woorden vastzit', () => {
+    const sleutels = new Set(les.woordenlijst.map((w) => w.sleutel));
+    expect(les.verhaal.hoofdstukken.length).toBeGreaterThanOrEqual(3);
+    for (const h of les.verhaal.hoofdstukken) {
+      if (h.citaat.de) expect(vindRegel(les.strofen, h.citaat.de), h.kop).not.toBe('');
+      expect(h.woorden.length, h.kop).toBeGreaterThanOrEqual(3);
+      for (const k of h.woorden) expect(sleutels, `${h.kop}: ${k}`).toContain(k);
+      if (h.vraag.vraag) expect(h.vraag.opties).toHaveLength(4);
+    }
+    const vragen = les.verhaal.hoofdstukken.filter((h) => h.vraag.vraag);
+    expect(vragen.length).toBeGreaterThanOrEqual(2);
+    for (const s of les.strofen) expect(s.duiding, s.naam).not.toBe('');
+    for (const b of les.bronnen) expect(b.url).toMatch(/^https:\/\//);
+  });
+
   it('heeft een toets met vier opties en een antwoord dat van plek wisselt', () => {
     expect(les.toets).toHaveLength(10);
     for (const t of les.toets) expect(t.opties).toHaveLength(4);
@@ -90,7 +105,7 @@ describe('voorbeeldles', () => {
 
   it('wordt een complete les', () => {
     const html = renderLesson(les, { id: 'voorbeeld', track: { title: les.lied.titel, artist: les.lied.artiest }, lyricsSource: 'publiek domein', partial: false, model: '', generatedAt: '', voorbeeld: true });
-    for (const id of ['doelen', 'achtergrond', 'tekst', 'cultuur', 'klank', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
+    for (const id of ['verhaal', 'tekst', 'meezingen', 'cultuur', 'klank', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
       expect(html).toContain(`<section id="${id}">`);
     }
     expect(html.match(/class="w"/g)!.length).toBe(regels.reduce((n, r) => n + r.woorden.length, 0));

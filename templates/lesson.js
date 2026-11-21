@@ -81,6 +81,89 @@
     $$('.strofe').forEach(function (s) { zetVertaling(s, aan); });
   });
 
+  $$('.strofe .duid').forEach(function (knop) {
+    knop.addEventListener('click', function () {
+      var aan = knop.getAttribute('aria-pressed') !== 'true', d = $('.duiding', knop.closest('.strofe'));
+      knop.setAttribute('aria-pressed', aan ? 'true' : 'false');
+      if (d) d.hidden = !aan;
+    });
+  });
+
+  /* ---------- verhaal ---------- */
+  $$('.raad').forEach(function (v) {
+    v.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.opt');
+      if (!b || v.dataset.klaar) return;
+      var goed = b.dataset.ok === '1';
+      v.dataset.klaar = '1';
+      $$('.opt', v).forEach(function (o) { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('goed'); });
+      if (!goed) b.classList.add('fout');
+      var toel = $('.toel', v);
+      toel.textContent = (goed ? 'Goed gegokt. ' : 'Het zat anders. ') + toel.dataset.t;
+      toel.hidden = false;
+    });
+  });
+  $$('.citaat .naar').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var r = document.getElementById(a.dataset.r);
+      if (!r) return;
+      r.classList.toggle('flits', false);
+      void r.offsetWidth;
+      r.classList.add('flits');
+    });
+  });
+  $$('.hw').forEach(function (hw) {
+    hw.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.hwk');
+      if (!b) return;
+      var e = D.lex[b.dataset.k], uit = $('.hw-uit', hw);
+      $$('.hwk', hw).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      uit.textContent = '';
+      if (!e) return;
+      var w = el('b', null, e.w); w.lang = 'de';
+      uit.appendChild(w);
+      uit.appendChild(document.createTextNode(' ' + e.nl + (e.fam ? '. ' + e.fam : '')));
+    });
+  });
+
+  /* ---------- meezingen ---------- */
+  function vorm(s) {
+    return s.trim().toLowerCase().replace(/ß/g, 'ss').replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/[^a-z0-9]/g, '');
+  }
+  $$('.mz').forEach(function (box) {
+    var gaten = $$('.gat', box), score = $('.mz-score', box);
+    function controleer() {
+      var goed = 0;
+      gaten.forEach(function (g) {
+        var ok = vorm(g.value) === vorm(g.dataset.a);
+        if (ok) goed++;
+        g.classList.toggle('goed', ok);
+        g.classList.toggle('fout', !ok && g.value.trim() !== '');
+      });
+      score.textContent = goed + ' van ' + gaten.length + ' goed';
+    }
+    $('.mz-check', box).addEventListener('click', controleer);
+    $('.mz-toon', box).addEventListener('click', function () {
+      gaten.forEach(function (g) {
+        if (vorm(g.value) !== vorm(g.dataset.a)) { g.value = g.dataset.a; g.classList.toggle('fout', false); g.classList.add('getoond'); }
+      });
+      score.textContent = 'Antwoorden ingevuld. Zing nog een keer mee.';
+    });
+    var nlKnop = $('.mz-nl', box);
+    nlKnop.addEventListener('click', function () {
+      var aan = nlKnop.getAttribute('aria-pressed') !== 'true';
+      nlKnop.setAttribute('aria-pressed', aan ? 'true' : 'false');
+      $$('.mz-regel .nl', box).forEach(function (n) { n.hidden = !aan; });
+    });
+    gaten.forEach(function (g, i) {
+      g.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Enter') return;
+        ev.preventDefault();
+        if (gaten[i + 1]) gaten[i + 1].focus(); else controleer();
+      });
+    });
+  });
+
   /* ---------- decoder ---------- */
   var woorden = [];
   D.decoder.forEach(function (g) { g.woorden.forEach(function (w) { woorden.push(w); }); });
