@@ -21,8 +21,11 @@ interface Nep {
   stukken?: string[];
 }
 
-function fakeClient({ text = fixture, stop_reason = 'end_turn', stop_details = null, stukken = [text] }: Nep = {}) {
-  const stream = vi.fn(() => {
+function fakeClient(...antwoorden: Nep[]) {
+  if (!antwoorden.length) antwoorden = [{}];
+  let n = 0;
+  const stream = vi.fn((_params: unknown) => {
+    const { text = fixture, stop_reason = 'end_turn', stop_details = null, stukken = [text] } = antwoorden[Math.min(n++, antwoorden.length - 1)];
     const luisteraars: ((delta: string) => void)[] = [];
     return {
       on: (_event: 'text', l: (delta: string) => void) => luisteraars.push(l),
@@ -45,7 +48,9 @@ describe('ClaudeLessonGenerator', () => {
     expect(les.titel).toBe('Wandern is wandelen met bepakking');
     const p = params(stream);
     expect(p.model).toBe('claude-test');
-    expect(p.output_config).toEqual({ effort: 'high', format: { type: 'json_schema', schema: LES_SCHEMA } });
+    // Het lesschema is te groot voor de strikte JSON-modus; het staat in de prompt.
+    expect(p.output_config).toEqual({ effort: 'high' });
+    expect(p.system).toContain(JSON.stringify(LES_SCHEMA));
     expect(p.system).toBe(SYSTEEMPROMPT);
     expect(p.messages[0].content).toContain('maar een deel van de tekst');
   });
@@ -86,9 +91,39 @@ describe('ClaudeLessonGenerator', () => {
     await expect(maak(client).generate(track, lyrics)).rejects.toThrow(/max_tokens/);
   });
 
-  it('zegt het gewoon als het antwoord geen JSON is', async () => {
-    const { client } = fakeClient({ text: 'Hier is je les:' });
-    await expect(maak(client).generate(track, lyrics)).rejects.toThrow('Het model gaf geen geldige JSON terug.');
+  it('haalt de les ook uit een codeblok met een zin ervoor', async () => {
+    const { client, stream } = fakeClient({ text: 'Hier is je les:\n```json\n' + fixture + '\n```' });
+    expect((await maak(client).generate(track, lyrics)).titel).toBe('Wandern is wandelen met bepakking');
+    expect(stream).toHaveBeenCalledTimes(1);
+  });
+
+  it('geeft het model één herkansing met de fouten erbij', async () => {
+    const kapot = JSON.parse(fixture);
+    delete kapot.cultuur;
+    kapot.woordenlijst[0].gebruik = 3;
+    const { client, stream } = fakeClient({ text: JSON.stringify(kapot) }, {});
+    const les = await maak(client).generate(track, lyrics);
+    expect(les.cultuur).toHaveLength(1);
+    expect(stream).toHaveBeenCalledTimes(2);
+    const tweede = (stream.mock.calls[1] as unknown[])[0] as Record<string, any>;
+    expect(tweede.messages).toHaveLength(3);
+    expect(tweede.messages[1].role).toBe('assistant');
+    // Het denkblok gaat ongewijzigd mee terug.
+    expect(tweede.messages[1].content[0].type).toBe('thinking');
+    expect(tweede.messages[2].content).toContain('$.cultuur: ontbreekt');
+    expect(tweede.messages[2].content).toContain('$.woordenlijst[0].gebruik: geen tekst');
+  });
+
+  it('geeft op na de herkansing en zegt waarom', async () => {
+    const { client, stream } = fakeClient({ text: 'Hier is je les:' });
+    await expect(maak(client).generate(track, lyrics)).rejects.toThrow('geen bruikbare les terug: Het model gaf geen JSON terug.');
+    expect(stream).toHaveBeenCalledTimes(2);
+  });
+
+  it('stoort zich niet aan een veld dat het schema niet kent', async () => {
+    const { client, stream } = fakeClient({ text: JSON.stringify({ ...JSON.parse(fixture), extra: 1 }) });
+    await maak(client).generate(track, lyrics);
+    expect(stream).toHaveBeenCalledTimes(1);
   });
 
   it('meldt een weigering met de categorie en leest de inhoud dan niet', async () => {

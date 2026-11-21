@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { LES_SCHEMA, validateLes, type Les } from './schema.js';
+import { LES_SCHEMA, schemaFouten, validateLes, type Les } from './schema.js';
 import { PROMPT_VERSIE, SYSTEEMPROMPT, gebruikersprompt } from './prompt.js';
 import type { Lyrics } from '../lyrics/provider.js';
 import type { TrackRef } from '../types.js';
@@ -69,22 +69,48 @@ export class ClaudeLessonGenerator implements LessonGenerator {
   }
 
   private async call(track: TrackRef, lyrics: Lyrics, opts: GenerateOpts): Promise<Les> {
+    const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: 'user', content: gebruikersprompt(track, lyrics) }];
+    let tekens = 0;
+    const voortgang = (delta: string) => {
+      tekens += delta.length;
+      opts.onProgress?.({ tekens });
+    };
+
+    let poging = await this.vraag(messages, voortgang);
+    let uitkomst = leesLes(poging.tekst);
+    if (!uitkomst.les) {
+      // Eén herkansing: het model krijgt zijn eigen antwoord terug met wat eraan mankeert.
+      messages.push(
+        { role: 'assistant', content: poging.content as Anthropic.Beta.BetaContentBlockParam[] },
+        {
+          role: 'user',
+          content: `Dit antwoord klopt niet met het JSON-schema:\n${uitkomst.fouten.slice(0, 30).join('\n')}\nGeef het hele JSON-object opnieuw, verbeterd, zonder tekst ervoor of erna.`,
+        },
+      );
+      tekens = 0;
+      poging = await this.vraag(messages, voortgang);
+      uitkomst = leesLes(poging.tekst);
+    }
+    if (!uitkomst.les) throw new Error(`Het model gaf geen bruikbare les terug: ${uitkomst.fouten.slice(0, 3).join('; ')}`);
+    return uitkomst.les;
+  }
+
+  /** Eén aanroep. Gooit bij een weigering of een afgebroken antwoord. */
+  private async vraag(messages: Anthropic.Beta.BetaMessageParam[], onText: (delta: string) => void) {
     const stream = this.client.beta.messages.stream({
       model: this.model,
       max_tokens: MAX_TOKENS,
       thinking: { type: 'adaptive' },
       system: SYSTEEMPROMPT,
-      messages: [{ role: 'user', content: gebruikersprompt(track, lyrics) }],
-      output_config: { effort: this.effort, format: { type: 'json_schema', schema: LES_SCHEMA } },
+      messages,
+      // Het lesschema is te groot voor de strikte JSON-modus van de API. Het schema staat in de prompt
+      // en leesLes controleert het antwoord.
+      output_config: { effort: this.effort },
       // Weigert een veiligheidsfilter de tekst, dan probeert de API het zelf op het aanbevolen vervangende model.
       betas: ['server-side-fallback-2026-07-01'],
       fallbacks: 'default',
     });
-    let tekens = 0;
-    stream.on('text', (delta) => {
-      tekens += delta.length;
-      opts.onProgress?.({ tekens });
-    });
+    stream.on('text', onText);
     const msg = await stream.finalMessage();
 
     if (msg.stop_reason === 'refusal') {
@@ -92,18 +118,34 @@ export class ClaudeLessonGenerator implements LessonGenerator {
       throw new Error(`Het model weigerde van deze tekst een les te maken${cat ? ` (categorie ${cat})` : ''}.`);
     }
     if (msg.stop_reason === 'max_tokens') throw new Error('De les werd te lang en is afgebroken (max_tokens).');
-    const text = msg.content
+    const tekst = msg.content
       .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === 'text')
       .map((b) => b.text)
       .join('');
-    if (!text) throw new Error('Het model gaf geen JSON terug.');
-    let les: unknown;
-    try {
-      les = JSON.parse(text);
-    } catch {
-      throw new Error('Het model gaf geen geldige JSON terug.');
-    }
-    return validateLes(les);
+    return { tekst, content: msg.content };
+  }
+}
+
+/**
+ * Haalt de les uit de tekst van het model. Een codeblok of een zin eromheen mag.
+ * Velden die het schema niet kent, zijn geen bezwaar; ontbrekende of verkeerde wel.
+ */
+export function leesLes(tekst: string): { les?: Les; fouten: string[] } {
+  const begin = tekst.indexOf('{');
+  const eind = tekst.lastIndexOf('}');
+  if (begin === -1 || eind < begin) return { fouten: ['Het model gaf geen JSON terug.'] };
+  let ruw: unknown;
+  try {
+    ruw = JSON.parse(tekst.slice(begin, eind + 1));
+  } catch (e) {
+    return { fouten: [`Het model gaf geen geldige JSON terug (${e instanceof Error ? e.message : e}).`] };
+  }
+  const fouten = schemaFouten(LES_SCHEMA, ruw).filter((f) => !f.endsWith('onbekend veld'));
+  if (fouten.length) return { fouten };
+  try {
+    return { les: validateLes(ruw), fouten: [] };
+  } catch (e) {
+    return { fouten: [e instanceof Error ? e.message : String(e)] };
   }
 }
 
