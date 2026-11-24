@@ -238,6 +238,37 @@ export function meezingHtml(les: Les): string {
   return blokken.join('\n');
 }
 
+/** Woordparen voor het koppelspel: de Duitse woordenboekvorm en de betekenis. */
+export function paren(les: Les): { de: string; nl: string }[] {
+  const gezien = new Set<string>();
+  return les.woordenlijst
+    .filter((w) => w.woord && w.betekenis)
+    .filter((w) => !gezien.has(w.betekenis) && !!gezien.add(w.betekenis))
+    .map((w) => ({ de: w.woord, nl: w.betekenis }));
+}
+
+/**
+ * Regels voor het bouwspel: elke regel één keer, met vier tot tien woorden.
+ * `stukken` zijn de woorden zonder leestekens eraan, in de goede volgorde.
+ */
+export function zinnen(les: Les): { nl: string; stukken: string[] }[] {
+  const gezien = new Set<string>();
+  const uit: { nl: string; stukken: string[] }[] = [];
+  for (const st of les.strofen) {
+    for (const r of st.regels) {
+      const k = normRegel(r.de);
+      if (!k || gezien.has(k)) continue;
+      gezien.add(k);
+      const stukken = r.de
+        .split(/\s+/)
+        .map((w) => w.replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, ''))
+        .filter(Boolean);
+      if (stukken.length >= 4 && stukken.length <= 10 && r.nl) uit.push({ nl: r.nl, stukken });
+    }
+  }
+  return uit;
+}
+
 /** De officiële Spotify-speler, zodat het lied naast de tekst klinkt. */
 function spelerHtml(t: TrackRef): string {
   if (!t.spotifyId || !/^[A-Za-z0-9]+$/.test(t.spotifyId)) return '';
@@ -278,7 +309,11 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
     id: meta.id,
     lex,
     kaarten: les.kaarten.map((k) => ({ v: k.voor, b: k.betekenis, fam: k.familie, regel: k.regel, txt: k.tekst })),
+    paren: paren(les),
+    zinnen: zinnen(les),
   };
+  const kanKoppelen = data.paren.length >= 4;
+  const kanBouwen = data.zinnen.length > 0;
   const blob = JSON.stringify(data).replace(/</g, '\\u003c');
 
   const meezingen = meezingHtml(les);
@@ -287,6 +322,7 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       ['tekst', 'De tekst'],
       les.cultuur.length && ['cultuur', 'Wat een Duitser hoort'],
       meezingen && ['meezingen', 'Meezingen'],
+      (kanKoppelen || kanBouwen) && ['spelen', 'Oefenen'],
       ['verhalen', 'Woordverhalen'],
       ['grammatica', 'Grammatica'],
       les.valseVrienden.length && ['vrienden', 'Valse vrienden'],
@@ -328,6 +364,29 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
         `  <p>Zet het lied op en vul in wat je hoort. Hoofdletters en umlauts mogen anders, ae voor ä is ook goed.</p>\n${meezingen}`,
       ),
     );
+  }
+  if (kanKoppelen || kanBouwen) {
+    const delen: string[] = [];
+    if (kanKoppelen) {
+      delen.push(`  <h3>Koppel de woorden</h3>
+  <p>Tik een Duits woord aan en dan wat het betekent.</p>
+  <div class="app spel" id="koppel-app">
+    <div class="koppel"><div class="kolom-de"></div><div class="kolom-nl"></div></div>
+    <div class="k-balk"><button class="btn" type="button" id="koppel-nieuw">Andere woorden</button><p class="k-voortgang" id="koppel-stand" aria-live="polite"></p></div>
+  </div>`);
+    }
+    if (kanBouwen) {
+      delen.push(`  <h3>Bouw de regel</h3>
+  <p>Zet de woorden in de goede volgorde. De Nederlandse regel staat erboven.</p>
+  <div class="app spel" id="bouw-app">
+    <p class="bouw-nl" id="bouw-nl"></p>
+    <div class="bouw-antwoord" id="bouw-antwoord" aria-label="Jouw regel"></div>
+    <div class="bouw-bank" id="bouw-bank"></div>
+    <p class="bouw-uit" id="bouw-uit" aria-live="polite"></p>
+    <div class="k-balk"><button class="btn pri" type="button" id="bouw-check">Controleer</button><button class="btn" type="button" id="bouw-volgende">Andere regel</button><p class="k-voortgang" id="bouw-stand"></p></div>
+  </div>`);
+    }
+    secties.push(sectie('spelen', 'Oefenen', 'Met de woorden spelen', delen.join('\n')));
   }
   secties.push(
     sectie(

@@ -99,7 +99,7 @@
       $$('.opt', v).forEach(function (o) { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('goed'); });
       if (!goed) b.classList.add('fout');
       var toel = $('.toel', v);
-      toel.textContent = (goed ? 'Goed gegokt. ' : 'Het zat anders. ') + toel.dataset.t;
+      toel.textContent = (goed ? 'Ja. ' : 'Nee. ') + toel.dataset.t;
       toel.hidden = false;
     });
   });
@@ -147,7 +147,7 @@
       gaten.forEach(function (g) {
         if (vorm(g.value) !== vorm(g.dataset.a)) { g.value = g.dataset.a; g.classList.toggle('fout', false); g.classList.add('getoond'); }
       });
-      score.textContent = 'Antwoorden ingevuld. Zing nog een keer mee.';
+      score.textContent = 'De antwoorden staan erin.';
     });
     var nlKnop = $('.mz-nl', box);
     nlKnop.addEventListener('click', function () {
@@ -163,6 +163,98 @@
       });
     });
   });
+
+  /* ---------- oefenen ---------- */
+  function schud(lijst) {
+    var l = lijst.slice();
+    for (var i = l.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = l[i]; l[i] = l[j]; l[j] = t; }
+    return l;
+  }
+  function knop(cls, txt, taal) {
+    var b = el('button', cls, txt);
+    b.type = 'button';
+    if (taal) b.lang = taal;
+    return b;
+  }
+
+  // Koppel de woorden: vijf paren per ronde.
+  var koppel = $('#koppel-app');
+  if (koppel && D.paren && D.paren.length >= 4) {
+    var kDe = $('.kolom-de', koppel), kNl = $('.kolom-nl', koppel), kStand = $('#koppel-stand'), kKeuze = null, kGoed = 0, kRonde = [];
+    function koppelRonde() {
+      kRonde = schud(D.paren).slice(0, 5);
+      kGoed = 0; kKeuze = null;
+      kDe.textContent = ''; kNl.textContent = '';
+      kRonde.forEach(function (p, i) { var b = knop('kp', p.de, 'de'); b.dataset.i = i; kDe.appendChild(b); });
+      schud(kRonde.map(function (p, i) { return i; })).forEach(function (i) { var b = knop('kp', kRonde[i].nl); b.dataset.i = i; kNl.appendChild(b); });
+      kStand.textContent = '0 van ' + kRonde.length;
+    }
+    kDe.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.kp');
+      if (!b || b.disabled) return;
+      $$('.kp', kDe).forEach(function (x) { x.classList.toggle('gekozen', x === b); });
+      kKeuze = b;
+    });
+    kNl.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.kp');
+      if (!b || b.disabled || !kKeuze) return;
+      if (b.dataset.i === kKeuze.dataset.i) {
+        [b, kKeuze].forEach(function (x) { x.classList.remove('gekozen'); x.classList.add('af'); x.disabled = true; });
+        kKeuze = null; kGoed++;
+        kStand.textContent = kGoed === kRonde.length ? 'Alles gekoppeld. Er zijn nog meer woorden.' : kGoed + ' van ' + kRonde.length;
+      } else {
+        var mis = [b, kKeuze];
+        mis.forEach(function (x) { x.classList.add('mis'); });
+        setTimeout(function () { mis.forEach(function (x) { x.classList.remove('mis'); }); }, 650);
+      }
+    });
+    $('#koppel-nieuw').addEventListener('click', koppelRonde);
+    koppelRonde();
+  }
+
+  // Bouw de regel: zet de woorden van een regel weer op volgorde.
+  var bouw = $('#bouw-app');
+  if (bouw && D.zinnen && D.zinnen.length) {
+    var bAnt = $('#bouw-antwoord'), bBank = $('#bouw-bank'), bUit = $('#bouw-uit'), bStand = $('#bouw-stand');
+    var bVolgorde = schud(D.zinnen.map(function (z, i) { return i; })), bPlek = -1, bZin = null, bMis = 0, bGoed = 0;
+    function bouwRegel() {
+      bPlek = (bPlek + 1) % bVolgorde.length;
+      bZin = D.zinnen[bVolgorde[bPlek]];
+      bMis = 0;
+      $('#bouw-nl').textContent = bZin.nl;
+      bAnt.textContent = ''; bBank.textContent = ''; bUit.textContent = '';
+      bUit.className = 'bouw-uit';
+      var stukken = schud(bZin.stukken);
+      if (stukken.join(' ') === bZin.stukken.join(' ')) stukken.reverse();
+      stukken.forEach(function (w) { bBank.appendChild(knop('tegel', w, 'de')); });
+    }
+    function verplaats(ev, naar) {
+      var b = ev.target.closest('.tegel');
+      if (!b) return;
+      naar.appendChild(b);
+      bUit.textContent = '';
+    }
+    bBank.addEventListener('click', function (ev) { verplaats(ev, bAnt); });
+    bAnt.addEventListener('click', function (ev) { verplaats(ev, bBank); });
+    $('#bouw-check').addEventListener('click', function () {
+      var nu = $$('.tegel', bAnt).map(function (b) { return b.textContent; });
+      if (!nu.length) { bUit.textContent = 'Tik eerst de woorden aan.'; return; }
+      if (nu.join(' ') === bZin.stukken.join(' ')) {
+        bGoed++;
+        bUit.className = 'bouw-uit ok';
+        bUit.textContent = 'Klopt.';
+        bStand.textContent = bGoed === 1 ? '1 regel goed' : bGoed + ' regels goed';
+        return;
+      }
+      bMis++;
+      bUit.className = 'bouw-uit fout';
+      bUit.textContent = bMis < 2
+        ? (bBank.children.length ? 'Nog niet, er liggen nog woorden.' : 'Nog niet helemaal. Kijk waar het werkwoord staat.')
+        : 'Zo staat het in het lied: ' + bZin.stukken.join(' ');
+    });
+    $('#bouw-volgende').addEventListener('click', bouwRegel);
+    bouwRegel();
+  }
 
   /* ---------- flashcards ---------- */
   var kaart = $('#kaart'), gekend = store.get('taalstof-' + D.id + '-kaarten', []).filter(function (v) {
@@ -181,7 +273,7 @@
     if (leeg) {
       kaart.appendChild(el('span', 'zijde', 'Stapel leeg'));
       kaart.appendChild(el('span', 'k-w', 'Je kent ze allemaal.'));
-      kaart.appendChild(el('span', 'k-txt', 'Zing het lied nog een keer en let op hoeveel je nu hoort. Met Begin opnieuw komt de hele stapel terug.'));
+      kaart.appendChild(el('span', 'k-txt', 'Met Begin opnieuw komt de stapel terug.'));
       return;
     }
     var k = stapel[0];

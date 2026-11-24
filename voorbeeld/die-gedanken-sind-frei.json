@@ -1,5 +1,5 @@
 {
-  "titel": "De gedachten zijn vrij, de naamvallen niet",
+  "titel": "Die Gedanken sind frei",
   "lied": {
     "titel": "Die Gedanken sind frei",
     "artiest": "Duits volkslied"
@@ -40,7 +40,7 @@
   "strofen": [
     {
       "naam": "Couplet 1",
-      "duiding": "Het hele lied zit al in deze vier regels. Gedachten zijn schaduwen in de nacht: je ziet ze voorbij glippen en je krijgt ze niet te pakken. De jager met kruit en lood staat voor elke macht die mensen met geweld stil wil krijgen.",
+      "duiding": "In het eerste couplet staat eigenlijk al waar het lied over gaat. Gedachten glippen weg als schaduwen 's nachts, en ook een jager met kruit en lood krijgt ze niet te pakken.",
       "regels": [
         {
           "de": "Die Gedanken sind frei, wer kann sie erraten,",
@@ -150,7 +150,7 @@
     },
     {
       "naam": "Couplet 2",
-      "duiding": "De ik in het lied kiest een stille vrijheid. Hij denkt wat hij wil, in der Still', in zijn eigen hoofd. Dat klinkt braaf en netjes, wie es sich schicket. Daardoor kon je het zingen terwijl de censor meeluisterde.",
+      "duiding": "De ik in het lied houdt het voor zichzelf. Hij denkt wat hij wil, in der Still', in stilte, en wie es sich schicket, zoals het hoort. Dat klinkt vrij braaf.",
       "regels": [
         {
           "de": "Ich denke, was ich will und was mich beglücket,",
@@ -240,7 +240,7 @@
     },
     {
       "naam": "Couplet 3",
-      "duiding": "Nu wordt het ernst: de kerker. Hier staat het hardste werkwoord van het lied, zerreißen. Wie het verhaal van Sophie Scholl kent, hoort deze strofe anders.",
+      "duiding": "Hier gaat het over de gevangenis. Opgesloten in een donkere kerker, en toch scheuren de gedachten de muren kapot: zerreißen.",
       "regels": [
         {
           "de": "Und sperrt man mich ein im finsteren Kerker,",
@@ -330,7 +330,7 @@
     },
     {
       "naam": "Couplet 4",
-      "duiding": "Het slot klinkt lichtvoetig. Lachen und scherzen, terwijl de zorgen buiten blijven. De spot is het laatste wapen: wie lacht in zijn cel, laat zien dat de cel niet werkt.",
+      "duiding": "Het laatste couplet is luchtiger. Hij wil zich geen zorgen meer maken en gewoon lachen en grappen maken. Dat lachen is ook een soort verzet, zo lees ik het tenminste.",
       "regels": [
         {
           "de": "Drum will ich auf immer den Sorgen entsagen",
@@ -1171,10 +1171,10 @@
   ],
   "cultuur": [
     {
-      "titel": "Een gedachte van achthonderd jaar oud",
+      "titel": "Een oud idee",
       "aanleiding": "Die Gedanken sind frei",
-      "tekst": "Niemand heeft dit lied ooit ondertekend. Tegen het eind van de achttiende eeuw dook het op, op vlugschriften zonder jaartal en zonder naam. Het idee is veel ouder. Rond 1200 schreef de minnezanger Walther von der Vogelweide al: gedanke frî. Een Duitser die de titel hoort, hoort een gedachte die al eeuwen rondgaat.",
-      "kapstok": "Frî werd frei, en in ons vrij klinkt de oude lange i nog door achter de letters ij.",
+      "tekst": "Wie dit lied geschreven heeft, weet niemand. Het dook ergens aan het eind van de achttiende eeuw op, op vlugschriften zonder naam en zonder jaartal. Het idee zelf is ouder. Rond 1200 schreef Walther von der Vogelweide al gedanke frî, dus helemaal nieuw was het toen ook niet.",
+      "kapstok": "Frî werd later frei. In ons vrij hoor je die oude lange i nog.",
       "woorden": [
         "gedanke",
         "frei"
@@ -1195,8 +1195,8 @@
     {
       "titel": "Zingen waar de censor bij staat",
       "aanleiding": "Kein Mensch kann sie wissen",
-      "tekst": "In 1819 spraken de Duitse vorsten in Karlsbad af dat kranten en universiteiten onder toezicht kwamen. Een lied over gedachten die niemand kan pakken, kreeg toen een scherpe rand. In 1842 kwam het in de bundel Schlesische Volkslieder van Hoffmann von Fallersleben en Ernst Richter. Diezelfde Hoffmann had een jaar eerder de tekst geschreven van wat later het Duitse volkslied werd.",
-      "kapstok": "Kein Mensch kann sie wissen: wissen is ons weten. Geen censor weet wat jij denkt.",
+      "tekst": "Na 1819 kwamen kranten en universiteiten in de Duitse staten onder toezicht. Dat hadden de vorsten in Karlsbad zo afgesproken. Een lied over gedachten die niemand kan controleren kreeg daardoor een politieke lading. In 1842 stond het in de Schlesische Volkslieder van Hoffmann von Fallersleben en Ernst Richter. Dezelfde Hoffmann had een jaar eerder trouwens de tekst geschreven van wat later het Duitse volkslied werd.",
+      "kapstok": "Wissen is ons weten, met ss waar wij een t hebben.",
       "woorden": [
         "mensch",
         "wissen",
@@ -1219,8 +1219,8 @@
     {
       "titel": "Een blokfluit bij de muur",
       "aanleiding": "Und sperrt man mich ein im finsteren Kerker",
-      "tekst": "In de zomer van 1942 zat Robert Scholl in de gevangenis. Hij had Hitler een gesel Gods genoemd en was aangegeven. Zijn dochter Sophie ging 's avonds bij de gevangenismuur staan en speelde dit lied op haar blokfluit, zodat hij het in zijn cel hoorde. Een half jaar later werd ze zelf opgepakt, als lid van de verzetsgroep Die Weiße Rose. Ze was eenentwintig.",
-      "kapstok": "Sperrt man mich ein: een zin die met het werkwoord begint, is hier een voorwaarde. Als ze mij opsluiten.",
+      "tekst": "In de zomer van 1942 zat Robert Scholl vast, omdat hij Hitler een gesel Gods had genoemd en was aangegeven. Zijn dochter Sophie ging 's avonds bij de gevangenismuur staan en speelde dit lied op haar blokfluit, zodat hij het in zijn cel kon horen. Een half jaar later werd ze zelf opgepakt, als lid van Die Weiße Rose.",
+      "kapstok": "Sperrt man mich ein begint met het werkwoord, en dan is het een voorwaarde: als ze mij opsluiten.",
       "woorden": [
         "einsperren",
         "finster",
@@ -1236,10 +1236,10 @@
       "zekerheid": "zeker"
     },
     {
-      "titel": "Driehonderdduizend stemmen",
+      "titel": "Berlijn, 1948",
       "aanleiding": "es bleibet dabei",
-      "tekst": "Berlijn, 9 september 1948. De Sovjet-Unie houdt de westelijke sectoren van de stad afgesloten. Burgemeester Ernst Reuter spreekt meer dan driehonderdduizend Berlijners toe voor de ruïne van de Rijksdag. Na zijn toespraak zingt de menigte uit zichzelf dit lied.",
-      "kapstok": "Es bleibt dabei: het blijft erbij. Een zin voor het eind van elke discussie.",
+      "tekst": "In 1948 had de Sovjet-Unie West-Berlijn afgesloten. Op 9 september sprak burgemeester Ernst Reuter meer dan driehonderdduizend mensen toe bij de ruïne van de Rijksdag, en daarna begon de menigte uit zichzelf dit lied te zingen.",
+      "kapstok": "Es bleibt dabei zeg je nog steeds als iets vaststaat. Het blijft erbij.",
       "woorden": [
         "bleiben",
         "dabei"
@@ -1260,8 +1260,8 @@
     {
       "titel": "Die Mauer is er maar één",
       "aanleiding": "Mauern",
-      "tekst": "Zeg in Duitsland die Mauer en iedereen denkt aan Berlijn. De Muur stond er van 1961 tot 1989, en de val ervan heet der Mauerfall. Het lied is veel ouder. Toch hoort wie het vandaag zingt bij Mauern entzwei vanzelf die ene muur.",
-      "kapstok": "Een Mauer is van steen en staat buiten, een Wand is de muur van je kamer. De Berlijnse Muur was een Mauer.",
+      "tekst": "Als een Duitser die Mauer zegt, bedoelt hij meestal de Berlijnse Muur, die er van 1961 tot 1989 stond. Het lied is veel ouder. Bij Mauern entzwei denk je er nu toch al snel aan.",
+      "kapstok": "Een Mauer is van steen en staat buiten. De muur van je kamer heet Wand.",
       "woorden": [
         "mauer",
         "entzwei"
@@ -1277,8 +1277,8 @@
     {
       "titel": "Mensch ärgere Dich nicht",
       "aanleiding": "Kein Mensch",
-      "tekst": "Het bordspel dat in veel Nederlandse kasten ligt, is Duits. Josef Friedrich Schmidt bedacht het rond 1908 in München. In de Eerste Wereldoorlog stuurde hij drieduizend exemplaren naar de lazaretten, en zo leerden de soldaten het kennen. De Nederlandse naam is een letterlijke vertaling.",
-      "kapstok": "Mensch en mens zijn hetzelfde woord, en ärgere dich nicht is erger je niet. Kein Mensch is dus geen mens.",
+      "tekst": "Het bordspel dat in veel Nederlandse kasten ligt, komt uit Duitsland. Josef Friedrich Schmidt bedacht het rond 1908 in München. In de Eerste Wereldoorlog stuurde hij drieduizend exemplaren naar de lazaretten, en zo leerden veel soldaten het kennen. Onze naam is gewoon vertaald.",
+      "kapstok": "Mensch is mens, en ärgere dich nicht is erger je niet.",
       "woorden": [
         "mensch",
         "kein"
@@ -1294,8 +1294,8 @@
     {
       "titel": "Zuiver bier",
       "aanleiding": "rein",
-      "tekst": "In 1516 legden de Beierse hertogen vast wat er in bier mocht zitten. Dat voorschrift heet nu het Reinheitsgebot en Duitse brouwers zetten het nog altijd trots op hun etiket: gebraut nach dem deutschen Reinheitsgebot. Rein is hier zuiver, de eerste betekenis van het woord.",
-      "kapstok": "In het lied is rein een versterker: rein vergeblich, volkomen vergeefs. Zuiver vergeefs, zou je kunnen zeggen.",
+      "tekst": "In 1516 legden de Beierse hertogen vast wat er in bier mocht. Dat heet nu het Reinheitsgebot, en veel brouwers zetten het nog op hun etiket. Rein betekent daar zuiver.",
+      "kapstok": "In het lied is rein meer een versterker: rein vergeblich is helemaal vergeefs.",
       "woorden": [
         "rein",
         "vergeblich"
@@ -1311,8 +1311,8 @@
     {
       "titel": "De geheimtaal van het getuigschrift",
       "aanleiding": "stets",
-      "tekst": "Een Duitse werkgever geeft een vertrekkende werknemer een Arbeitszeugnis mee, en dat moet welwillend klinken. Daardoor is een geheimtaal ontstaan. Stets zu unserer vollsten Zufriedenheit is het hoogste cijfer. Laat de chef het woordje stets weg, dan zakt het cijfer. Wie in Duitsland solliciteert, leest elk bijwoord twee keer.",
-      "kapstok": "Stets is ons steeds. Het is schrijftaal, en daarom staat het in zulke brieven.",
+      "tekst": "Wie in Duitsland van baan wisselt, krijgt een Arbeitszeugnis mee. Dat moet welwillend klinken, en daardoor is er een soort code ontstaan. Stets zu unserer vollsten Zufriedenheit is ongeveer het hoogste cijfer. Staat stets er niet bij, dan is het al een stuk minder.",
+      "kapstok": "Stets is ons steeds, en vooral schrijftaal.",
       "woorden": [
         "stets"
       ],

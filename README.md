@@ -11,6 +11,7 @@ Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0
 | De tekst | Elke regel klikbaar. Per woord de betekenis en de familie, met daaronder waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt, zoals woordvolgorde of een uitdrukking. Per strofe vertelt **Waarom deze strofe** wat erin gebeurt. Komt het nummer van Spotify, dan staat de speler erboven |
 | Wat een Duitser hoort | Wat een Duitser bij een zinsnede weet of voelt en jij nog niet. Elk stuk linkt naar zijn regel in het lied en heeft woorden om aan te tikken. Soms raad je eerst, en elk stuk eindigt met een kapstok die het vastknoopt aan iets uit de les |
 | Meezingen | De tekst met gaten. Zet het lied op en vul in wat je hoort |
+| Oefenen | Twee spelletjes: koppel Duitse woorden aan hun betekenis, en zet de woorden van een regel weer in de goede volgorde. Ze kosten niets extra, de pagina maakt ze zelf uit de les |
 | Woordverhalen | De herkomst van de mooiste woorden |
 | Grammatica | Wat het lied nodig heeft, met erbij hoe het zo gekomen is |
 | Valse vrienden | Woorden die op Nederlands lijken en iets anders betekenen |

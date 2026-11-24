@@ -192,3 +192,20 @@ td.b{font-style:italic;font-weight:600}
 
 footer{padding:24px 0 48px;font:700 13px var(--ui);color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.btn,.opt,.w,.hwk{transition:background-color .12s,border-color .12s,color .12s,transform .06s}}
+
+/* oefenen */
+.koppel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.koppel>div{display:grid;gap:8px;align-content:start}
+.kp,.tegel{font:inherit;color:var(--fg);background:var(--card);border:2px solid var(--line);border-radius:12px;box-shadow:0 3px 0 var(--line);cursor:pointer}
+.kp{font-size:17px;line-height:1.25;padding:8px 10px;text-align:center}
+.kolom-de .kp{font-style:italic;font-weight:600;font-size:19px}
+.kp.gekozen{border-color:var(--accent);background:var(--soft);box-shadow:0 3px 0 var(--accent)}
+.kp.af{border-color:var(--ok);background:var(--ok-l);color:var(--ok-d);box-shadow:none;opacity:.55;cursor:default}
+.kp.mis{border-color:var(--fout);background:var(--fout-l)}
+.bouw-nl{color:var(--muted);font-size:18px;margin:0 0 12px}
+.bouw-antwoord{min-height:54px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;border-bottom:2px solid var(--line);padding:0 0 10px;margin-bottom:14px}
+.bouw-bank{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.tegel{font-style:italic;font-weight:600;font-size:20px;padding:4px 12px}
+.bouw-uit{font-size:17px;margin:12px 0 0;min-height:1.5em;max-width:none}
+.bouw-uit.ok{color:var(--ok-d)}
+.bouw-uit.fout{color:var(--fout)}

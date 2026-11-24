@@ -268,6 +268,12 @@ describe('prompt en schema', () => {
     }
   });
 
+  it('vraagt om een gewone, menselijke toon zonder oneliners', () => {
+    expect(SYSTEEMPROMPT).toContain('Geen oneliners of slogans.');
+    expect(SYSTEEMPROMPT).toContain('Sluit een stuk niet af met een zin die het voorgaande samenvat');
+    expect(SYSTEEMPROMPT).toContain('"kapstok" is één gewone zin, geen slogan');
+  });
+
   it('houdt zich in de prompt zelf aan de stijlregels', () => {
     expect(SYSTEEMPROMPT).not.toMatch(/[—–]/);
     // De verboden woorden staan er precies één keer in: in de regel die ze verbiedt.

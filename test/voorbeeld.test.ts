@@ -84,7 +84,7 @@ describe('voorbeeldles', () => {
 
   it('wordt een complete les', () => {
     const html = renderLesson(les, { id: 'voorbeeld', track: { title: les.lied.titel, artist: les.lied.artiest }, lyricsSource: 'publiek domein', partial: false, model: '', generatedAt: '', voorbeeld: true });
-    for (const id of ['tekst', 'cultuur', 'meezingen', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
+    for (const id of ['tekst', 'cultuur', 'meezingen', 'spelen', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
       expect(html).toContain(`<section id="${id}">`);
     }
     expect(html.match(/class="w"/g)!.length).toBe(regels.reduce((n, r) => n + r.woorden.length, 0));

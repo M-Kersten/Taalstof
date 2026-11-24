@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { renderLesson, regelHtml, vindWoord, vulHerhalingen } from '../src/render/renderer.js';
+import { paren, renderLesson, regelHtml, vindWoord, vulHerhalingen, zinnen } from '../src/render/renderer.js';
 import { validateLes, type Les } from '../src/lesson/schema.js';
 
 const les = validateLes(JSON.parse(readFileSync(new URL('./fixtures/les.json', import.meta.url), 'utf8'))) as Les;
@@ -70,7 +70,7 @@ describe('renderLesson', () => {
   });
 
   it('bevat alle onderdelen van de les, in de volgorde van het menu', () => {
-    const ids = ['tekst', 'cultuur', 'meezingen', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
+    const ids = ['tekst', 'cultuur', 'meezingen', 'spelen', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
     expect([...html.matchAll(/<section id="([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect([...html.matchAll(/<li><a href="#([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
     expect(html).toContain('data-start="wandern"');
@@ -147,6 +147,31 @@ describe('renderLesson', () => {
     expect(sectie).toContain('<b>Kapstok</b>Wandern is trekken, spazieren is wandelen.');
   });
 
+  it('geeft de spellen hun woordparen en regels mee, zonder extra werk voor het model', () => {
+    const d = lesdata(html);
+    expect(d.paren).toEqual(paren(les));
+    expect(paren(les)).toContainEqual({ de: 'das Wasser', nl: 'het water' });
+    expect(paren(les)).toHaveLength(4);
+    // Elke regel één keer, woorden zonder leestekens, en de herhaalde eerste regel maar één keer.
+    expect(zinnen(les)).toEqual([
+      { nl: 'Het trekken is de lust van de molenaar,', stukken: ['Das', 'Wandern', 'ist', 'des', 'Müllers', 'Lust'] },
+      { nl: 'Van het water hebben we het geleerd,', stukken: ['Vom', 'Wasser', 'haben', "wir's", 'gelernt', 'b'] },
+    ]);
+    expect(d.zinnen).toHaveLength(2);
+    const spelen = /<section id="spelen">([\s\S]*?)<\/section>/.exec(html)![1];
+    expect(spelen).toContain('id="koppel-app"');
+    expect(spelen).toContain('id="bouw-app"');
+  });
+
+  it('laat een spel weg als er te weinig voor is', () => {
+    const weinig = { ...les, woordenlijst: les.woordenlijst.slice(0, 2) };
+    const h = renderLesson(weinig, meta);
+    expect(h).not.toContain('id="koppel-app"');
+    expect(h).toContain('id="bouw-app"');
+    const kort = { ...weinig, strofen: [{ naam: '', duiding: '', regels: [{ de: 'Ja ja', nl: 'ja ja', woorden: [], noot: '' }] }] };
+    expect(renderLesson(kort, meta)).not.toContain('<section id="spelen">');
+  });
+
   it('zet bij grammatica hoe het zo gekomen is', () => {
     expect(html).toContain('<h4>Hoe het zo kwam</h4><p>Het Nederlands bewaart hem in &#39;s avonds.</p>');
   });
@@ -195,7 +220,7 @@ describe('renderLesson', () => {
     const js = readFileSync(new URL('../templates/lesson.js', import.meta.url), 'utf8');
     for (const veld of ['e.w', 'e.nl', 'e.fam', 'e.chips', 'e.geb', 'e.ety']) expect(js).toContain(veld);
     expect(js).toContain('dataset.noot');
-    for (const klasse of ["'.raad'", "'a.naar'", "'.hw'", "'.mz'", "'.strofe .duid'"]) expect(js).toContain(klasse);
+    for (const klasse of ["'.raad'", "'a.naar'", "'.hw'", "'.mz'", "'.strofe .duid'", "'#koppel-app'", "'#bouw-app'", 'D.paren', 'D.zinnen']) expect(js).toContain(klasse);
   });
 
   it('voorkomt dat lesdata het script-element afsluit', () => {
