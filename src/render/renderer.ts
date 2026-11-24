@@ -6,7 +6,7 @@ import type { TrackRef } from '../types.js';
 
 const TEMPLATES = path.join(ROOT, 'templates');
 const FONTS =
-  'https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap';
+  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Nunito:wght@700;800&display=swap';
 
 export interface RenderMeta {
   id: string;

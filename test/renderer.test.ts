@@ -62,7 +62,8 @@ describe('vulHerhalingen', () => {
 describe('renderLesson', () => {
   it('is een zelfstandig HTML-document met stijl en script inline', () => {
     expect(html.startsWith('<!doctype html>')).toBe(true);
-    expect(html).toContain('--accent:#B6531B');
+    expect(html).toContain('--accent:#1F7A6E');
+    expect(html).toContain('family=Cormorant+Garamond');
     expect(html).toContain("'taalstof-' + D.id + '-kaarten'");
     expect(html).not.toMatch(/<script[^>]+src=/);
     expect(html).toContain('<title>Wandern is wandelen met bepakking</title>');
