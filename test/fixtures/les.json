@@ -17,6 +17,7 @@
  "strofen": [
   {
    "naam": "Couplet 1",
+   "inleiding": "De molenaar wil op pad.",
    "duiding": "De molenaar zingt over zijn lust tot trekken.",
    "regels": [
     {
@@ -57,6 +58,7 @@
   },
   {
    "naam": "",
+   "inleiding": "",
    "duiding": "",
    "regels": [
     {

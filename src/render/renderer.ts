@@ -105,48 +105,48 @@ export function normRegel(s: string): string {
   return s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
 
-/** Het id van de regel die een citaat uit het verhaal aanhaalt, of leeg. */
-export function vindRegel(strofen: Les['strofen'], citaat: string): string {
+/**
+ * Waar een zinsnede in het lied staat: strofe en regel, of null. Eerst een hele regel,
+ * dan een stuk van een regel op woordgrens, zodat "rein" niet in "reinigen" valt.
+ */
+export function vindPlek(strofen: Les['strofen'], citaat: string): { n: number; i: number } | null {
   const c = normRegel(citaat);
-  if (!c) return '';
+  if (!c) return null;
   for (const heel of [true, false]) {
     for (const [n, st] of strofen.entries()) {
       for (const [i, r] of st.regels.entries()) {
         const d = normRegel(r.de);
-        if (heel ? d === c : d.includes(c) || (c.length > 12 && c.includes(d) && d.length > 6)) return `r-${n}-${i}`;
+        if (heel ? d === c : ` ${d} `.includes(` ${c} `) || (c.length > 12 && ` ${c} `.includes(` ${d} `) && d.length > 6)) return { n, i };
       }
     }
   }
-  return '';
+  return null;
 }
 
-function liedHtml(les: Les): string {
-  const strofen = vulHerhalingen(les.strofen);
-  const eerste = strofen[0]?.regels.find((r) => r.woorden.length)?.woorden[0]?.sleutel;
+/** Het id van de regel die een zinsnede aanhaalt, of leeg. */
+export function vindRegel(strofen: Les['strofen'], citaat: string): string {
+  const p = vindPlek(strofen, citaat);
+  return p ? `r-${p.n}-${p.i}` : '';
+}
+
+const ONZEKER = '<p class="zeker">Niet alles hiervan staat vast</p>';
+
+/** Eén couplet: de regels met klikbare woorden, een knop voor de vertaling en ruimte voor uitleg. */
+function strofeHtml(s: Les['strofen'][number], n: number): string {
+  const eerste = s.regels.find((r) => r.woorden.length)?.woorden[0]?.sleutel;
   const uit = [
-    '<div class="lied" id="lied-app">',
-    `  <div class="lied-balk"><p>${esc(les.lied.artiest)} &middot; ${esc(les.lied.titel)}</p>` +
-      '<button class="btn klein" type="button" id="vert-alle" aria-pressed="false">Alle vertalingen</button></div>',
+    `  <div class="strofe"${eerste ? ` data-start="${esc(eerste)}"` : ''}>`,
+    `    <div class="strofe-kop"><span>${esc(s.naam || `Couplet ${n + 1}`)}</span><button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></div>`,
   ];
-  strofen.forEach((s, n) => {
-    const start = n === 0 && eerste ? ` data-start="${esc(eerste)}"` : '';
-    uit.push(`  <div class="strofe"${start}>`);
+  for (const [i, r] of s.regels.entries()) {
+    const noot = r.noot
+      ? ` <button class="rn" type="button" lang="nl" aria-pressed="false" data-noot="${esc(r.noot)}">waarom?</button>`
+      : '';
     uit.push(
-      `    <div class="strofe-kop"><span>${esc(s.naam || `Strofe ${n + 1}`)}</span><span class="knoppen">${s.duiding ? '<button class="btn klein duid" type="button" aria-pressed="false">Waarom deze strofe</button>' : ''}<button class="btn klein vert" type="button" aria-pressed="false">Vertaling</button></span></div>`,
+      `    <p class="regel" id="r-${n}-${i}"><span class="de" lang="de">${regelHtml(r)}${noot}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
     );
-    if (s.duiding) uit.push(`    <p class="duiding" hidden>${esc(s.duiding)}</p>`);
-    for (const [i, r] of s.regels.entries()) {
-      const noot = r.noot
-        ? ` <button class="rn" type="button" lang="nl" aria-pressed="false" data-noot="${esc(r.noot)}">waarom?</button>`
-        : '';
-      uit.push(
-        `    <p class="regel" id="r-${n}-${i}"><span class="de" lang="de">${regelHtml(r)}${noot}</span><span class="nl" hidden>${esc(r.nl)}</span></p>`,
-      );
-    }
-    uit.push('    <div class="uitleg" aria-live="polite"><p class="leeg">Tik op een woord voor uitleg.</p></div>');
-    uit.push('  </div>');
-  });
-  uit.push('</div>');
+  }
+  uit.push('    <div class="uitleg" aria-live="polite"><p class="leeg">Tik op een woord voor uitleg.</p></div>', '  </div>');
   return uit.join('\n');
 }
 
@@ -160,40 +160,32 @@ function raadHtml(v: Les['cultuur'][number]['vraag']): string {
   );
 }
 
-/**
- * Wat een Duitser erbij hoort. Elk stuk hangt aan een zinsnede uit het lied, die naar zijn
- * regel linkt, en aan woorden uit de les. Soms raad je eerst.
- */
-function cultuurHtml(les: Les): string {
-  const lex = new Map(les.woordenlijst.map((w) => [w.sleutel, w]));
-  return les.cultuur
-    .map((c) => {
-      const uit = [`  <article class="box beeld cult">`, `    <h4>${esc(c.titel)}</h4>`];
-      if (c.aanleiding) {
-        const doel = vindRegel(les.strofen, c.aanleiding);
-        uit.push(
-          `    <p class="aanl">Bij <i lang="de">${esc(c.aanleiding)}</i>` +
-            (doel ? ` <a class="naar" href="#${doel}" data-r="${doel}">naar de regel</a>` : '') +
-            '</p>',
-        );
-      }
-      if (c.zekerheid === 'onzeker') uit.push(`    ${ONZEKER}`);
-      const raad = raadHtml(c.vraag);
-      if (raad) uit.push(raad);
-      uit.push(`    <p>${esc(c.tekst)}</p>`);
-      const woorden = c.woorden.map((k) => lex.get(k)).filter((w): w is Woord => !!w);
-      if (woorden.length) {
-        uit.push(
-          `    <div class="hw"><p class="lab">Woorden die hierbij horen</p><div class="hw-knoppen">` +
-            woorden.map((w) => `<button class="hwk" type="button" lang="de" data-k="${esc(w.sleutel)}" aria-pressed="false">${esc(w.woord)}</button>`).join('') +
-            `</div><p class="hw-uit" aria-live="polite"></p></div>`,
-        );
-      }
-      if (c.kapstok) uit.push(`    <p class="kapstok"><b>Kapstok</b>${esc(c.kapstok)}</p>`);
-      uit.push('  </article>');
-      return uit.join('\n');
-    })
-    .join('\n');
+type Cultuur = Les['cultuur'][number];
+
+/** Wat een Duitser erbij hoort: de regel uit het lied, dan het stuk zelf. */
+function cultuurHtml(c: Cultuur, regel: Regel | undefined, lex: Map<string, Woord>): string {
+  const uit: string[] = [];
+  if (regel) {
+    uit.push(`  <blockquote class="citaat"><p class="de" lang="de">${esc(regel.de)}</p><p class="nl">${esc(regel.nl)}</p></blockquote>`);
+  } else if (c.aanleiding) {
+    uit.push(`  <blockquote class="citaat"><p class="de" lang="de">${esc(c.aanleiding)}</p></blockquote>`);
+  }
+  uit.push(`  <article class="box cult">`, `    <h3>${esc(c.titel)}</h3>`);
+  if (c.zekerheid === 'onzeker') uit.push(`    ${ONZEKER}`);
+  const raad = raadHtml(c.vraag);
+  if (raad) uit.push(raad);
+  uit.push(`    <p>${esc(c.tekst)}</p>`);
+  const woorden = c.woorden.map((k) => lex.get(k)).filter((w): w is Woord => !!w);
+  if (woorden.length) {
+    uit.push(
+      `    <div class="hw"><p class="lab">Woorden die hierbij horen</p><div class="hw-knoppen">` +
+        woorden.map((w) => `<button class="hwk" type="button" lang="de" data-k="${esc(w.sleutel)}" aria-pressed="false">${esc(w.woord)}</button>`).join('') +
+        `</div><p class="hw-uit" aria-live="polite"></p></div>`,
+    );
+  }
+  if (c.kapstok) uit.push(`    <p class="kapstok"><b>Kapstok</b>${esc(c.kapstok)}</p>`);
+  uit.push('  </article>');
+  return uit.join('\n');
 }
 
 /**
@@ -230,7 +222,7 @@ export function meezingHtml(les: Les): string {
     }
     if (!regels.length) return;
     blokken.push(
-      `  <div class="app mz" data-n="${n}">\n    <p class="lab">${esc(s.naam || `Strofe ${n + 1}`)}</p>\n${regels.join('\n')}\n` +
+      `  <div class="app mz" data-n="${n}">\n    <p class="lab">${esc(s.naam || `Couplet ${n + 1}`)}</p>\n${regels.join('\n')}\n` +
         '    <div class="k-balk"><button class="btn pri mz-check" type="button">Controleer</button><button class="btn mz-toon" type="button">Toon antwoorden</button><button class="btn klein mz-nl" type="button" aria-pressed="true">Vertaling</button><p class="k-voortgang mz-score" aria-live="polite"></p></div>\n  </div>',
     );
   });
@@ -238,51 +230,62 @@ export function meezingHtml(les: Les): string {
   return blokken.join('\n');
 }
 
-/** Woordparen voor het koppelspel: de Duitse woordenboekvorm en de betekenis. */
-export function paren(les: Les): { de: string; nl: string }[] {
-  const gezien = new Set<string>();
-  return les.woordenlijst
-    .filter((w) => w.woord && w.betekenis)
-    .filter((w) => !gezien.has(w.betekenis) && !!gezien.add(w.betekenis))
-    .map((w) => ({ de: w.woord, nl: w.betekenis }));
+/** De woorden van een regel zonder leestekens eraan, in de goede volgorde. */
+export function stukkenVan(de: string): string[] {
+  return de
+    .split(/\s+/)
+    .map((w) => w.replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, ''))
+    .filter(Boolean);
 }
 
-/**
- * Regels voor het bouwspel: elke regel één keer, met vier tot tien woorden.
- * `stukken` zijn de woorden zonder leestekens eraan, in de goede volgorde.
- */
-export function zinnen(les: Les): { nl: string; stukken: string[] }[] {
-  const gezien = new Set<string>();
-  const uit: { nl: string; stukken: string[] }[] = [];
-  for (const st of les.strofen) {
-    for (const r of st.regels) {
-      const k = normRegel(r.de);
-      if (!k || gezien.has(k)) continue;
-      gezien.add(k);
-      const stukken = r.de
-        .split(/\s+/)
-        .map((w) => w.replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, ''))
-        .filter(Boolean);
-      if (stukken.length >= 4 && stukken.length <= 10 && r.nl) uit.push({ nl: r.nl, stukken });
+export interface Spel {
+  /** Woordparen uit dit couplet die nog niet eerder aan bod kwamen, voor het koppelspel. */
+  paren: { de: string; nl: string }[];
+  /** Regels uit dit couplet die nog niet eerder in het lied stonden, voor het bouwspel. */
+  zinnen: { nl: string; stukken: string[]; bij: string }[];
+}
+
+/** Wat Zelf doen bij couplet n te spelen heeft. Gebruikt alleen wat de les al heeft. */
+export function spelVoor(les: Les, n: number, cultuurBij: Map<string, string> = new Map()): Spel {
+  const strofen = vulHerhalingen(les.strofen);
+  const lex = new Map(les.woordenlijst.map((w) => [w.sleutel, w]));
+  // Woorden die in een eerder couplet al te koppelen waren, komen niet nog eens terug.
+  const sleutels = new Set<string>(strofen.slice(0, n).flatMap((s) => s.regels.flatMap((r) => r.woorden.map((w) => w.sleutel))));
+  const betekenissen = new Set<string>();
+  const paren: Spel['paren'] = [];
+  for (const r of strofen[n]?.regels ?? []) {
+    for (const w of r.woorden) {
+      const e = lex.get(w.sleutel);
+      if (!e?.woord || !e.betekenis || sleutels.has(w.sleutel) || betekenissen.has(e.betekenis)) continue;
+      sleutels.add(w.sleutel);
+      betekenissen.add(e.betekenis);
+      paren.push({ de: e.woord, nl: e.betekenis });
     }
   }
-  return uit;
+  const eerder = new Set(strofen.slice(0, n).flatMap((s) => s.regels.map((r) => normRegel(r.de))));
+  const zinnen: Spel['zinnen'] = [];
+  for (const [i, r] of (strofen[n]?.regels ?? []).entries()) {
+    const k = normRegel(r.de);
+    if (!k || eerder.has(k)) continue;
+    eerder.add(k);
+    const stukken = stukkenVan(r.de);
+    if (stukken.length >= 4 && stukken.length <= 10 && r.nl) zinnen.push({ nl: r.nl, stukken, bij: cultuurBij.get(`${n}-${i}`) ?? '' });
+  }
+  return { paren: paren.length >= 3 ? paren : [], zinnen };
 }
 
-/** De officiële Spotify-speler, zodat het lied naast de tekst klinkt. */
+/** De officiële Spotify-speler, zodat het lied naast de les klinkt. */
 function spelerHtml(t: TrackRef): string {
   if (!t.spotifyId || !/^[A-Za-z0-9]+$/.test(t.spotifyId)) return '';
   return `  <iframe class="speler" title="Speel ${esc(t.title)} af in Spotify" src="https://open.spotify.com/embed/track/${t.spotifyId}" height="80" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>\n`;
 }
 
 function bronnenHtml(les: Les): string {
-  if (!les.bronnen.length) return '  <p>Het verhaal steunt niet op bronnen die het model tijdens het maken van de les gelezen heeft. Lees het als een verhaal uit het geheugen.</p>\n';
-  return `  <h3>Waar het verhaal op steunt</h3>\n  <ul class="bronnen">${les.bronnen
+  if (!les.bronnen.length) return '  <p>Dit steunt niet op bronnen die het model tijdens het maken van de les gelezen heeft. Lees het als iets uit het geheugen.</p>\n';
+  return `  <h3>Waar het op steunt</h3>\n  <ul class="bronnen">${les.bronnen
     .map((b) => `<li><a href="${esc(b.url)}" rel="noopener noreferrer" target="_blank">${esc(b.titel || b.url)}</a></li>`)
     .join('')}</ul>\n`;
 }
-
-const ONZEKER = '<p class="zeker">Niet alles hiervan staat vast</p>';
 
 function toetsHtml(les: Les): string {
   const uit = ['<ol class="mc">'];
@@ -297,137 +300,252 @@ function toetsHtml(les: Les): string {
   return uit.join('\n');
 }
 
-function sectie(id: string, num: string, titel: string, inhoud: string): string {
-  return `<section id="${id}">\n  <h2><span class="num">${esc(num)}</span>${esc(titel)}</h2>\n${inhoud}\n</section>\n`;
+/* ------------------------------------------------------------------ */
+/* De reis: haltes (coupletten, meezingen, toets) met elk een paar stappen. */
+
+export interface Stap {
+  id: string;
+  naam: string;
+  verteller: string;
+  inhoud: string;
+  /** Wat er na deze stap komt, als korte tekst met hooguit wat cursief. Leeg bij de laatste stap. */
+  hierna: string;
+  /** Bij Zelf doen: de woorden en regels voor de spellen. */
+  spel?: Spel;
 }
 
-export function renderLesson(les: Les, meta: RenderMeta): string {
-  const css = readFileSync(path.join(TEMPLATES, 'lesson.css'), 'utf8');
-  const js = readFileSync(path.join(TEMPLATES, 'lesson.js'), 'utf8');
-  const lex = Object.fromEntries(les.woordenlijst.map((w) => [w.sleutel, lexEntry(w)]));
-  const data = {
-    id: meta.id,
-    lex,
-    kaarten: les.kaarten.map((k) => ({ v: k.voor, b: k.betekenis, fam: k.familie, regel: k.regel, txt: k.tekst })),
-    paren: paren(les),
-    zinnen: zinnen(les),
-  };
-  const kanKoppelen = data.paren.length >= 4;
-  const kanBouwen = data.zinnen.length > 0;
-  const blob = JSON.stringify(data).replace(/</g, '\\u003c');
+export interface Halte {
+  id: string;
+  soort: 'couplet' | 'meezingen' | 'toets';
+  /** Korte naam in de kop, zoals "Couplet 3". */
+  naam: string;
+  /** Het label op het pad: de eerste regel van het couplet, of de naam van de halte. */
+  label: string;
+  klein: string;
+  inleiding: string;
+  woorden: string[];
+  stappen: Stap[];
+}
+
+function kort(s: string, max = 34): string {
+  const t = s.replace(/[,.;:!?]+$/, '');
+  return t.length <= max ? t : `${t.slice(0, max).replace(/\s+\S*$/, '')}…`;
+}
+
+/** Bouwt de hele reis door het lied. De volgorde van de stappen is de volgorde van de les. */
+export function reisplan(les: Les, meta: Pick<RenderMeta, 'partial' | 'track'> = { partial: false, track: { title: '', artist: '' } }): Halte[] {
+  const strofen = vulHerhalingen(les.strofen);
+  const lex = new Map(les.woordenlijst.map((w) => [w.sleutel, w]));
+
+  // Elk cultuurstuk hangt aan het couplet waar zijn zinsnede staat. Zonder plek: bij het eerste couplet.
+  const cultuurPer = new Map<number, { c: Cultuur; regel?: Regel; i?: number }[]>();
+  const cultuurBij = new Map<string, string>();
+  for (const c of les.cultuur) {
+    const p = vindPlek(strofen, c.aanleiding);
+    const n = p?.n ?? 0;
+    const lijst = cultuurPer.get(n) ?? [];
+    lijst.push({ c, regel: p ? strofen[p.n].regels[p.i] : undefined, i: p?.i });
+    cultuurPer.set(n, lijst);
+    if (p && !cultuurBij.has(`${p.n}-${p.i}`)) cultuurBij.set(`${p.n}-${p.i}`, c.titel);
+  }
+
+  // Een grammaticaonderwerp verschijnt bij het eerste couplet waar een voorbeeld uit staat.
+  const grammaticaPer = new Map<number, { titel: string; i: number }[]>();
+  les.grammatica.forEach((g, gi) => {
+    const n = g.voorbeelden.map((v) => vindPlek(strofen, v.de)?.n).find((x) => x !== undefined);
+    if (n === undefined) return;
+    grammaticaPer.set(n, [...(grammaticaPer.get(n) ?? []), { titel: g.titel, i: gi }]);
+  });
+
+  const haltes: Halte[] = [];
+  strofen.forEach((s, n) => {
+    const naam = s.naam || `Couplet ${n + 1}`;
+    const eersteRegel = s.regels[0]?.de ?? '';
+    const stappen: Stap[] = [];
+
+    const gram = grammaticaPer.get(n) ?? [];
+    const partieel =
+      n === 0 && meta.partial
+        ? '  <div class="box let"><h4>Onvolledige tekst</h4><p>De bron gaf maar een deel van de songtekst. Plak de hele tekst voor een volledige les.</p></div>\n'
+        : '';
+    stappen.push({
+      id: `s${n}-lezen`,
+      naam: 'Lezen',
+      verteller: s.inleiding || 'Lees het couplet en tik aan wat je niet kent.',
+      inhoud:
+        partieel +
+        strofeHtml(s, n) +
+        (gram.length
+          ? `\n  <div class="gram"><p class="lab">Grammatica hierbij</p>${gram.map((g) => `<button class="btn klein naslag-link" type="button" data-naslag="g-${g.i}">${esc(g.titel)}</button>`).join('')}</div>`
+          : ''),
+      hierna: '',
+    });
+
+    const cultuur = cultuurPer.get(n) ?? [];
+    if (s.duiding || cultuur.length) {
+      stappen.push({
+        id: `s${n}-erachter`,
+        naam: 'Erachter',
+        verteller: s.duiding,
+        inhoud: cultuur.map((x) => cultuurHtml(x.c, x.regel, lex)).join('\n'),
+        hierna: '',
+      });
+    }
+
+    const spel = spelVoor(les, n, cultuurBij);
+    if (spel.paren.length || spel.zinnen.length) {
+      const delen: string[] = [];
+      if (spel.paren.length) {
+        delen.push(`  <h3>Koppel de woorden</h3>
+  <div class="app spel-koppel" data-spel="s${n}-zelf">
+    <div class="koppel"><div class="kolom-de"></div><div class="kolom-nl"></div></div>
+    <div class="k-balk"><button class="btn koppel-nieuw" type="button">Andere woorden</button><p class="k-voortgang koppel-stand" aria-live="polite"></p></div>
+  </div>`);
+      }
+      if (spel.zinnen.length) {
+        delen.push(`  <h3>Bouw een regel</h3>
+  <div class="app spel-bouw" data-spel="s${n}-zelf">
+    <p class="bouw-bij"></p>
+    <p class="bouw-nl"></p>
+    <div class="bouw-antwoord" aria-label="Jouw regel"></div>
+    <div class="bouw-bank"></div>
+    <p class="bouw-uit" aria-live="polite"></p>
+    <div class="k-balk"><button class="btn pri bouw-check" type="button">Controleer</button>${spel.zinnen.length > 1 ? '<button class="btn bouw-volgende" type="button">Andere regel</button>' : ''}<p class="k-voortgang bouw-stand"></p></div>
+  </div>`);
+      }
+      stappen.push({
+        id: `s${n}-zelf`,
+        naam: 'Zelf doen',
+        verteller:
+          spel.paren.length && spel.zinnen.length
+            ? 'Nu zelf. Eerst de woorden van dit couplet, en dan een regel in elkaar zetten.'
+            : spel.paren.length
+              ? 'Nu zelf. Koppel de woorden van dit couplet aan wat ze betekenen.'
+              : 'Nu zelf. Zet een regel uit dit couplet in de goede volgorde.',
+        inhoud: delen.join('\n'),
+        hierna: '',
+        spel,
+      });
+    }
+
+    const woorden = [...new Set(s.regels.flatMap((r) => r.woorden.map((w) => lex.get(w.sleutel)?.woord ?? '')).filter(Boolean))];
+    haltes.push({
+      id: `h${n}`,
+      soort: 'couplet',
+      naam,
+      label: kort(eersteRegel) || naam,
+      klein: naam,
+      inleiding: s.inleiding,
+      woorden: woorden.slice(0, 6),
+      stappen,
+    });
+  });
 
   const meezingen = meezingHtml(les);
-  const nav = (
-    [
-      ['tekst', 'De tekst'],
-      les.cultuur.length && ['cultuur', 'Wat een Duitser hoort'],
-      meezingen && ['meezingen', 'Meezingen'],
-      (kanKoppelen || kanBouwen) && ['spelen', 'Oefenen'],
-      ['verhalen', 'Woordverhalen'],
-      ['grammatica', 'Grammatica'],
-      les.valseVrienden.length && ['vrienden', 'Valse vrienden'],
-      ['kaarten', 'Flashcards'],
-      ['toets', 'Zelftoets'],
-      ['bron', 'Bron'],
-    ] as (false | 0 | '' | [string, string])[]
-  ).filter((n): n is [string, string] => !!n);
-
-  const secties: string[] = [];
-  const partialNoot = meta.partial
-    ? '  <div class="box let"><h4>Onvolledige tekst</h4><p>De bron gaf maar een deel van de songtekst. Plak de hele tekst handmatig voor een volledige les.</p></div>\n'
-    : '';
-  const heeftNoten = les.strofen.some((s) => s.regels.some((r) => r.noot));
-  secties.push(
-    sectie(
-      'tekst',
-      'De tekst',
-      'Regel voor regel',
-      `${partialNoot}  <p>Tik op een onderstreept woord. Naast de betekenis zie je waarom het hier zo staat en waar het vandaan komt.${heeftNoten ? ' Achter sommige regels staat <i>waarom?</i> voor wat aan de hele regel hangt.' : ''}</p>\n${spelerHtml(meta.track)}${liedHtml(les)}`,
-    ),
-  );
-  if (les.cultuur.length) {
-    secties.push(
-      sectie(
-        'cultuur',
-        'Cultuur',
-        'Wat een Duitser erbij hoort',
-        `  <p>Wat een Duitser bij deze tekst weet of voelt, en jij nog niet.</p>\n${cultuurHtml(les)}`,
-      ),
-    );
-  }
   if (meezingen) {
-    secties.push(
-      sectie(
-        'meezingen',
-        'Meezingen',
-        'Vul de gaten',
-        `  <p>Zet het lied op en vul in wat je hoort. Hoofdletters en umlauts mogen anders, ae voor ä is ook goed.</p>\n${meezingen}`,
-      ),
-    );
+    haltes.push({
+      id: 'h-mz',
+      soort: 'meezingen',
+      naam: 'Meezingen',
+      label: 'Meezingen',
+      klein: 'Het hele lied',
+      inleiding: 'Nu het hele lied achter elkaar. Zet het op en vul in wat je hoort.',
+      woorden: [],
+      stappen: [
+        {
+          id: 'meezingen',
+          naam: 'Meezingen',
+          verteller: 'Nu het hele lied achter elkaar. Zet het op en vul in wat je hoort.',
+          inhoud: `  <p class="hint">Hoofdletters en umlauts mogen anders, ae voor ä is ook goed.${meta.track.spotifyId ? ' De speler staat bij het overzicht.' : ''}</p>\n${meezingen}`,
+          hierna: '',
+        },
+      ],
+    });
   }
-  if (kanKoppelen || kanBouwen) {
-    const delen: string[] = [];
-    if (kanKoppelen) {
-      delen.push(`  <h3>Koppel de woorden</h3>
-  <p>Tik een Duits woord aan en dan wat het betekent.</p>
-  <div class="app spel" id="koppel-app">
-    <div class="koppel"><div class="kolom-de"></div><div class="kolom-nl"></div></div>
-    <div class="k-balk"><button class="btn" type="button" id="koppel-nieuw">Andere woorden</button><p class="k-voortgang" id="koppel-stand" aria-live="polite"></p></div>
-  </div>`);
+
+  if (les.toets.length) {
+    haltes.push({
+      id: 'h-toets',
+      soort: 'toets',
+      naam: 'Toets',
+      label: 'Toets',
+      klein: `${les.toets.length} vragen`,
+      inleiding: 'Tot slot een paar vragen over het hele lied.',
+      woorden: [],
+      stappen: [
+        {
+          id: 'toets',
+          naam: 'Toets',
+          verteller: 'Tot slot een paar vragen over het hele lied.',
+          inhoud: `${les.leerdoelen.length ? `  <div class="box doelen"><h4>Kun je dit nu?</h4><ul>${les.leerdoelen.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>\n` : ''}${toetsHtml(les)}\n  <div class="score">\n    <p id="toets-score">0 van ${les.toets.length} beantwoord</p>\n    <button class="btn klein" type="button" id="toets-reset">Wis antwoorden</button>\n  </div>`,
+          hierna: '',
+        },
+      ],
+    });
+  }
+
+  // Wat er hierna komt, zodat elke stap naar de volgende verwijst.
+  const alle = haltes.flatMap((h) => h.stappen.map((s) => ({ h, s })));
+  alle.forEach(({ h, s }, k) => {
+    const volgende = alle[k + 1];
+    if (!volgende) return;
+    if (volgende.h === h) {
+      if (volgende.s.naam === 'Erachter') {
+        const eerste = cultuurPer.get(Number(h.id.slice(1)))?.[0]?.c.titel;
+        s.hierna = eerste ? `<i>${esc(eerste)}</i>` : 'waarom dit couplet zo is';
+      } else s.hierna = 'zelf met dit couplet aan de slag';
+      return;
     }
-    if (kanBouwen) {
-      delen.push(`  <h3>Bouw de regel</h3>
-  <p>Zet de woorden in de goede volgorde. De Nederlandse regel staat erboven.</p>
-  <div class="app spel" id="bouw-app">
-    <p class="bouw-nl" id="bouw-nl"></p>
-    <div class="bouw-antwoord" id="bouw-antwoord" aria-label="Jouw regel"></div>
-    <div class="bouw-bank" id="bouw-bank"></div>
-    <p class="bouw-uit" id="bouw-uit" aria-live="polite"></p>
-    <div class="k-balk"><button class="btn pri" type="button" id="bouw-check">Controleer</button><button class="btn" type="button" id="bouw-volgende">Andere regel</button><p class="k-voortgang" id="bouw-stand"></p></div>
-  </div>`);
-    }
-    secties.push(sectie('spelen', 'Oefenen', 'Met de woorden spelen', delen.join('\n')));
-  }
-  secties.push(
-    sectie(
-      'verhalen',
-      'Etymologie',
-      'Woorden met een verhaal',
-      les.verhalen
-        .map(
-          (v) =>
-            `  <div class="box verhaal"><h4 lang="de">${esc(v.woord)}</h4>${v.zekerheid === 'onzeker' ? '<p class="zeker">Herkomst onzeker</p>' : ''}<p><strong>${esc(v.titel)}</strong></p><p>${esc(v.tekst)}</p></div>`,
-        )
-        .join('\n'),
-    ),
-  );
-  secties.push(
-    sectie(
-      'grammatica',
-      'Grammatica',
-      'Wat het lied van je vraagt',
-      les.grammatica
-        .map(
-          (g) =>
-            `  <h3>${esc(g.titel)}</h3>\n  <p>${esc(g.uitleg)}</p>\n  <ul class="vb">${g.voorbeelden.map((v) => `<li><span class="de" lang="de">${esc(v.de)}</span> <span class="nl">${esc(v.nl)}</span></li>`).join('')}</ul>${g.herkomst ? `\n  <div class="box dig"><h4>Hoe het zo kwam</h4><p>${esc(g.herkomst)}</p></div>` : ''}`,
-        )
-        .join('\n'),
-    ),
-  );
-  if (les.valseVrienden.length) {
-    const rijen = les.valseVrienden
-      .map((v) => `    <tr><td class="b" lang="de">${esc(v.duits)}</td><td>${esc(v.lijktOp)}</td><td>${esc(v.betekent)}</td><td>${esc(v.toelichting)}</td></tr>`)
-      .join('\n');
-    secties.push(
-      sectie('vrienden', 'Let op', 'Valse vrienden', `  <div class="tw"><table class="breed">\n    <tr><th>Duits</th><th>Lijkt op</th><th>Betekent</th><th>Toelichting</th></tr>\n${rijen}\n  </table></div>`),
-    );
-  }
-  const k0 = les.kaarten[0];
-  secties.push(
-    sectie(
-      'kaarten',
-      'Oefenen',
-      'Flashcards met de herkomst op de achterkant',
+    const v = volgende.h;
+    s.hierna =
+      v.soort === 'couplet'
+        ? `${esc(v.naam)}, <i lang="de">${esc(v.label)}</i>`
+        : v.soort === 'meezingen'
+          ? 'het hele lied meezingen'
+          : 'een paar vragen over het hele lied';
+  });
+  return haltes;
+}
+
+/* ------------------------------------------------------------------ */
+
+const DX = [0, 52, 78, 52, 0, -52, -78, -52];
+const VINK = '<svg class="vink" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4L18 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const NOOT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.6" fill="currentColor"/><circle cx="16.5" cy="16" r="2.6" fill="currentColor"/></svg>';
+const VLAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const KAART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+const BOEK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+
+function padHtml(haltes: Halte[]): string {
+  let nr = 0;
+  return haltes
+    .map((h, k) => {
+      const ikoon = h.soort === 'couplet' ? `<span class="nr">${++nr}</span>` : h.soort === 'meezingen' ? NOOT : VLAG;
+      return `    <li class="halte" data-halte="${h.id}" style="--dx:${DX[k % DX.length]}px">
+      <button class="node" type="button" data-halte="${h.id}" aria-label="${esc(h.naam)}">${ikoon}${VINK}</button>
+      <button class="lbl" type="button" data-halte="${h.id}"><span class="t"${h.soort === 'couplet' ? ' lang="de"' : ''}>${esc(h.label)}</span><small>${esc(h.klein)}</small></button>
+      <ol class="sub">${h.stappen.map((s) => `<li><a href="#${s.id}" data-stap="${s.id}">${esc(s.naam)}</a></li>`).join('')}</ol>
+    </li>`;
+    })
+    .join('\n');
+}
+
+function stapHtml(h: Halte, s: Stap, volgende: string | undefined, eerste: boolean): string {
+  return `<section class="stap" id="stap-${s.id}" data-stap="${s.id}" data-halte="${h.id}"${eerste ? '' : ' hidden'}>
+  <div class="stap-binnen">
+${s.verteller ? `  <p class="verteller">${esc(s.verteller)}</p>\n` : ''}${s.inhoud}
+  </div>
+  <div class="voet"><div class="voet-binnen">${s.hierna ? `<p class="hierna">Hierna: ${s.hierna}</p>` : '<p class="hierna">Dit was de laatste stap.</p>'}<button class="btn pri verder" type="button" data-naar="${volgende ?? 'overzicht'}">${volgende ? 'Verder' : 'Klaar'}</button></div></div>
+</section>`;
+}
+
+function naslagHtml(les: Les, meta: RenderMeta): string {
+  const delen: [string, string, string][] = [];
+  if (les.kaarten.length) {
+    const k0 = les.kaarten[0];
+    delen.push([
+      'n-kaarten',
+      'Kaarten',
       `  <div class="app" id="kaart-app">
     <button class="kaart" type="button" id="kaart" aria-label="Flashcard, tik om te draaien">
       <span class="zijde">Voorkant</span>
@@ -441,35 +559,86 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
       <p class="k-voortgang" id="k-voortgang">0 van ${les.kaarten.length} gekend</p>
     </div>
   </div>`,
-    ),
-  );
-  secties.push(
-    sectie(
-      'toets',
-      'Zelftoets',
-      `${les.toets.length} vragen`,
-      `${les.leerdoelen.length ? `  <div class="box oef"><h4>Kun je dit nu?</h4><ul>${les.leerdoelen.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>\n` : ''}  <p>Kies per vraag één antwoord. Je ziet meteen of het klopt en waarom.</p>\n${toetsHtml(les)}\n  <div class="score">\n    <p id="toets-score">0 van ${les.toets.length} beantwoord</p>\n    <button class="btn klein" type="button" id="toets-reset">Wis antwoorden</button>\n  </div>`,
-    ),
-  );
+    ]);
+  }
+  if (les.verhalen.length) {
+    delen.push([
+      'n-verhalen',
+      'Woordverhalen',
+      les.verhalen
+        .map(
+          (v) =>
+            `  <div class="box verhaal"><h4 lang="de">${esc(v.woord)}</h4>${v.zekerheid === 'onzeker' ? '<p class="zeker">Herkomst onzeker</p>' : ''}<p><strong>${esc(v.titel)}</strong></p><p>${esc(v.tekst)}</p></div>`,
+        )
+        .join('\n'),
+    ]);
+  }
+  if (les.grammatica.length) {
+    delen.push([
+      'n-grammatica',
+      'Grammatica',
+      les.grammatica
+        .map(
+          (g, gi) =>
+            `  <div class="gram-item" id="g-${gi}">\n  <h3>${esc(g.titel)}</h3>\n  <p>${esc(g.uitleg)}</p>\n  <ul class="vb">${g.voorbeelden.map((v) => `<li><span class="de" lang="de">${esc(v.de)}</span> <span class="nl">${esc(v.nl)}</span></li>`).join('')}</ul>${g.herkomst ? `\n  <div class="box dig"><h4>Hoe het zo kwam</h4><p>${esc(g.herkomst)}</p></div>` : ''}\n  </div>`,
+        )
+        .join('\n'),
+    ]);
+  }
+  if (les.valseVrienden.length) {
+    delen.push([
+      'n-vrienden',
+      'Valse vrienden',
+      les.valseVrienden
+        .map((v) => `  <div class="box vriend"><p><b lang="de">${esc(v.duits)}</b> lijkt op ${esc(v.lijktOp)}. Het betekent <b>${esc(v.betekent)}</b>.</p><p>${esc(v.toelichting)}</p></div>`)
+        .join('\n'),
+    ]);
+  }
   const spotify = meta.track.spotifyUrl ? `<a href="${esc(meta.track.spotifyUrl)}">Open in Spotify</a>. ` : '';
   const bron = meta.voorbeeld
     ? `  <p>Dit is de voorbeeldles die bij Taalstof hoort. De tekst van het lied is vrij van rechten. Claude schreef de les bij het bouwen van de app, in dezelfde vorm als de lessen die je zelf maakt.</p>`
     : `  <p>${spotify}Songtekst via ${esc(meta.lyricsSource)}${meta.copyright ? `, ${esc(meta.copyright)}` : ''}. De tekst is auteursrechtelijk beschermd; deze les is alleen voor eigen gebruik.</p>\n  <p>Gemaakt met ${esc(meta.model)} op ${esc(meta.generatedAt.slice(0, 10))}${meta.bedrag ? `, kosten ${esc(meta.bedrag)}` : ''}.</p>`;
-  secties.push(
-    sectie(
-      'bron',
-      'Bron',
-      'Over deze les',
-      `${bron}\n${bronnenHtml(les)}  <p>Wat het label onzeker draagt, staat niet vast. Herkomst van woorden komt uit het geheugen van een taalmodel.</p>`,
-    ),
-  );
+  delen.push(['n-bron', 'Bron', `${bron}\n${bronnenHtml(les)}  <p>Wat het label onzeker draagt, staat niet vast. Herkomst van woorden komt uit het geheugen van een taalmodel.</p>`]);
+
+  return `<div class="naslag-achter" id="naslag-achter" hidden></div>
+<aside class="naslag" id="naslag" aria-label="Naslag" hidden>
+  <div class="naslag-kop"><h2>Naslag</h2><button class="ikoon" type="button" id="sluit-naslag" aria-label="Naslag sluiten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+  <nav class="naslag-nav">${delen.map(([id, t]) => `<a class="btn klein" href="#${id}" data-naslag="${id}">${esc(t)}</a>`).join('')}</nav>
+${delen.map(([id, t, inhoud]) => `  <section class="naslag-deel" id="${id}">\n  <h3 class="naslag-titel">${esc(t)}</h3>\n${inhoud}\n  </section>`).join('\n')}
+</aside>`;
+}
+
+export function renderLesson(les: Les, meta: RenderMeta): string {
+  const css = readFileSync(path.join(TEMPLATES, 'lesson.css'), 'utf8');
+  const js = readFileSync(path.join(TEMPLATES, 'lesson.js'), 'utf8');
+  const lex = Object.fromEntries(les.woordenlijst.map((w) => [w.sleutel, lexEntry(w)]));
+  const haltes = reisplan(les, meta);
+  const spellen: Record<string, Spel> = {};
+  for (const h of haltes) for (const s of h.stappen) if (s.spel) spellen[s.id] = s.spel;
+  const data = {
+    id: meta.id,
+    lex,
+    kaarten: les.kaarten.map((k) => ({ v: k.voor, b: k.betekenis, fam: k.familie, regel: k.regel, txt: k.tekst })),
+    haltes: haltes.map((h) => ({
+      id: h.id,
+      soort: h.soort,
+      naam: h.naam,
+      label: h.label,
+      inleiding: h.inleiding,
+      woorden: h.woorden,
+      stappen: h.stappen.map((s) => ({ id: s.id, naam: s.naam })),
+    })),
+    spellen,
+  };
+  const blob = JSON.stringify(data).replace(/</g, '\\u003c');
+  const alle = haltes.flatMap((h) => h.stappen.map((s) => ({ h, s })));
 
   return `<!doctype html>
 <html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(les.titel)}</title>
+<title>${esc(les.lied.titel)} · Taalstof</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${FONTS}">
@@ -477,31 +646,34 @@ export function renderLesson(les: Les, meta: RenderMeta): string {
 ${css}</style>
 </head>
 <body>
-<div class="wrap">
-<header class="mast">
-  <p class="eyebrow">Taalstof &middot; Duits via muziek</p>
-  <h1>${esc(les.titel)}</h1>
-  <div class="meta">
-    <span><b>Lied</b> ${esc(les.lied.titel)}</span>
-    <span>${esc(les.lied.artiest)}</span>
-    <span>${les.woordenlijst.length} woorden</span>
+<div class="les">
+<aside class="overzicht" id="overzicht" aria-label="Overzicht">
+  <div class="ov-kop">
+    <p class="eyebrow">Taalstof</p>
+    <h1>${esc(les.lied.titel)}</h1>
+    <p class="ov-meta">${esc(les.lied.artiest)}</p>
   </div>
-</header>
-<div class="grid">
-<nav class="rail" aria-label="Inhoud">
-  <p>Inhoud</p>
-  <ol>
-${nav.map(([id, t]) => `    <li><a href="#${id}">${esc(t)}</a></li>`).join('\n')}
+${spelerHtml(meta.track)}  <ol class="pad">
+${padHtml(haltes)}
   </ol>
-</nav>
-<main>
-${secties.join('\n')}
-<footer>
-  Taalstof &middot; alleen voor eigen gebruik
-</footer>
+  <button class="btn naslag-knop naslag-link" type="button" data-naslag="">${BOEK}Naslag</button>
+</aside>
+<main class="hoofd" id="hoofd">
+  <header class="stap-kop">
+    <button class="ikoon" type="button" id="naar-overzicht" aria-label="Overzicht">${KAART}</button>
+    <div class="kop-midden">
+      <p class="kop-titel" id="kop-titel"></p>
+      <div class="balk" id="balk"></div>
+    </div>
+    <button class="ikoon naslag-link" type="button" data-naslag="" aria-label="Naslag">${BOEK}</button>
+  </header>
+  <nav class="pillen" id="pillen" aria-label="Stappen"></nav>
+${alle.map(({ h, s }, k) => stapHtml(h, s, alle[k + 1]?.s.id, k === 0)).join('\n')}
 </main>
 </div>
-</div>
+${naslagHtml(les, meta)}
+<div class="sheet-achter" id="sheet-achter" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-naam" hidden></div>
 <script type="application/json" id="lesdata">${blob}</script>
 <script>
 ${js}</script>

@@ -84,9 +84,16 @@ describe('voorbeeldles', () => {
 
   it('wordt een complete les', () => {
     const html = renderLesson(les, { id: 'voorbeeld', track: { title: les.lied.titel, artist: les.lied.artiest }, lyricsSource: 'publiek domein', partial: false, model: '', generatedAt: '', voorbeeld: true });
-    for (const id of ['tekst', 'cultuur', 'meezingen', 'spelen', 'verhalen', 'grammatica', 'vrienden', 'kaarten', 'toets', 'bron']) {
-      expect(html).toContain(`<section id="${id}">`);
-    }
+    // Elk couplet heeft de drie stappen, daarna meezingen en de toets.
+    const stappen = [...html.matchAll(/<section class="stap" id="stap-([a-z0-9-]+)"/g)].map((m) => m[1]);
+    expect(stappen).toEqual([
+      ...les.strofen.flatMap((_, n) => [`s${n}-lezen`, `s${n}-erachter`, `s${n}-zelf`]),
+      'meezingen',
+      'toets',
+    ]);
+    for (const id of ['n-kaarten', 'n-verhalen', 'n-grammatica', 'n-vrienden', 'n-bron']) expect(html).toContain(`id="${id}"`);
+    expect(html.match(/<article class="box cult">/g)).toHaveLength(les.cultuur.length);
+    for (const s of les.strofen) expect(s.inleiding, s.naam).not.toBe('');
     expect(html.match(/class="w"/g)!.length).toBe(regels.reduce((n, r) => n + r.woorden.length, 0));
     expect(html.match(/class="rn"/g)!.length).toBe(regels.filter((r) => r.noot).length);
   });

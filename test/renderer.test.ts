@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { paren, renderLesson, regelHtml, vindWoord, vulHerhalingen, zinnen } from '../src/render/renderer.js';
+import { regelHtml, reisplan, renderLesson, spelVoor, stukkenVan, vindPlek, vindWoord, vulHerhalingen } from '../src/render/renderer.js';
 import { validateLes, type Les } from '../src/lesson/schema.js';
 
 const les = validateLes(JSON.parse(readFileSync(new URL('./fixtures/les.json', import.meta.url), 'utf8'))) as Les;
@@ -17,6 +17,12 @@ const html = renderLesson(les, meta);
 function lesdata(h: string) {
   const m = /<script type="application\/json" id="lesdata">([\s\S]*?)<\/script>/.exec(h);
   return JSON.parse(m![1]);
+}
+/** De HTML van één stap. */
+function stap(id: string, h = html): string {
+  const m = new RegExp(`<section class="stap" id="stap-${id}"[\\s\\S]*?</section>`).exec(h);
+  if (!m) throw new Error(`geen stap ${id}`);
+  return m[0];
 }
 const regel = (de: string, ...woorden: string[]) => ({ de, nl: '', noot: '', woorden: woorden.map((tekst) => ({ tekst, sleutel: tekst.toLowerCase() })) });
 
@@ -54,8 +60,129 @@ describe('vulHerhalingen', () => {
   });
   it('laat een herhaling met eigen woorden met rust', () => {
     const eigen = [{ tekst: 'Lust', sleutel: 'lust' }];
-    const s = vulHerhalingen([les.strofen[0], { naam: '', regels: [{ ...les.strofen[0].regels[0], woorden: eigen, noot: '' }] }]);
+    const s = vulHerhalingen([les.strofen[0], { naam: '', inleiding: '', duiding: '', regels: [{ ...les.strofen[0].regels[0], woorden: eigen, noot: '' }] }]);
     expect(s[1].regels[0].woorden).toBe(eigen);
+  });
+});
+
+describe('vindPlek', () => {
+  it('vindt een hele regel en een stuk van een regel, op woordgrens', () => {
+    expect(vindPlek(les.strofen, 'Das Wandern ist des Müllers Lust')).toEqual({ n: 0, i: 0 });
+    expect(vindPlek(les.strofen, 'Vom Wasser')).toEqual({ n: 0, i: 1 });
+    expect(vindPlek(les.strofen, 'andern')).toBeNull();
+    expect(vindPlek(les.strofen, '')).toBeNull();
+  });
+});
+
+describe('de reis door het lied', () => {
+  const haltes = reisplan(les, meta);
+
+  it('loopt het lied couplet voor couplet door en eindigt met meezingen en de toets', () => {
+    expect(haltes.map((h) => [h.id, h.soort, h.naam])).toEqual([
+      ['h0', 'couplet', 'Couplet 1'],
+      ['h1', 'couplet', 'Couplet 2'],
+      ['h-mz', 'meezingen', 'Meezingen'],
+      ['h-toets', 'toets', 'Toets'],
+    ]);
+    // Couplet 1 heeft alles; het herhaalde refrein heeft niets nieuws om erachter te zoeken of te oefenen.
+    expect(haltes[0].stappen.map((s) => s.naam)).toEqual(['Lezen', 'Erachter', 'Zelf doen']);
+    expect(haltes[1].stappen.map((s) => s.naam)).toEqual(['Lezen']);
+    expect(haltes[0].label).toBe('Das Wandern ist des Müllers Lust');
+  });
+
+  it('opent elk couplet met de inleiding, en anders met een gewone zin', () => {
+    expect(haltes[0].stappen[0].verteller).toBe('De molenaar wil op pad.');
+    expect(haltes[1].stappen[0].verteller).toBe('Lees het couplet en tik aan wat je niet kent.');
+    expect(haltes[0].stappen[1].verteller).toBe('De molenaar zingt over zijn lust tot trekken.');
+  });
+
+  it('zegt bij elke stap wat er hierna komt', () => {
+    const hierna = haltes.flatMap((h) => h.stappen.map((s) => s.hierna));
+    expect(hierna).toEqual([
+      '<i>Op de Walz</i>',
+      'zelf met dit couplet aan de slag',
+      'Couplet 2, <i lang="de">Das Wandern ist des Müllers Lust</i>',
+      'het hele lied meezingen',
+      'een paar vragen over het hele lied',
+      '',
+    ]);
+  });
+
+  it('hangt elk cultuurstuk aan het couplet waar zijn regel staat, met die regel erboven', () => {
+    const erachter = stap('s0-erachter');
+    expect(erachter.match(/<article class="box cult">/g)).toHaveLength(2);
+    expect(erachter).toContain('<blockquote class="citaat"><p class="de" lang="de">Das Wandern ist des Müllers Lust,</p><p class="nl">Het trekken is de lust van de molenaar,</p></blockquote>');
+    expect(erachter).toContain('<h3>Op de Walz</h3>');
+    expect(erachter).toContain('<h3>Water als leraar</h3>');
+    expect(erachter.match(/Niet alles hiervan staat vast/g)).toHaveLength(1);
+    expect(erachter).toContain('<p class="verteller">De molenaar zingt over zijn lust tot trekken.</p>');
+  });
+
+  it('laat je raden voor je leest, alleen waar een vraag is', () => {
+    const erachter = stap('s0-erachter');
+    expect(erachter.match(/class="raad"/g)).toHaveLength(1);
+    expect(erachter).toContain('<p class="q">Wat betekent wandern hier?</p>');
+    expect(erachter).toContain('data-ok="1">trekken</button>');
+  });
+
+  it('hangt woorden uit de woordenlijst aan een cultuurstuk', () => {
+    const erachter = stap('s0-erachter');
+    expect(erachter).toContain('<button class="hwk" type="button" lang="de" data-k="wandern" aria-pressed="false">wandern</button>');
+    expect(erachter).not.toContain('bestaatniet');
+    expect(erachter).toContain('<b>Kapstok</b>Wandern is trekken, spazieren is wandelen.');
+  });
+
+  it('oefent per couplet met de eigen woorden en regels, en weet welke regel bij een verhaal hoorde', () => {
+    const spel = spelVoor(les, 0, new Map([['0-1', 'Water als leraar']]));
+    expect(spel.paren).toEqual([
+      { de: 'wandern', nl: 'trekken, wandelen' },
+      { de: 'der Müller', nl: 'de molenaar' },
+      { de: 'die Lust', nl: 'zin, plezier' },
+      { de: 'das Wasser', nl: 'het water' },
+    ]);
+    expect(spel.zinnen).toEqual([
+      { nl: 'Het trekken is de lust van de molenaar,', stukken: ['Das', 'Wandern', 'ist', 'des', 'Müllers', 'Lust'], bij: '' },
+      { nl: 'Van het water hebben we het geleerd,', stukken: ['Vom', 'Wasser', 'haben', "wir's", 'gelernt', 'b'], bij: 'Water als leraar' },
+    ]);
+    // Het refrein komt terug: geen regels of woorden die al geoefend zijn.
+    expect(spelVoor(les, 1)).toEqual({ paren: [], zinnen: [] });
+    expect(stukkenVan('Die Gedanken sind frei!')).toEqual(['Die', 'Gedanken', 'sind', 'frei']);
+  });
+
+  it('zet de spellen in de stap Zelf doen en geeft hun gegevens mee', () => {
+    const zelf = stap('s0-zelf');
+    expect(zelf).toContain('class="app spel-koppel" data-spel="s0-zelf"');
+    expect(zelf).toContain('class="app spel-bouw" data-spel="s0-zelf"');
+    expect(zelf).toContain('<p class="verteller">Nu zelf. Eerst de woorden van dit couplet, en dan een regel in elkaar zetten.</p>');
+    const d = lesdata(html);
+    expect(Object.keys(d.spellen)).toEqual(['s0-zelf']);
+    expect(d.spellen['s0-zelf'].zinnen[1].bij).toBe('Water als leraar');
+  });
+
+  it('wijst bij het couplet op de grammatica die erin zit', () => {
+    expect(stap('s0-lezen')).toContain('<button class="btn klein naslag-link" type="button" data-naslag="g-0">Tweede naamval</button>');
+    expect(stap('s1-lezen')).not.toContain('naslag-link');
+  });
+
+  it('zegt bij een onvolledige tekst iets in het eerste couplet', () => {
+    expect(stap('s0-lezen')).toContain('Onvolledige tekst');
+    expect(renderLesson(les, { ...meta, partial: false })).not.toContain('Onvolledige tekst');
+  });
+
+  it('geeft een regel met een noot een waarom-knop, ook bij de herhaling', () => {
+    const knoppen = html.match(/<button class="rn"[^>]*>waarom\?<\/button>/g)!;
+    expect(knoppen).toHaveLength(2);
+    expect(knoppen[0]).toContain('data-noot="Des Müllers Lust: de bezitter staat voorop, zoals in &#39;s lands wijs."');
+  });
+
+  it('eindigt met meezingen en de toets, met de leerdoelen erbij', () => {
+    expect(stap('meezingen')).toContain('class="app mz"');
+    expect(stap('meezingen')).toContain('De speler staat bij het overzicht.');
+    const toets = stap('toets');
+    expect(toets).toContain('<h4>Kun je dit nu?</h4>');
+    expect(toets).toContain('<li>Je leest de tweede naamval in des Müllers.</li>');
+    expect(toets).toContain('data-naar="overzicht">Klaar</button>');
+    expect(toets).toContain('Dit was de laatste stap.');
   });
 });
 
@@ -64,137 +191,52 @@ describe('renderLesson', () => {
     expect(html.startsWith('<!doctype html>')).toBe(true);
     expect(html).toContain('--accent:#1F7A6E');
     expect(html).toContain('family=Cormorant+Garamond');
-    expect(html).toContain("'taalstof-' + D.id + '-kaarten'");
+    expect(html).toContain("sleutel + 'kaarten'");
     expect(html).not.toMatch(/<script[^>]+src=/);
-    expect(html).toContain('<title>Wandern is wandelen met bepakking</title>');
+    expect(html).toContain('<title>Das Wandern · Taalstof</title>');
+    expect(html).toContain('<h1>Das Wandern</h1>');
   });
 
-  it('bevat alle onderdelen van de les, in de volgorde van het menu', () => {
-    const ids = ['tekst', 'cultuur', 'meezingen', 'spelen', 'verhalen', 'grammatica', 'kaarten', 'toets', 'bron'];
-    expect([...html.matchAll(/<section id="([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
-    expect([...html.matchAll(/<li><a href="#([a-z]+)">/g)].map((m) => m[1])).toEqual(ids);
-    expect(html).toContain('data-start="wandern"');
-    expect(html).not.toContain('decoder');
-    expect(html).not.toContain('class="lead"');
-    expect(html).toContain('0 van 1 gekend');
-    // Vier in de toets en vier bij de vraag in de cultuur.
-    expect(html.match(/class="opt"/g)).toHaveLength(8);
-    expect(html).toContain('data-ok="1">zin</button>');
-    expect(html).toContain('Onvolledige tekst');
-    expect(html).toContain('Herkomst onzeker');
-    expect(html).toContain('https://open.spotify.com/track/x');
-  });
-
-  const cultuur = /<section id="cultuur">([\s\S]*?)<\/section>/.exec(html)![1];
-
-  it('zet wat een Duitser erbij hoort direct na de tekst, en zegt wat niet vaststaat', () => {
-    expect(cultuur).toContain('Wat een Duitser erbij hoort');
-    expect(cultuur.match(/<article class="box beeld cult">/g)).toHaveLength(2);
-    expect(cultuur.match(/Niet alles hiervan staat vast/g)).toHaveLength(1);
-  });
-
-  it('laat je raden voor je leest, alleen waar een vraag is', () => {
-    expect(cultuur.match(/class="raad"/g)).toHaveLength(1);
-    expect(cultuur).toContain('<p class="q">Wat betekent wandern hier?</p>');
-    expect(cultuur).toContain('data-ok="1">trekken</button>');
-    expect(cultuur).toContain('data-t="Een gezel trok van werkplaats naar werkplaats."');
-  });
-
-  it('linkt de zinsnede naar de regel in het lied', () => {
-    expect(cultuur).toContain('Bij <i lang="de">Das Wandern</i> <a class="naar" href="#r-0-0" data-r="r-0-0">naar de regel</a>');
-    expect(cultuur).toContain('href="#r-0-1"');
-    expect(html).toContain('<p class="regel" id="r-0-0">');
-  });
-
-  it('hangt woorden uit de woordenlijst aan een stuk', () => {
-    expect(cultuur).toContain('<button class="hwk" type="button" lang="de" data-k="wandern" aria-pressed="false">wandern</button>');
-    expect(cultuur).toContain('data-k="mueller"');
-    expect(cultuur).not.toContain('bestaatniet');
-    expect(cultuur.match(/class="hw"/g)).toHaveLength(1);
-  });
-
-  it('legt per strofe uit waarom hij zo is, achter een knop', () => {
-    expect(html).toContain('<button class="btn klein duid" type="button" aria-pressed="false">Waarom deze strofe</button>');
-    expect(html).toContain('<p class="duiding" hidden>De molenaar zingt over zijn lust tot trekken.</p>');
-    expect(html.match(/class="duiding"/g)).toHaveLength(1);
-  });
-
-  it('maakt van de tekst een invuloefening, zonder dubbele regels', () => {
-    const mz = /<section id="meezingen">([\s\S]*?)<\/section>/.exec(html)![1];
-    const gaten = [...mz.matchAll(/data-a="([^"]+)"/g)].map((m) => m[1]);
-    expect(gaten).toEqual(['Wandern', 'Müllers', 'Wasser']);
-    expect(mz).toContain('Das <input class="gat"');
-    expect(mz).toContain('&lt;b&gt;');
-    expect(mz.match(/class="mz-regel"/g)).toHaveLength(2);
-    expect(mz).not.toContain('nergens');
-  });
-
-  it('noemt de bronnen en wat het leren oplevert bij de toets', () => {
-    const bron = /<section id="bron">([\s\S]*?)<\/section>/.exec(html)![1];
-    expect(bron).toContain('<a href="https://de.wikipedia.org/wiki/Das_Wandern" rel="noopener noreferrer" target="_blank">Das Wandern</a>');
-    const zonder = renderLesson({ ...les, bronnen: [] }, meta);
-    expect(zonder).toContain('uit het geheugen');
-    const toets = /<section id="toets">([\s\S]*?)<\/section>/.exec(html)![1];
-    expect(toets).toContain('<h4>Kun je dit nu?</h4>');
-    expect(toets).toContain('<li>Je leest de tweede naamval in des Müllers.</li>');
-  });
-
-  it('hangt cultuur aan een plek in de tekst en aan een kapstok', () => {
-    const sectie = /<section id="cultuur">([\s\S]*?)<\/section>/.exec(html)![1];
-    expect(sectie).toContain('<h4>Op de Walz</h4>');
-    expect(sectie).toContain('Bij <i lang="de">Das Wandern</i>');
-    expect(sectie).toContain('<h4>Water als leraar</h4>');
-    expect(sectie).toContain('<b>Kapstok</b>Wandern is trekken, spazieren is wandelen.');
-  });
-
-  it('geeft de spellen hun woordparen en regels mee, zonder extra werk voor het model', () => {
-    const d = lesdata(html);
-    expect(d.paren).toEqual(paren(les));
-    expect(paren(les)).toContainEqual({ de: 'das Wasser', nl: 'het water' });
-    expect(paren(les)).toHaveLength(4);
-    // Elke regel één keer, woorden zonder leestekens, en de herhaalde eerste regel maar één keer.
-    expect(zinnen(les)).toEqual([
-      { nl: 'Het trekken is de lust van de molenaar,', stukken: ['Das', 'Wandern', 'ist', 'des', 'Müllers', 'Lust'] },
-      { nl: 'Van het water hebben we het geleerd,', stukken: ['Vom', 'Wasser', 'haben', "wir's", 'gelernt', 'b'] },
+  it('toont één stap tegelijk, in de volgorde van de reis', () => {
+    const ids = [...html.matchAll(/<section class="stap" id="stap-([a-z0-9-]+)"[^>]*?( hidden)?>/g)].map((m) => [m[1], !!m[2]]);
+    expect(ids).toEqual([
+      ['s0-lezen', false],
+      ['s0-erachter', true],
+      ['s0-zelf', true],
+      ['s1-lezen', true],
+      ['meezingen', true],
+      ['toets', true],
     ]);
-    expect(d.zinnen).toHaveLength(2);
-    const spelen = /<section id="spelen">([\s\S]*?)<\/section>/.exec(html)![1];
-    expect(spelen).toContain('id="koppel-app"');
-    expect(spelen).toContain('id="bouw-app"');
+    expect(stap('s0-lezen')).toContain('data-naar="s0-erachter">Verder</button>');
+    expect(stap('s0-zelf')).toContain('data-naar="s1-lezen">Verder</button>');
   });
 
-  it('laat een spel weg als er te weinig voor is', () => {
-    const weinig = { ...les, woordenlijst: les.woordenlijst.slice(0, 2) };
-    const h = renderLesson(weinig, meta);
-    expect(h).not.toContain('id="koppel-app"');
-    expect(h).toContain('id="bouw-app"');
-    const kort = { ...weinig, strofen: [{ naam: '', duiding: '', regels: [{ de: 'Ja ja', nl: 'ja ja', woorden: [], noot: '' }] }] };
-    expect(renderLesson(kort, meta)).not.toContain('<section id="spelen">');
+  it('zet het pad in het overzicht, met per halte zijn stappen', () => {
+    const pad = /<ol class="pad">([\s\S]*?)<\/ol>\n  <button/.exec(html)![1];
+    expect(pad.match(/<li class="halte"/g)).toHaveLength(4);
+    expect(pad).toContain('data-halte="h0" style="--dx:0px"');
+    expect(pad).toContain('data-halte="h1" style="--dx:52px"');
+    expect(pad).toContain('<span class="t" lang="de">Das Wandern ist des Müllers Lust</span><small>Couplet 1</small>');
+    expect(pad).toContain('<a href="#s0-erachter" data-stap="s0-erachter">Erachter</a>');
+    expect(pad).toContain('<span class="t">Meezingen</span><small>Het hele lied</small>');
   });
 
-  it('zet bij grammatica hoe het zo gekomen is', () => {
-    expect(html).toContain('<h4>Hoe het zo kwam</h4><p>Het Nederlands bewaart hem in &#39;s avonds.</p>');
-  });
-
-  it('geeft een regel met een noot een waarom-knop, ook bij de herhaling', () => {
-    const knoppen = html.match(/<button class="rn"[^>]*>waarom\?<\/button>/g)!;
-    expect(knoppen).toHaveLength(2);
-    expect(knoppen[0]).toContain('data-noot="Des Müllers Lust: de bezitter staat voorop, zoals in &#39;s lands wijs."');
-    expect(html.match(/class="w" type="button" data-k="wandern"/g)).toHaveLength(2);
-    expect(html).toContain('<i>waarom?</i>');
-  });
-
-  it('noemt een strofe bij haar naam', () => {
-    expect(html).toContain('<span>Couplet 1</span>');
-    expect(html).toContain('<span>Strofe 2</span>');
-  });
-
-  it('zet de Spotify-speler boven de tekst als het nummer van Spotify komt', () => {
+  it('zet de Spotify-speler in het overzicht als het nummer van Spotify komt', () => {
     expect(html).toContain('src="https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC"');
-    const zonder = renderLesson(les, { ...meta, track: { ...meta.track, spotifyId: undefined } });
-    expect(zonder).not.toContain('<iframe');
-    const raar = renderLesson(les, { ...meta, track: { ...meta.track, spotifyId: 'x"><script>' } });
-    expect(raar).not.toContain('<iframe');
+    expect(renderLesson(les, { ...meta, track: { ...meta.track, spotifyId: undefined } })).not.toContain('<iframe');
+    expect(renderLesson(les, { ...meta, track: { ...meta.track, spotifyId: 'x"><script>' } })).not.toContain('<iframe');
+  });
+
+  it('bergt woordverhalen, grammatica en kaarten op in de naslag', () => {
+    const naslag = /<aside class="naslag"[\s\S]*?<\/aside>/.exec(html)![0];
+    expect([...naslag.matchAll(/<section class="naslag-deel" id="([a-z-]+)">/g)].map((m) => m[1])).toEqual(['n-kaarten', 'n-verhalen', 'n-grammatica', 'n-bron']);
+    expect(naslag).toContain('<div class="gram-item" id="g-0">');
+    expect(naslag).toContain('<h4>Hoe het zo kwam</h4><p>Het Nederlands bewaart hem in &#39;s avonds.</p>');
+    expect(naslag).toContain('0 van 1 gekend');
+    expect(naslag).toContain('<a href="https://de.wikipedia.org/wiki/Das_Wandern" rel="noopener noreferrer" target="_blank">Das Wandern</a>');
+    const met = renderLesson({ ...les, valseVrienden: [{ duits: 'bellen', lijktOp: 'bellen', betekent: 'blaffen', toelichting: 'De hond belt.' }] }, meta);
+    expect(met).toContain('id="n-vrienden"');
+    expect(met).toContain('<b lang="de">bellen</b> lijkt op bellen. Het betekent <b>blaffen</b>.');
   });
 
   it('levert lesdata in de vorm die het script verwacht', () => {
@@ -205,22 +247,23 @@ describe('renderLesson', () => {
       geb: 'Na vom staat de derde naamval.', ety: 'Familie van Grieks hydor.',
     });
     expect(d.lex.lust.chips).toEqual([['r', 'dichterlijk'], ['o', 'herkomst onzeker']]);
-    expect(d.lex.mueller.chips).toEqual([['l', 'Latijn'], ['g', 'tweede naamval']]);
-    expect(d.decoder).toBeUndefined();
     expect(d.kaarten[0]).toMatchObject({ v: 'das Wasser', b: 'het water', regel: 't → ss' });
+    expect(d.haltes[0]).toEqual({
+      id: 'h0', soort: 'couplet', naam: 'Couplet 1', label: 'Das Wandern ist des Müllers Lust', inleiding: 'De molenaar wil op pad.',
+      woorden: ['wandern', 'der Müller', 'die Lust', 'das Wasser'],
+      stappen: [{ id: 's0-lezen', naam: 'Lezen' }, { id: 's0-erachter', naam: 'Erachter' }, { id: 's0-zelf', naam: 'Zelf doen' }],
+    });
+  });
+
+  it('gebruikt in het script de velden en namen die de pagina levert', () => {
+    const js = readFileSync(new URL('../templates/lesson.js', import.meta.url), 'utf8');
+    for (const veld of ['e.w', 'e.nl', 'e.fam', 'e.chips', 'e.geb', 'e.ety', 'D.haltes', 'D.spellen', 'dataset.noot', "'stap-' + x.id"]) expect(js).toContain(veld);
+    for (const klasse of ["'.raad'", "'.hw'", "'.mz'", "'.spel-koppel'", "'.spel-bouw'", "'#sheet'", "'#naslag'", "'#pillen'", "'#balk'"]) expect(js).toContain(klasse);
   });
 
   it('houdt de vertaling dicht tot je erom vraagt', () => {
-    // .regel .nl heeft display:block. Zonder deze regel wint dat van het hidden-attribuut.
     expect(html).toContain('[hidden]{display:none!important}');
     expect(html.match(/<span class="nl" hidden>/g)).toHaveLength(3);
-  });
-
-  it('gebruikt in het script de velden die de lesdata levert', () => {
-    const js = readFileSync(new URL('../templates/lesson.js', import.meta.url), 'utf8');
-    for (const veld of ['e.w', 'e.nl', 'e.fam', 'e.chips', 'e.geb', 'e.ety']) expect(js).toContain(veld);
-    expect(js).toContain('dataset.noot');
-    for (const klasse of ["'.raad'", "'a.naar'", "'.hw'", "'.mz'", "'.strofe .duid'", "'#koppel-app'", "'#bouw-app'", 'D.paren', 'D.zinnen']) expect(js).toContain(klasse);
   });
 
   it('voorkomt dat lesdata het script-element afsluit', () => {
@@ -231,15 +274,10 @@ describe('renderLesson', () => {
     expect(h.match(/<\/script>/g)).toHaveLength(2);
   });
 
-  it('toont valse vrienden als die er zijn', () => {
-    const met = { ...les, valseVrienden: [{ duits: 'bellen', lijktOp: 'bellen', betekent: 'blaffen', toelichting: 'De hond belt.' }] };
-    expect(renderLesson(met, meta)).toContain('<section id="vrienden">');
-  });
-
-  it('laat cultuur weg als het model er niets over wist', () => {
-    const kaal = renderLesson({ ...les, cultuur: [] }, meta);
-    expect(kaal).not.toContain('<section id="cultuur">');
-    expect(kaal).not.toContain('href="#cultuur"');
+  it('laat Erachter weg bij een couplet zonder duiding of cultuur', () => {
+    const kaal = renderLesson({ ...les, cultuur: [], strofen: les.strofen.map((s) => ({ ...s, duiding: '' })) }, meta);
+    expect(kaal).not.toContain('id="stap-s0-erachter"');
+    expect(kaal).toContain('id="stap-s0-zelf"');
   });
 
   it('zegt bij de voorbeeldles eerlijk waar die vandaan komt', () => {

@@ -268,6 +268,13 @@ describe('prompt en schema', () => {
     }
   });
 
+  it('legt uit dat de les één verhaal is dat couplet voor couplet loopt', () => {
+    expect(SYSTEEMPROMPT).toContain('De les is één verhaal: het lied zelf');
+    expect(SYSTEEMPROMPT).toContain('"inleiding"');
+    expect(JSON.stringify(LES_SCHEMA)).toContain('"inleiding"');
+    expect(SYSTEEMPROMPT).toContain('verdeel de stukken over de coupletten');
+  });
+
   it('vraagt om een gewone, menselijke toon zonder oneliners', () => {
     expect(SYSTEEMPROMPT).toContain('Geen oneliners of slogans.');
     expect(SYSTEEMPROMPT).toContain('Sluit een stuk niet af met een zin die het voorgaande samenvat');

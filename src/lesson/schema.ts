@@ -51,7 +51,9 @@ export interface Cultuur {
 
 export interface Strofe {
   naam: string;
-  /** Wat er in deze strofe gebeurt en waarom de maker het zo schreef. */
+  /** Eén gewone zin waarmee dit couplet begint in de les, als opstapje. */
+  inleiding: string;
+  /** Wat er in deze strofe gebeurt en waarom de maker het zo schreef. Opent het deel "erachter". */
   duiding: string;
   regels: Regel[];
 }
@@ -93,6 +95,7 @@ export const LES_SCHEMA = obj({
   strofen: arr(
     obj({
       naam: str,
+      inleiding: str,
       duiding: str,
       regels: arr(obj({ de: str, nl: str, woorden: arr(obj({ tekst: str, sleutel: str })), noot: str })),
     }),

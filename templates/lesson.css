@@ -1,9 +1,11 @@
 /* Taalstof, stijl Jugendstil: rustig papier, groenblauw en goud, sierlijke cursief voor het Duits,
-   stevige knoppen met een schaduwrand. Zo weinig mogelijk versiering. */
+   stevige knoppen met een schaduwrand. Zo weinig mogelijk versiering.
+   De les is een reis door het lied: op de telefoon het pad als startscherm en daarna een stap per
+   scherm, op desktop het pad als zijbalk naast de stap. */
 :root{
   --bg:#F4F1E8; --card:#FFFDF8; --soft:#EEF5F1; --raise:#E9EEE8;
   --fg:#1D2B2A; --muted:#6E7B76; --line:#D5DED7;
-  --accent:#1F7A6E; --accent-d:#145A51; --gold:#B28A3A; --gold-l:#EBDDB8;
+  --accent:#1F7A6E; --accent-d:#145A51; --gold:#B28A3A; --gold-d:#8B6A27; --gold-l:#EBDDB8; --line-d:#C2CCC4;
   --ok:#2F9A6A; --ok-d:#1C6A47; --ok-l:#DFF2E8;
   --fout:#C0453A; --fout-l:#F8E1DD;
   --serif:"Cormorant Garamond",Georgia,serif;
@@ -13,14 +15,14 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121C1A; --card:#192623; --soft:#1C2E2A; --raise:#22322F;
   --fg:#E4ECE7; --muted:#93A39C; --line:#2E403C;
-  --accent:#4FB3A4; --accent-d:#2F7D72; --gold:#D2AE62; --gold-l:#4A3E24;
+  --accent:#4FB3A4; --accent-d:#2F7D72; --gold:#D2AE62; --gold-d:#8A6B2C; --gold-l:#4A3E24; --line-d:#23332F;
   --ok:#4CC48A; --ok-d:#2B8A5C; --ok-l:#173327;
   --fout:#EE8579; --fout-l:#3A201D;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121C1A; --card:#192623; --soft:#1C2E2A; --raise:#22322F;
   --fg:#E4ECE7; --muted:#93A39C; --line:#2E403C;
-  --accent:#4FB3A4; --accent-d:#2F7D72; --gold:#D2AE62; --gold-l:#4A3E24;
+  --accent:#4FB3A4; --accent-d:#2F7D72; --gold:#D2AE62; --gold-d:#8A6B2C; --gold-l:#4A3E24; --line-d:#23332F;
   --ok:#4CC48A; --ok-d:#2B8A5C; --ok-l:#173327;
   --fout:#EE8579; --fout-l:#3A201D;
   color-scheme:dark}
@@ -35,32 +37,112 @@ ul,ol{margin:0 0 14px;padding-left:22px;max-width:64ch}
 i[lang]{font-style:italic}
 .nb{white-space:nowrap}
 
-/* kader */
-.wrap{max-width:1120px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
-.grid{display:grid;grid-template-columns:minmax(0,1fr)}
-@media(min-width:1000px){.grid{grid-template-columns:190px minmax(0,1fr);gap:44px}}
-main{min-width:0;padding-bottom:80px}
+/* ---------- de reis: indeling ---------- */
+.les{min-height:100vh}
+.hoofd{min-height:100vh;display:flex;flex-direction:column;min-width:0}
+h1{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(32px,6vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.eyebrow{font:800 12px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
 
-header.mast{padding:40px 0 24px}
-.eyebrow{font:800 12px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
-h1{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(34px,6vw,50px);line-height:1.05;margin:0;text-wrap:balance}
-.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:700 13px var(--ui);color:var(--muted)}
-.meta b{color:var(--fg)}
+/* overzicht: op de telefoon een eigen scherm dat over de stap schuift */
+.overzicht{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;padding:24px 18px 48px;transform:translateX(-100%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}
+body.ov-open{overflow:hidden}
+body.ov-open .overzicht{transform:none;visibility:visible;transition:transform .22s ease}
+.ov-kop{margin-bottom:16px}
+.ov-meta{font:700 13px var(--ui);color:var(--muted);margin:6px 0 0}
+.overzicht .speler{display:block;width:100%;border:0;border-radius:14px;margin:0 0 22px}
 
-nav.rail{font:700 14px var(--ui);padding:8px 0 4px}
-nav.rail>p{display:none}
-nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px}
-nav.rail a{display:block;text-decoration:none;color:var(--muted);padding:3px 0}
-nav.rail a:hover{color:var(--accent)}
+.pad{list-style:none;margin:0;padding:8px 0 0;max-width:none;display:flex;flex-direction:column;align-items:center;gap:24px}
+.halte{display:flex;flex-direction:column;align-items:center;margin:0;transform:translateX(var(--dx,0px))}
+.node{width:70px;height:70px;border-radius:50%;border:0;padding:0;background:var(--line);box-shadow:0 6px 0 var(--line-d);color:#fff;display:grid;place-items:center;cursor:pointer;font:900 22px var(--ui)}
+.node svg{width:30px;height:30px}
+.node .vink{display:none}
+.halte.af .node{background:var(--accent);box-shadow:0 6px 0 var(--accent-d)}
+.halte.af .node>:not(.vink){display:none}
+.halte.af .node .vink{display:block}
+.halte.nu .node{background:var(--gold);box-shadow:0 6px 0 var(--gold-d),0 0 0 7px var(--bg),0 0 0 10px var(--gold-l)}
+.lbl{background:none;border:0;padding:0;margin-top:12px;cursor:pointer;color:var(--fg);display:flex;flex-direction:column;align-items:center;text-align:center}
+.lbl .t{font-family:var(--serif);font-style:italic;font-weight:600;font-size:18px;line-height:1.2;max-width:230px}
+.lbl small{font:800 11.5px var(--ui);letter-spacing:.03em;color:var(--muted);margin-top:3px}
+.sub{display:none}
+.naslag-knop{display:flex;align-items:center;gap:8px;margin:30px auto 0}
+.naslag-knop svg{width:18px;height:18px}
+
+/* stap */
+.stap-kop{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;gap:12px;padding:12px 16px 8px}
+.ikoon{width:42px;height:42px;flex:none;border-radius:12px;border:2px solid var(--line);background:var(--card);box-shadow:0 3px 0 var(--line);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
+.ikoon svg{width:22px;height:22px}
+.kop-midden{flex:1;min-width:0}
+.kop-titel{display:flex;justify-content:space-between;gap:10px;margin:0 0 6px;max-width:none;font:800 13px var(--ui);color:var(--muted)}
+.kop-titel b{color:var(--fg);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.balk{display:flex;gap:4px}
+.balk span{flex:1;height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+.balk i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.pillen{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 10px}
+.pil{font:800 12.5px var(--ui);padding:5px 12px;border-radius:99px;border:2px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.pil.af{border-color:var(--accent);color:var(--accent)}
+.pil.nu{background:var(--accent);border-color:var(--accent);color:#fff}
+.stap{flex:1;display:flex;flex-direction:column}
+.stap-binnen{flex:1;width:100%;max-width:752px;margin:0 auto;padding:4px 16px 28px}
+.verteller{font-size:20.5px;line-height:1.5;margin:6px 0 18px;max-width:none}
+.voet{position:sticky;bottom:0;z-index:4;background:var(--bg);border-top:2px solid var(--line);padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.voet-binnen{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.hierna{font:700 13.5px var(--ui);color:var(--muted);margin:0;max-width:none}
+.hierna i{font-family:var(--serif);font-size:17.5px;font-weight:600;color:var(--fg)}
+.verder{width:100%;font-size:16px;padding:14px 22px;letter-spacing:.04em}
+.hint{font:700 13px var(--ui);color:var(--muted)}
+
+/* kaartje onderaan (telefoon) en naslag */
+.sheet-achter,.naslag-achter{position:fixed;inset:0;z-index:30;background:rgba(18,28,26,.42)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-height:85vh;overflow-y:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 24px rgba(0,0,0,.15)}
+.greep{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+.sheet .verteller{font-size:19px;margin:2px 0 12px}
+.sheet .de{font-style:italic;font-weight:600;font-size:23px;line-height:1.35;margin:0 0 14px}
+.sheet-woorden{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.sheet-woorden .hwk{cursor:default}
+.btn.groot{display:block;width:100%;font-size:16px;padding:14px;letter-spacing:.04em}
+.naslag{position:fixed;top:0;right:0;bottom:0;z-index:31;width:min(540px,100%);overflow-y:auto;background:var(--bg);padding:0 20px 48px;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
+.naslag-kop{position:sticky;top:0;z-index:2;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:18px 0 10px}
+.naslag-kop h2{margin:0}
+.naslag-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.naslag-nav a{text-decoration:none}
+.naslag-deel{padding:16px 0 4px;scroll-margin-top:72px}
+.naslag-titel{margin:6px 0 12px}
+.gram-item{scroll-margin-top:72px}
+body.naslag-open{overflow:hidden}
+
 @media(min-width:1000px){
-  nav.rail{position:sticky;top:0;align-self:start;padding-top:28px}
-  nav.rail ol{flex-direction:column}
+  .les{display:grid;grid-template-columns:320px minmax(0,1fr)}
+  .overzicht{position:sticky;top:0;height:100vh;transform:none;visibility:visible;transition:none;z-index:1;border-right:2px solid var(--line);padding:30px 24px 30px}
+  #naar-overzicht{display:none}
+  .stap-kop,.pillen{width:100%;max-width:784px;margin:0 auto}
+  .stap-kop{padding:24px 32px 10px}
+  .pillen{padding:4px 32px 12px}
+  .stap-binnen{max-width:784px;padding:6px 32px 36px}
+  .voet{padding:14px 32px 22px}
+  .voet-binnen{flex-direction:row;align-items:center;justify-content:space-between;gap:20px}
+  .verder{width:auto;min-width:200px}
+  .pad{align-items:stretch;gap:8px;position:relative;padding-top:4px}
+  .pad::before{content:"";position:absolute;left:20px;top:26px;bottom:26px;width:3px;border-radius:3px;background:var(--line)}
+  .halte{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:14px;align-items:center;transform:none;position:relative}
+  .node{width:44px;height:44px;font-size:16px;box-shadow:0 4px 0 var(--line-d)}
+  .node svg{width:22px;height:22px}
+  .halte.af .node{box-shadow:0 4px 0 var(--accent-d)}
+  .halte.nu .node{box-shadow:0 4px 0 var(--gold-d),0 0 0 5px var(--bg),0 0 0 8px var(--gold-l)}
+  .lbl{margin:0;align-items:flex-start;text-align:left;padding:8px 0}
+  .lbl .t{font-size:17.5px;max-width:none}
+  .halte.nu .lbl .t{color:var(--accent-d)}
+  .sub{grid-column:2;list-style:none;margin:0 0 10px;padding:0;gap:6px;flex-wrap:wrap}
+  .halte.nu .sub{display:flex}
+  .sub li{margin:0}
+  .sub a{display:block;font:800 12px var(--ui);text-decoration:none;color:var(--muted);border:2px solid var(--line);border-radius:99px;padding:3px 10px}
+  .sub a.af{color:var(--accent);border-color:var(--accent)}
+  .sub a[aria-current]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .naslag-knop{margin:28px 0 0}
 }
 
-section{padding:30px 0 6px}
 h2{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(28px,4vw,34px);line-height:1.1;margin:0 0 14px;text-wrap:balance}
-h2 .num{display:block;font:800 12px var(--ui);font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:24px;line-height:1.2;margin:26px 0 8px}
+h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:24px;line-height:1.2;margin:26px 0 10px}
+.stap-binnen>h3:first-of-type{margin-top:8px}
 h4{font:800 12px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .lab{display:block;font:800 11.5px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 .zeker{font:700 12px var(--ui);color:var(--muted);margin:0 0 8px}
@@ -87,23 +169,16 @@ h4{font:800 12px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:v
 .uitleg .chip:not(.l):not(.o){background:var(--card)}
 .chip.o{background:transparent;border:1.5px dashed var(--line);color:var(--muted)}
 
-/* de tekst */
-.lied{display:grid;gap:18px;max-width:760px;margin:6px 0 24px}
-.lied-balk{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.lied-balk p{margin:0;font:700 13px var(--ui);color:var(--muted)}
-.speler{display:block;width:100%;max-width:760px;border:0;border-radius:16px;margin:0 0 16px;position:sticky;top:8px;z-index:2}
+/* het couplet */
 .strofe{padding:16px 18px 18px}
 .strofe-kop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .strofe-kop>span:first-child{font:800 12px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .strofe-kop .btn.klein{box-shadow:none;border-width:1.5px;color:var(--muted)}
 .strofe-kop .btn.klein[aria-pressed="true"]{color:var(--accent-d);border-color:var(--accent)}
 .knoppen{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
-.duiding{font-size:17px;line-height:1.5;color:var(--muted);margin:0 0 12px;max-width:none}
-.regel{margin:0;max-width:none;scroll-margin-top:110px;border-radius:8px}
+.regel{margin:0;max-width:none;border-radius:8px}
 .regel .de{display:block;font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(22px,3vw,27px);line-height:1.6}
 .regel .nl{display:block;font-size:16px;color:var(--muted);margin:-2px 0 8px}
-@keyframes flits{from{background:var(--gold-l)}to{background:transparent}}
-.regel.flits{animation:flits 2.2s ease-out}
 .w{font:inherit;color:inherit;background:none;border:0;border-bottom:2px dotted var(--muted);border-radius:6px 6px 0 0;padding:0 2px;margin:0;cursor:pointer}
 .w:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .w.on,.w.on:hover{background:var(--accent);color:#fff;border-bottom:2px solid var(--accent-d)}
@@ -120,12 +195,14 @@ h4{font:800 12px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:v
 .uitleg .u-txt{font-size:17px;line-height:1.5;margin:10px 0 0}
 .uitleg .u-txt .lab{color:var(--gold);margin-bottom:0}
 
-/* wat een Duitser hoort */
-article.cult{max-width:720px}
-.cult h4{font-family:var(--serif);font-style:italic;font-weight:600;font-size:25px;letter-spacing:0;text-transform:none;color:var(--fg);margin:0 0 4px}
-.cult .aanl{font:700 13px var(--ui);color:var(--muted);margin:0 0 12px}
-.cult .aanl i{font-family:var(--serif);font-weight:600;font-size:17px;color:var(--fg)}
-.cult .naar{margin-left:4px}
+/* erachter: de regel uit het lied, dan wat een Duitser erbij hoort */
+.citaat{margin:22px 0 10px;padding:2px 0 2px 16px;border-left:3px solid var(--gold)}
+.citaat .de{font-style:italic;font-weight:600;font-size:23px;line-height:1.35;margin:0}
+.citaat .nl{font-size:16px;color:var(--muted);margin:2px 0 0}
+.cult h3{margin:0 0 8px}
+.gram{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.gram .lab{margin:0 4px 0 0}
+.box.vriend p{margin-bottom:6px}
 .raad{margin:2px 0 14px}
 .raad .q,.mc .q{font:800 16.5px/1.35 var(--ui);margin:4px 0 12px;max-width:none}
 .opts{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
@@ -140,7 +217,8 @@ article.cult{max-width:720px}
 .hw-knoppen{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .hwk{font-family:var(--serif);font-style:italic;font-weight:600;font-size:19px;color:var(--fg);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:2px 13px;box-shadow:0 3px 0 var(--line);cursor:pointer}
 .hwk[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:0 3px 0 var(--accent)}
-.hw-uit{font-size:17px;margin:10px 0 0;min-height:1.4em;max-width:none}
+.hw-uit{font-size:17px;margin:10px 0 0;max-width:none}
+.hw-uit:empty{display:none}
 .kapstok{border-top:2px solid var(--line);padding-top:12px;margin:14px 0 0}
 .kapstok b{display:block;font:800 11.5px var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
 
@@ -190,7 +268,6 @@ td.b{font-style:italic;font-weight:600}
 .score p{font:700 14px var(--ui);margin:0}
 .bronnen{font-size:17px}
 
-footer{padding:24px 0 48px;font:700 13px var(--ui);color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.btn,.opt,.w,.hwk{transition:background-color .12s,border-color .12s,color .12s,transform .06s}}
 
 /* oefenen */
@@ -202,6 +279,7 @@ footer{padding:24px 0 48px;font:700 13px var(--ui);color:var(--muted)}
 .kp.gekozen{border-color:var(--accent);background:var(--soft);box-shadow:0 3px 0 var(--accent)}
 .kp.af{border-color:var(--ok);background:var(--ok-l);color:var(--ok-d);box-shadow:none;opacity:.55;cursor:default}
 .kp.mis{border-color:var(--fout);background:var(--fout-l)}
+.bouw-bij{font-size:17px;color:var(--gold-d);margin:0 0 4px}
 .bouw-nl{color:var(--muted);font-size:18px;margin:0 0 12px}
 .bouw-antwoord{min-height:54px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;border-bottom:2px solid var(--line);padding:0 0 10px;margin-bottom:14px}
 .bouw-bank{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}

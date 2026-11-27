@@ -75,7 +75,7 @@ describe('les maken op de achtergrond', () => {
     expect(af).toMatchObject({ status: 'klaar', titel: les.titel, url: `/lessons/${job.id}.html` });
     expect(existsSync(path.join(app.config.lessonsDir, `${job.id}.html`))).toBe(true);
     const html = await (await app.get(af.url!)).text();
-    expect(html).toContain('<title>Wandern is wandelen met bepakking</title>');
+    expect(html).toContain('<title>Das Wandern · Taalstof</title>');
     expect(await (await app.get('/api/lessons')).json()).toMatchObject([{ file: `${job.id}.html` }]);
 
     // Na afloop mag dezelfde les opnieuw: de generator haalt hem dan uit zijn cache.
@@ -125,7 +125,8 @@ describe('de rest van de app', () => {
     expect(res.headers.get('content-type')).toContain('text/html');
     const html = await res.text();
     expect(html).toContain('Die Gedanken sind frei');
-    expect(html).toContain('<section id="cultuur">');
+    expect(html).toContain('id="overzicht"');
+    expect(html).toContain('<section class="stap" id="stap-s0-erachter"');
     expect(html).toContain('voorbeeldles');
     expect(generate).not.toHaveBeenCalled();
   });

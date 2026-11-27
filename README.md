@@ -4,19 +4,23 @@ Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eig
 
 Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0.0.1`. Elke les is een los HTML-bestand in `lessons/`, dat je ook zonder de server kunt openen.
 
-## Wat er in een les zit
+## Hoe een les loopt
 
-| Onderdeel | Wat je krijgt |
+Een les is één verhaal: het lied zelf, van het eerste couplet tot het laatste. Je loopt het couplet voor couplet door, één stap per scherm, met **Verder** onderaan. Onder de knop staat steeds wat er hierna komt.
+
+| Stap | Wat je doet |
 | --- | --- |
-| De tekst | Elke regel klikbaar. Per woord de betekenis en de familie, met daaronder waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt, zoals woordvolgorde of een uitdrukking. Per strofe vertelt **Waarom deze strofe** wat erin gebeurt. Komt het nummer van Spotify, dan staat de speler erboven |
-| Wat een Duitser hoort | Wat een Duitser bij een zinsnede weet of voelt en jij nog niet. Elk stuk linkt naar zijn regel in het lied en heeft woorden om aan te tikken. Soms raad je eerst, en elk stuk eindigt met een kapstok die het vastknoopt aan iets uit de les |
-| Meezingen | De tekst met gaten. Zet het lied op en vul in wat je hoort |
-| Oefenen | Twee spelletjes: koppel Duitse woorden aan hun betekenis, en zet de woorden van een regel weer in de goede volgorde. Ze kosten niets extra, de pagina maakt ze zelf uit de les |
-| Woordverhalen | De herkomst van de mooiste woorden |
-| Grammatica | Wat het lied nodig heeft, met erbij hoe het zo gekomen is |
-| Valse vrienden | Woorden die op Nederlands lijken en iets anders betekenen |
-| Flashcards en zelftoets | Oefenen, met het verhaal op de achterkant. Bij de toets staat wat je na de les moet kunnen |
-| Bron | De pagina's waar de les op steunt, en wat de les kostte |
+| Lezen | Het couplet, met een zin waarmee het begint. Tik op een woord voor de betekenis, de familie, waarom het hier zo staat en waar het vandaan komt. Achter sommige regels staat *waarom?* voor wat aan de hele regel hangt. Komt er grammatica in voor, dan brengt een knopje je naar de uitleg |
+| Erachter | Wat er in het couplet gebeurt en wat een Duitser erbij hoort: de regel uit het lied, het verhaal erachter, soms eerst een vraag om te raden, woorden om aan te tikken en een kapstok |
+| Zelf doen | Koppel de woorden van dit couplet aan hun betekenis en zet een regel weer in de goede volgorde. Kwam die regel net voorbij in een verhaal, dan staat dat erbij |
+
+Na het laatste couplet zing je het hele lied mee door de gaten in te vullen, en dan volgt de toets met wat je nu zou moeten kunnen.
+
+Het **overzicht** is een pad met een halte per couplet, plus meezingen en de toets. Afgeronde haltes worden groen en de halte waar je bent goud. Op de telefoon is het pad je startscherm. Tik je op een halte, dan zie je wat er komt en begin je met **Begin**. Op een computer staat het pad altijd links, met de stappen van de huidige halte eronder. De Spotify-speler staat bij het overzicht. Taalstof onthoudt in je browser waar je was.
+
+De **naslag** schuift er van rechts in, op elk moment. Daar staan de kaarten, de woordverhalen, de grammatica, de valse vrienden en de bron van de les.
+
+De pagina maakt het pad, de stappen, de spelletjes en de zinnen bij Hierna zelf uit wat de les al heeft. Het model schrijft alleen per couplet één openingszin extra.
 
 Eerst zien hoe dat eruitziet? Start de app en open `http://127.0.0.1:8787/voorbeeld`. Die voorbeeldles over *Die Gedanken sind frei* werkt zonder sleutels.
 
