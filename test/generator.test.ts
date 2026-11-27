@@ -1,10 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mkdtempSync, readFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
-import { ClaudeLessonGenerator, type MessagesLike } from '../src/lesson/generator.js';
-import { JsonCache } from '../src/cache.js';
-import { loadConfig } from '../src/config.js';
+import { readFileSync } from 'node:fs';
+import { ClaudeLessonGenerator, type LesCache, type MessagesLike } from '../src/lesson/generator.js';
+import { DEFAULT_EFFORT, isEffort } from '../src/lesson/instellingen.js';
+import type { Les } from '../src/lesson/schema.js';
 import { LES_SCHEMA, validateLes } from '../src/lesson/schema.js';
 import { SYSTEEMPROMPT, gebruikersprompt } from '../src/lesson/prompt.js';
 import { bedrag, leegKosten, telOp, type Kosten } from '../src/lesson/kosten.js';
@@ -44,6 +42,11 @@ function fakeClient(...antwoorden: Nep[]) {
   });
   return { client: { beta: { messages: { stream } } } as unknown as MessagesLike, stream };
 }
+/** Zoals Supabase in de app: eerder gemaakte lessen op sleutel. */
+function geheugen(): LesCache & { m: Map<string, Les> } {
+  const m = new Map<string, Les>();
+  return { m, get: async (k) => m.get(k), set: async (k, les) => void m.set(k, les) };
+}
 const params = (stream: ReturnType<typeof fakeClient>['stream']) => (stream.mock.calls[0] as unknown[])[0] as Record<string, any>;
 const maak = (client: MessagesLike, extra: object = {}) => new ClaudeLessonGenerator({ apiKey: '', model: 'claude-test', client, ...extra });
 
@@ -75,7 +78,7 @@ describe('ClaudeLessonGenerator', () => {
   });
 
   it('gebruikt de cache voor dezelfde tekst en dezelfde instellingen', async () => {
-    const cache = new JsonCache(mkdtempSync(path.join(tmpdir(), 'taalstof-')));
+    const cache = geheugen();
     const { client, stream } = fakeClient();
     const g = maak(client, { cache });
     await g.generate(track, lyrics);
@@ -182,11 +185,11 @@ describe('ClaudeLessonGenerator', () => {
     const fc = fakeClient({ text: '{"titel": 1}' }, {});
     const stream = fc.stream;
     const echte = stream.getMockImplementation()!;
-    stream.mockImplementation((p) => {
-      const s = echte(p);
+    stream.mockImplementation(((p: unknown) => {
+      const s = echte(p) as { on: unknown; finalMessage: () => Promise<object> };
       const eind = s.finalMessage;
-      return { ...s, finalMessage: async () => ({ ...(await eind()), usage }) as never };
-    });
+      return { ...s, finalMessage: async () => ({ ...(await eind()), usage }) };
+    }) as never);
     const gezien: Kosten[] = [];
     await maak(fc.client, { model: 'claude-opus-5-5' }).generate(track, lyrics, { onKosten: (k) => gezien.push(k) });
     const k = gezien.at(-1)!;
@@ -198,7 +201,7 @@ describe('ClaudeLessonGenerator', () => {
   });
 
   it('meldt een les uit de cache als gratis', async () => {
-    const cache = new JsonCache(mkdtempSync(path.join(tmpdir(), 'taalstof-')));
+    const cache = geheugen();
     const { client } = fakeClient();
     await maak(client, { cache }).generate(track, lyrics);
     const gezien: Kosten[] = [];
@@ -233,7 +236,7 @@ describe('ClaudeLessonGenerator', () => {
   });
 
   it('bewaart een mislukte les niet in de cache', async () => {
-    const cache = new JsonCache(mkdtempSync(path.join(tmpdir(), 'taalstof-')));
+    const cache = geheugen();
     const mis = fakeClient({ text: '', stop_reason: 'refusal' });
     await expect(maak(mis.client, { cache }).generate(track, lyrics)).rejects.toThrow();
     const goed = fakeClient();
@@ -242,7 +245,7 @@ describe('ClaudeLessonGenerator', () => {
   });
 
   it('meldt een ontbrekende API-sleutel', async () => {
-    await expect(new ClaudeLessonGenerator({ apiKey: '', model: 'm' }).generate(track, lyrics)).rejects.toThrow(/ANTHROPIC_API_KEY/);
+    await expect(new ClaudeLessonGenerator({ apiKey: '', model: 'm' }).generate(track, lyrics)).rejects.toThrow(/Claude-sleutel/);
   });
 });
 
@@ -338,10 +341,10 @@ describe('validateLes', () => {
   });
 });
 
-describe('config', () => {
-  it('denkt standaard gemiddeld na en keurt een onbekend niveau af', () => {
-    expect(loadConfig({}).anthropicEffort).toBe('medium');
-    expect(loadConfig({ ANTHROPIC_EFFORT: 'low' }).anthropicEffort).toBe('low');
-    expect(() => loadConfig({ ANTHROPIC_EFFORT: 'turbo' })).toThrow(/ANTHROPIC_EFFORT/);
+describe('instellingen', () => {
+  it('denkt standaard gemiddeld na en kent alleen de bekende niveaus', () => {
+    expect(DEFAULT_EFFORT).toBe('medium');
+    expect(isEffort('low')).toBe(true);
+    expect(isEffort('turbo')).toBe(false);
   });
 });

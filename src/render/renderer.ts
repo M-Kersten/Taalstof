@@ -1,10 +1,9 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { ROOT } from '../config.js';
+// Stijl en interactie van de les gaan als tekst mee, zodat een les één los HTML-document is.
+import css from '../../templates/lesson.css?raw';
+import js from '../../templates/lesson.js?raw';
 import type { Les, Regel, Woord } from '../lesson/schema.js';
 import type { TrackRef } from '../types.js';
 
-const TEMPLATES = path.join(ROOT, 'templates');
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Nunito:wght@700;800&display=swap';
 
@@ -20,6 +19,8 @@ export interface RenderMeta {
   bedrag?: string;
   /** De meegeleverde voorbeeldles: tekst vrij van rechten, niet door de app gegenereerd. */
   voorbeeld?: boolean;
+  /** Adres van de app, voor de weg terug vanuit de les. */
+  terug?: string;
 }
 
 export function esc(s: unknown): string {
@@ -609,8 +610,6 @@ ${delen.map(([id, t, inhoud]) => `  <section class="naslag-deel" id="${id}">\n  
 }
 
 export function renderLesson(les: Les, meta: RenderMeta): string {
-  const css = readFileSync(path.join(TEMPLATES, 'lesson.css'), 'utf8');
-  const js = readFileSync(path.join(TEMPLATES, 'lesson.js'), 'utf8');
   const lex = Object.fromEntries(les.woordenlijst.map((w) => [w.sleutel, lexEntry(w)]));
   const haltes = reisplan(les, meta);
   const spellen: Record<string, Spel> = {};
@@ -649,7 +648,7 @@ ${css}</style>
 <div class="les">
 <aside class="overzicht" id="overzicht" aria-label="Overzicht">
   <div class="ov-kop">
-    <p class="eyebrow">Taalstof</p>
+    <p class="eyebrow">${meta.terug ? `<a href="${esc(meta.terug)}">Taalstof</a>` : 'Taalstof'}</p>
     <h1>${esc(les.lied.titel)}</h1>
     <p class="ov-meta">${esc(les.lied.artiest)}</p>
   </div>

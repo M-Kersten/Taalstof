@@ -1,11 +1,11 @@
 {
   "name": "taalstof",
   "version": "1.0.0",
-  "description": "Duitse taallessen uit songteksten, lokaal voor eigen gebruik",
+  "description": "Duitse taallessen uit songteksten, als browser-app voor eigen gebruik",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
-    "build": "tsc -p tsconfig.json",
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "preview": "vite preview",
     "test": "vitest run"
   },
   "repository": {
@@ -20,14 +20,12 @@
   "homepage": "https://github.com/M-Kersten/taalstof#readme",
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
-    "dotenv": "^18.0.10",
-    "express": "^4.22.3"
+    "@supabase/supabase-js": "2.118.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.25",
     "@types/node": "^22.20.5",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
+    "vite": "8.3.8",
     "vitest": "^5.1.0"
   },
   "type": "module",

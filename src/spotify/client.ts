@@ -1,11 +1,19 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import path from 'node:path';
 import { challengeFor, createVerifier } from './pkce.js';
 import type { FetchFn, TrackRef } from '../types.js';
 
 const ACCOUNTS = 'https://accounts.spotify.com';
 const API = 'https://api.spotify.com/v1';
 export const SCOPES = ['playlist-read-private', 'playlist-read-collaborative', 'user-read-recently-played'];
+
+/** Waar de client tokens en de PKCE-verifier bewaart. In de browser is dat localStorage. */
+export interface Opslag {
+  getItem(k: string): string | null;
+  setItem(k: string, v: string): void;
+  removeItem(k: string): void;
+}
+
+const TOKEN = 'taalstof-spotify-token';
+const PKCE = 'taalstof-spotify-pkce-';
 
 interface TokenSet {
   access_token: string;
@@ -36,41 +44,49 @@ export function toTrackRef(t: SpTrack): TrackRef {
   };
 }
 
-/** Officiele Spotify Web API met Authorization Code + PKCE. Alleen metadata, geen songteksten. */
+/**
+ * Officiële Spotify Web API met Authorization Code + PKCE, rechtstreeks vanuit de browser.
+ * Alleen metadata, geen songteksten. De verifier staat in de opslag, omdat de pagina na het
+ * inloggen opnieuw laadt.
+ */
 export class SpotifyClient {
-  private pending = new Map<string, string>(); // state -> verifier
   private tokens?: TokenSet;
 
   constructor(
     private readonly clientId: string,
     private readonly redirectUri: string,
-    private readonly tokenFile: string,
-    private readonly fetchFn: FetchFn = fetch,
+    private readonly opslag: Opslag,
+    private readonly fetchFn: FetchFn = (...a) => fetch(...a),
     private readonly now: () => number = Date.now,
   ) {}
 
-  authorizeUrl(): string {
-    if (!this.clientId) throw new Error('SPOTIFY_CLIENT_ID ontbreekt in .env');
+  async authorizeUrl(): Promise<string> {
+    if (!this.clientId) throw new Error('Vul eerst de Spotify Client ID in bij Instellingen.');
     const verifier = createVerifier();
     const state = createVerifier().slice(0, 16);
-    this.pending.set(state, verifier);
+    this.opslag.setItem(PKCE + state, verifier);
     const u = new URL(`${ACCOUNTS}/authorize`);
     u.search = new URLSearchParams({
       client_id: this.clientId,
       response_type: 'code',
       redirect_uri: this.redirectUri,
       code_challenge_method: 'S256',
-      code_challenge: challengeFor(verifier),
+      code_challenge: await challengeFor(verifier),
       scope: SCOPES.join(' '),
       state,
     }).toString();
     return u.toString();
   }
 
+  /** Hoort deze state bij een login die hier begon? */
+  wachtOp(state: string): boolean {
+    return !!state && this.opslag.getItem(PKCE + state) !== null;
+  }
+
   async handleCallback(code: string, state: string): Promise<void> {
-    const verifier = this.pending.get(state);
+    const verifier = this.opslag.getItem(PKCE + state);
     if (!verifier) throw new Error('Onbekende of verlopen state; begin opnieuw met inloggen.');
-    this.pending.delete(state);
+    this.opslag.removeItem(PKCE + state);
     await this.tokenRequest({
       grant_type: 'authorization_code',
       code,
@@ -93,18 +109,23 @@ export class SpotifyClient {
       refresh_token: j.refresh_token ?? this.tokens?.refresh_token,
       expires_at: this.now() + (j.expires_in - 60) * 1000,
     };
-    await mkdir(path.dirname(this.tokenFile), { recursive: true });
-    await writeFile(this.tokenFile, JSON.stringify(this.tokens), { encoding: 'utf8', mode: 0o600 });
+    this.opslag.setItem(TOKEN, JSON.stringify(this.tokens));
   }
 
   private async loadTokens(): Promise<TokenSet | undefined> {
     if (this.tokens) return this.tokens;
     try {
-      this.tokens = JSON.parse(await readFile(this.tokenFile, 'utf8')) as TokenSet;
+      const t = this.opslag.getItem(TOKEN);
+      if (t) this.tokens = JSON.parse(t) as TokenSet;
     } catch {
-      /* nog niet ingelogd */
+      /* kapotte opslag: gewoon opnieuw inloggen */
     }
     return this.tokens;
+  }
+
+  uitloggen(): void {
+    this.tokens = undefined;
+    this.opslag.removeItem(TOKEN);
   }
 
   async isLoggedIn(): Promise<boolean> {

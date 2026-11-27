@@ -2,7 +2,7 @@ import type { TrackRef } from '../types.js';
 
 export interface Lyrics {
   text: string;
-  /** true als de bron maar een deel van de tekst gaf (gratis Musixmatch-sleutel). */
+  /** true als de bron maar een deel van de tekst gaf. */
   partial: boolean;
   source: string;
   copyright?: string;

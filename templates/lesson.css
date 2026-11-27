@@ -42,6 +42,8 @@ i[lang]{font-style:italic}
 .hoofd{min-height:100vh;display:flex;flex-direction:column;min-width:0}
 h1{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(32px,6vw,40px);line-height:1.05;margin:0;text-wrap:balance}
 .eyebrow{font:800 12px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.eyebrow a{color:inherit;text-decoration:none}
+.eyebrow a::before{content:"\2039\00a0"}
 
 /* overzicht: op de telefoon een eigen scherm dat over de stap schuift */
 .overzicht{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;padding:24px 18px 48px;transform:translateX(-100%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}

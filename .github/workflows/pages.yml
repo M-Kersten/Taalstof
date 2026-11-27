@@ -1,0 +1,51 @@
+# Bouwt Taalstof als statische site en zet hem op GitHub Pages.
+# Zet eerst onder Settings > Pages de bron op "GitHub Actions" en vul onder
+# Settings > Secrets and variables > Actions > Variables deze drie in:
+# SPOTIFY_CLIENT_ID, SUPABASE_URL en SUPABASE_ANON_KEY. Ze komen openbaar in de pagina
+# te staan; daarom zijn het variabelen en geen secrets. De Claude-sleutel hoort hier niet.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          BASE: /${{ github.event.repository.name }}/
+          VITE_SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID }}
+          VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

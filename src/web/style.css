@@ -27,8 +27,9 @@ h2{font-family:var(--serif);font-style:italic;font-weight:600;font-size:30px;lin
 .lab{display:block;font-weight:800;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 .muted{color:var(--muted)}
 .tabs,.rij{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
-input[type=search],textarea{flex:1 1 200px;font:inherit;padding:10px 12px;background:var(--bg);color:var(--fg);border:2px solid var(--line);border-radius:14px}
-input[type=search]:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input:not([type=checkbox]),select,textarea{flex:1 1 200px;font:inherit;padding:10px 12px;background:var(--bg);color:var(--fg);border:2px solid var(--line);border-radius:14px;min-width:0}
+input:not([type=checkbox]):focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent);flex:none;margin:0}
 textarea{display:block;width:100%;font-family:var(--serif);font-size:18px;line-height:1.5;margin:4px 0 14px}
 .btn{font:800 14px var(--ui);color:var(--fg);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 16px;box-shadow:0 4px 0 var(--line);cursor:pointer;text-decoration:none;display:inline-block}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
@@ -44,3 +45,22 @@ textarea{display:block;width:100%;font-family:var(--serif);font-size:18px;line-h
 .lijst a{font-weight:700}
 #melding .btn{margin-left:6px}
 .voet{font-size:14px;margin:14px 0 0}
+details.paneel>summary{cursor:pointer;font-weight:800;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.paneel>summary::-webkit-details-marker{display:none}
+details.paneel>summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
+details.paneel[open]>summary{margin-bottom:16px}
+details.paneel[open]>summary::after{content:"\2212"}
+.velden{display:grid;gap:14px}
+.velden label{display:grid;gap:4px}
+.velden .rij{margin:0}
+.velden .rij>label{flex:1 1 180px}
+.velden small{font-size:13.5px}
+.velden .vink{display:flex;gap:10px;align-items:center;font-weight:700}
+.meer>summary{cursor:pointer;font-weight:800;color:var(--accent);font-size:14px}
+.meer label{margin-top:12px}
+.meer>small{display:block;margin-top:8px}
+#inloggen p{margin:0 0 12px}
+#zoek-melding:empty,#inst-melding:empty,#inlog-melding:empty{display:none}
+.linkknop{background:none;border:0;padding:0;font:inherit;color:var(--accent);text-decoration:underline;cursor:pointer}
+.lijst .les{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card)}
+.lijst .les .linkknop{width:auto;flex:none;display:inline;background:none;border:0;box-shadow:none;padding:0;font:600 13px var(--ui);color:var(--muted)}

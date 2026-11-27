@@ -3,8 +3,8 @@ import { LES_SCHEMA, schemaFouten, validateLes, type Les } from './schema.js';
 import { PROMPT_VERSIE, SYSTEEMPROMPT, gebruikersprompt } from './prompt.js';
 import type { Lyrics } from '../lyrics/provider.js';
 import type { TrackRef } from '../types.js';
-import { JsonCache } from '../cache.js';
-import { DEFAULT_EFFORT, type Effort } from '../config.js';
+import { sleutel } from '../hash.js';
+import { DEFAULT_EFFORT, type Effort } from './instellingen.js';
 import { leegKosten, telOp, type Kosten } from './kosten.js';
 
 /**
@@ -43,13 +43,19 @@ export interface MessagesLike {
   };
 }
 
+/** Eerder gemaakte lessen, op sleutel. In de app is dat Supabase, in de tests een Map. */
+export interface LesCache {
+  get(key: string): Promise<Les | undefined>;
+  set(key: string, les: Les): Promise<void>;
+}
+
 export interface GeneratorOpties {
   apiKey: string;
   model: string;
   effort?: Effort;
   /** Mag het model het web doorzoeken? Standaard ja. */
   onderzoek?: boolean;
-  cache?: JsonCache;
+  cache?: LesCache;
   client?: MessagesLike;
 }
 
@@ -74,25 +80,31 @@ export class ClaudeLessonGenerator implements LessonGenerator {
   private readonly model: string;
   private readonly effort: Effort;
   private readonly onderzoek: boolean;
-  private readonly cache?: JsonCache;
+  private readonly cache?: LesCache;
 
   constructor(o: GeneratorOpties) {
     this.model = o.model;
     this.effort = o.effort ?? DEFAULT_EFFORT;
     this.onderzoek = o.onderzoek ?? true;
     this.cache = o.cache;
-    this.client = o.client ?? (o.apiKey ? new Anthropic({ apiKey: o.apiKey }) : zonderSleutel);
+    // De app draait in de browser en Merijn vult zijn eigen sleutel in; die blijft in zijn browser.
+    this.client = o.client ?? (o.apiKey ? new Anthropic({ apiKey: o.apiKey, dangerouslyAllowBrowser: true }) : zonderSleutel);
+  }
+
+  /** Dezelfde tekst met dezelfde instellingen geeft dezelfde sleutel, en dus geen tweede rekening. */
+  sleutel(track: TrackRef, lyrics: Lyrics): Promise<string> {
+    return sleutel(this.model, this.effort, this.onderzoek, PROMPT_VERSIE, track.title, track.artist, lyrics.text);
   }
 
   async generate(track: TrackRef, lyrics: Lyrics, opts: GenerateOpts = {}): Promise<Les> {
-    const key = JsonCache.key(this.model, this.effort, this.onderzoek, PROMPT_VERSIE, track.title, track.artist, lyrics.text);
-    let betaald = false;
-    const run = () => {
-      betaald = true;
-      return this.call(track, lyrics, opts);
-    };
-    const les = await (this.cache ? this.cache.wrap('lessen', key, run) : run());
-    if (!betaald) opts.onKosten?.(leegKosten(true));
+    const key = await this.sleutel(track, lyrics);
+    const eerder = await this.cache?.get(key);
+    if (eerder) {
+      opts.onKosten?.(leegKosten(true));
+      return eerder;
+    }
+    const les = await this.call(track, lyrics, opts);
+    await this.cache?.set(key, les);
     return les;
   }
 
@@ -247,7 +259,7 @@ const zonderSleutel: MessagesLike = {
   beta: {
     messages: {
       stream: () => {
-        throw new Error('ANTHROPIC_API_KEY ontbreekt in .env');
+        throw new Error('Vul eerst je Claude-sleutel in bij Instellingen.');
       },
     },
   },

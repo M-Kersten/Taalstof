@@ -2,7 +2,7 @@
 
 Taalstof maakt van songteksten Duitse taallessen. Je kiest een nummer uit je eigen Spotify, plakt de songtekst erbij en Claude bouwt er een les van. Het doel is Duits leren. De les begint bij de tekst en vertelt wat een Duitser erbij hoort: de plek, het merk, de gebeurtenis of het verhaal achter een zinsnede. Daar hangen de woorden aan, en een woord dat aan een verhaal hangt, onthoud je.
 
-Het is een kleine webapp die alleen op je eigen machine draait, op `http://127.0.0.1`. Elke les is een los HTML-bestand in `lessons/`, dat je ook zonder de server kunt openen.
+De app draait helemaal in je browser en staat op GitHub Pages: **https://m-kersten.github.io/Taalstof/**. Je Claude-sleutel vul je in de app zelf in. De lessen gaan als JSON naar je eigen Supabase-database, waar alleen jij na inloggen bij kunt.
 
 ## Hoe een les loopt
 
@@ -22,88 +22,93 @@ De **naslag** schuift er van rechts in, op elk moment. Daar staan de kaarten, de
 
 De pagina maakt het pad, de stappen, de spelletjes en de zinnen bij Hierna zelf uit wat de les al heeft. Het model schrijft alleen per couplet één openingszin extra.
 
-Eerst zien hoe dat eruitziet? Start de app en open `http://127.0.0.1:8787/voorbeeld`. Die voorbeeldles over *Die Gedanken sind frei* werkt zonder sleutels.
+Eerst zien hoe dat eruitziet? Onderaan de startpagina staat een link naar de voorbeeldles over *Die Gedanken sind frei*. Die werkt zonder sleutels en zonder inloggen.
 
 Claude zoekt kort op het web om te controleren wat het over de maker en de verwijzingen in de tekst vertelt. Onder **Bron** staan alleen pagina's die het tijdens het maken echt gezien heeft. Een adres dat het uit zijn geheugen noemt, laat Taalstof weg. De herkomst van losse woorden komt uit het geheugen van het model; wat niet vaststaat, krijgt het label onzeker.
 
-## Wat je nodig hebt
+## Eenmalig instellen
 
-Node.js 20 of nieuwer, plus twee sleutels: Spotify en Anthropic. Kopieer eerst het voorbeeld:
+Je hebt drie dingen nodig die je één keer regelt: een Supabase-project, een Spotify-app en de instellingen van deze repository. De Claude-sleutel komt daarna in de app zelf.
 
-```sh
-cp .env.example .env
-```
+### Supabase
+
+1. Maak een gratis project op [supabase.com](https://supabase.com).
+2. Open **SQL Editor**, plak de inhoud van `supabase/schema.sql` en voer het uit. Dat maakt de tabel `lessen`, met regels die zorgen dat elke gebruiker alleen zijn eigen lessen ziet.
+3. Ga naar **Authentication**, **URL Configuration**. Zet de **Site URL** op `https://m-kersten.github.io/Taalstof/` en voeg onder **Redirect URLs** zowel dat adres als `http://127.0.0.1:5173/` toe.
+4. Kopieer onder **Project Settings**, **API** de Project URL en de anon key (in nieuwe projecten heet hij publishable key). Die zijn bedoeld om openbaar in een webpagina te staan.
+5. Log één keer in via de app. Zet daarna onder **Authentication** het aanmelden van nieuwe gebruikers uit, zodat niemand anders een account in je project kan maken.
+
+Inloggen gaat met een link per mail. De ingebouwde mailer van Supabase stuurt er maar een paar per uur; voor één gebruiker is dat genoeg. Een gratis project gaat na een week zonder gebruik in de slaapstand. Je zet hem terug met één klik in het dashboard, de lessen blijven bewaard.
 
 ### Spotify-app
 
-1. Ga naar het [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) en log in.
-2. Kies **Create app**. Naam en beschrijving mag je zelf kiezen.
-3. Vul bij **Redirect URIs** precies dit in, met de poort uit je `.env` (standaard 8787):
-   `http://127.0.0.1:8787/callback`
-   Spotify accepteert `localhost` niet meer, gebruik dus `127.0.0.1`.
-4. Vink **Web API** aan en sla op.
-5. Kopieer de **Client ID** naar `SPOTIFY_CLIENT_ID`. Een client secret is niet nodig: Taalstof gebruikt PKCE.
+1. Ga naar het [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) en kies **Create app**, of open de app die je al had.
+2. Zet bij **Redirect URIs** deze twee adressen, precies zo, met de schuine streep aan het eind:
+   `https://m-kersten.github.io/Taalstof/`
+   `http://127.0.0.1:5173/`
+   Het oude adres `http://127.0.0.1:8787/callback` mag weg.
+3. Vink **Web API** aan en sla op. Een client secret is niet nodig: Taalstof gebruikt PKCE.
+4. Een app in development mode werkt alleen voor accounts die onder **User Management** staan. Zet je eigen Spotify-account daar neer.
 
-Een app in development mode werkt alleen voor accounts die je onder **User Management** toevoegt. Zet je eigen Spotify-account daar neer.
+Spotify levert zelf geen songteksten. Taalstof gebruikt de officiële Web API alleen voor je playlists, recent gespeelde nummers, zoeken en de link om het nummer te openen. In de les staat de officiële Spotify-speler, zodat je kunt meeluisteren.
 
-Spotify levert zelf geen songteksten. Taalstof gebruikt de officiële Web API alleen voor je playlists, recent gespeelde nummers, zoeken en de link om het nummer te openen. In de les staat de officiële Spotify-speler boven de tekst, zodat je kunt meeluisteren.
+### GitHub
 
-### Musixmatch-sleutel (optioneel)
+1. Zet onder **Settings**, **Pages** de **Source** op **GitHub Actions**.
+2. Vul onder **Settings**, **Secrets and variables**, **Actions**, tabblad **Variables** drie variabelen in: `SPOTIFY_CLIENT_ID`, `SUPABASE_URL` en `SUPABASE_ANON_KEY`. Variabelen en geen secrets, want ze komen toch openbaar in de pagina te staan.
+3. Elke push naar `main` bouwt de site opnieuw (`.github/workflows/pages.yml`). Na een wijziging in de variabelen start je de bouw zelf onder **Actions**, **Pages**, **Run workflow**.
 
-Niet nodig: je plakt de tekst zelf. Wil je dat Taalstof een tekst voor je zoekt, dan kan het via Musixmatch.
+Laat je de variabelen leeg, dan kun je de drie waarden ook in de app invullen onder **Instellingen**, **Spotify en Supabase**. Ze gelden dan alleen voor die browser.
 
-1. Maak een account op [developer.musixmatch.com](https://developer.musixmatch.com).
-2. Kies het gratis plan en maak een applicatie aan.
-3. Zet de API-sleutel in `MUSIXMATCH_API_KEY`.
+### Claude-sleutel
 
-Met de gratis sleutel geeft Musixmatch ongeveer 30 procent van de tekst. Taalstof ziet dat en zegt het erbij. Zonder sleutel laat Taalstof Musixmatch helemaal links liggen.
+1. Maak in de [Claude Console](https://console.anthropic.com) een aparte sleutel voor Taalstof, het liefst in een eigen workspace met een bestedingslimiet.
+2. Open de app en vul de sleutel in onder **Instellingen**. Hij blijft in de opslag van die browser en gaat alleen naar Anthropic.
 
-### Anthropic-sleutel
+Iedereen die bij je browser kan, kan de sleutel daar uitlezen. Ook andere sites die je ooit onder `m-kersten.github.io` zet, delen die opslag met Taalstof. Een sleutel met een limiet houdt de schade dan klein, en intrekken kan altijd in de Console.
 
-1. Log in op de [Claude Console](https://console.anthropic.com).
-2. Maak onder **API Keys** een sleutel aan en zet hem in `ANTHROPIC_API_KEY`.
-3. `ANTHROPIC_MODEL` staat standaard op `claude-opus-5-5`. Voor goedkopere lessen kun je `claude-sonnet-5-5` proberen.
-4. `ONDERZOEK` staat standaard op `aan`: Claude doet hooguit vier zoekopdrachten om feiten na te gaan. Zoeken moet aanstaan voor je organisatie in de Claude Console. Met `ONDERZOEK=uit` vertelt Claude alleen wat het zeker weet.
-5. `ANTHROPIC_EFFORT` bepaalt hoe diep het model nadenkt voor het schrijft. Standaard `medium`. Met `high` wordt het grondiger en duurder, met `low` sneller en goedkoper.
+Bij **Instellingen** kies je ook het model, hoe diep het nadenkt en of Claude op het web mag zoeken. Zoeken moet aanstaan voor je organisatie in de Claude Console. Zonder zoeken vertelt Claude alleen wat het zeker weet.
 
-Na elke les zie je wat hij kostte, in de kiespagina en onderaan de les. Reken met ongeveer een dollar per lied met `claude-opus-5-5`, en de helft met `claude-sonnet-5-5`; een lang lied kost meer. Het grootste deel zit in wat Claude schrijft en denkt. De lange instructies gaan in de cache van de API, zodat een vervolg of herkansing weinig kost.
+## Een les maken
 
-Eén les duurt een paar minuten. De server maakt hem op de achtergrond en de pagina laat zien hoe ver hij is. Taalstof bewaart elke les in `data/`, zodat hetzelfde lied met dezelfde tekst en dezelfde instellingen je maar één keer geld kost.
+Log in met je mailadres, log in bij Spotify, kies een nummer, plak de songtekst en druk op **Maak les**. De les komt in **Mijn lessen** en opent op zijn eigen adres.
+
+Eén les duurt een paar minuten en wordt in je browser gemaakt. Laat de pagina zo lang open. Op een telefoon houdt Taalstof het scherm aan; gaat hij toch op slot, dan breekt de verbinding af. Lukt het bewaren in Supabase niet, dan blijft de les in je browser staan en probeert Taalstof het opnieuw zodra je weer ingelogd bent.
+
+Na elke les zie je wat hij kostte. Reken met ongeveer een dollar per lied met Opus 5.5, en de helft met Sonnet 5.5; een lang lied kost meer. Het grootste deel zit in wat Claude schrijft en denkt. Vraag je dezelfde les met dezelfde tekst en dezelfde instellingen nog eens, dan haalt Taalstof hem uit Supabase en kost hij niets.
 
 Weigert een veiligheidsfilter van het model een tekst, dan probeert de API het zelf nog eens op het vervangende model dat Anthropic daarvoor aanraadt. Dat staat aan in `src/lesson/generator.ts` met `fallbacks`.
 
-## Starten
+## Ontwikkelen
 
 ```sh
 npm install
-npm run dev        # ontwikkelen, herstart bij wijzigingen
-# of
-npm run build && npm start
+cp .env.example .env
+npm run dev
 ```
 
-Open `http://127.0.0.1:8787`, klik op **Inloggen bij Spotify**, kies een nummer, plak de songtekst in het veld en druk op **Maak les**. Is de les klaar, dan verschijnt de knop **Open de les**.
+Vul in `.env` dezelfde drie openbare waarden in als op GitHub en open `http://127.0.0.1:5173/`. Gebruik `127.0.0.1` en niet `localhost`: Spotify en Supabase sturen je terug naar precies het adres dat je hebt opgegeven.
 
-Overige commando's:
-
-```sh
-npm test           # vitest, alles met gemockte HTTP
-npm run build      # TypeScript naar dist/
-```
+| Commando | Wat het doet |
+| --- | --- |
+| `npm test` | vitest, alles met nep-Spotify, nep-Supabase en nep-Claude |
+| `npm run build` | typecontrole en de statische site in `dist/` |
+| `npm run preview` | `dist/` bekijken op `http://127.0.0.1:4173/` |
 
 ## Mappen
 
 | Map | Inhoud |
 | --- | --- |
+| `index.html`, `les.html` | De startpagina en de pagina die een les laadt |
+| `src/web/` | Wat in de browser draait: instellingen, inloggen, Supabase en de startpagina |
 | `src/spotify/` | Spotify Web API met Authorization Code + PKCE |
-| `src/lyrics/` | `LyricsProvider`-interface, handmatig plakken en optioneel Musixmatch |
+| `src/lyrics/` | Geplakte tekst opschonen |
 | `src/lesson/` | Lesschema, Nederlandse prompt en de aanroep naar Claude |
-| `src/render/` | Zet een les om naar één zelfstandig HTML-bestand |
-| `templates/` | CSS en script van de les, overgenomen uit de eerste handgemaakte les |
+| `src/render/` | Zet een les om naar één zelfstandig HTML-document |
+| `templates/` | CSS en script van de les |
 | `voorbeeld/` | De voorbeeldles over een rechtenvrij volkslied, ook de maatstaf in de tests |
-| `public/` | De kiespagina |
-| `data/` | Cache van Spotify, songteksten en lessen, plus je Spotify-token (niet in git) |
-| `lessons/` | De gemaakte lessen (niet in git) |
+| `supabase/` | De tabel en de toegangsregels voor je lessen |
 
 ## Auteursrecht
 
-Songteksten zijn auteursrechtelijk beschermd. Taalstof is daarom alleen bedoeld voor eigen gebruik op je eigen computer. De app publiceert niets, de server luistert alleen op `127.0.0.1`, en de mappen met teksten en lessen staan in `.gitignore`. Zet gemaakte lessen niet online.
+Songteksten zijn auteursrechtelijk beschermd. Op GitHub Pages staat alleen de app zelf en de rechtenvrije voorbeeldles. Teksten en lessen staan in je eigen Supabase-database en zijn alleen na inloggen te lezen. Maak die tabel niet openbaar en zet gemaakte lessen niet in de repository.
